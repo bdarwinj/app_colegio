@@ -10,6 +10,8 @@ from src.controllers.config_controller import ConfigController
 from src.controllers.user_controller import UserController
 from src.views.config_ui import ConfigUI
 from src.views.user_management_ui import UserManagementUI
+from src.views.payment_ui import PaymentUI
+from src.views.login_ui import LoginUI
 from config import SCHOOL_NAME, LOGO_PATH
 
 class AppUI:
@@ -106,7 +108,6 @@ class AppUI:
         self.btn_registrar_pago.pack(side="left", padx=5, pady=5)
         self.btn_cursos = ttk.Button(self.frame_admin, text="Administrar Cursos", command=self.manage_courses)
         self.btn_cursos.pack(side="left", padx=5, pady=5)
-        # New button to manage users
         self.btn_usuarios = ttk.Button(self.frame_admin, text="Administrar Usuarios", command=self.manage_users)
         self.btn_usuarios.pack(side="left", padx=5, pady=5)
 
@@ -114,7 +115,9 @@ class AppUI:
         ConfigUI(self.db)
 
     def registrar_pago(self):
-        messagebox.showinfo("Registro de Pago", "Funcionalidad para registrar pagos pendiente de implementación.")
+        # Open the Payment UI for registering a payment.
+        from src.views.payment_ui import PaymentUI  # Imported locally to avoid circular dependency.
+        PaymentUI(self.db)
 
     def manage_courses(self):
         win = tk.Toplevel(self.root)
@@ -141,7 +144,7 @@ class AppUI:
         btn_deactivate.grid(row=2, column=0, columnspan=2, padx=5, pady=5)
 
     def manage_users(self):
-        # Open the user management window to create new users.
+        from src.views.user_management_ui import UserManagementUI
         UserManagementUI(self.db)
 
     def load_courses_into_tree(self):
