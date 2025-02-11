@@ -4,6 +4,7 @@ from PIL import Image, ImageTk
 import os
 from fpdf import FPDF
 import datetime
+import traceback
 from src.controllers.student_controller import StudentController
 from src.controllers.course_controller import CourseController
 from src.controllers.config_controller import ConfigController
@@ -13,6 +14,7 @@ from src.views.user_management_ui import UserManagementUI
 from src.views.payment_ui import PaymentUI
 from src.views.login_ui import LoginUI
 from config import SCHOOL_NAME, LOGO_PATH
+from src.views.student_details_window import StudentDetailsWindow  # Import for student details
 
 class AppUI:
     def __init__(self, db, user):
@@ -92,6 +94,8 @@ class AppUI:
         for col in columnas:
             self.tree.heading(col, text=col.capitalize())
         self.tree.pack(fill="both", expand=True)
+        # Bind double-click event on the treeview to open student details using identification number.
+        self.tree.bind("<Double-1>", self.on_student_double_click)
 
         # Action Buttons
         self.btn_refrescar = ttk.Button(self.root, text="Refrescar Lista", command=self.refrescar_lista)
@@ -115,8 +119,7 @@ class AppUI:
         ConfigUI(self.db)
 
     def registrar_pago(self):
-        # Open the Payment UI for registering a payment.
-        from src.views.payment_ui import PaymentUI  # Imported locally to avoid circular dependency.
+        from src.views.payment_ui import PaymentUI
         PaymentUI(self.db)
 
     def manage_courses(self):
@@ -152,7 +155,7 @@ class AppUI:
             self.courses_tree.delete(item)
         courses = self.course_controller.get_all_courses()
         for course in courses:
-            self.courses_tree.insert("", "end", values=(course["id"], course["name"], "Sí" if course["active"]==1 else "No"))
+            self.courses_tree.insert("", "end", values=(course["id"], course["name"], "Sí" if course["active"] == 1 else "No"))
         self.load_courses_into_combobox()
 
     def add_course(self):
@@ -246,6 +249,18 @@ class AppUI:
             course_name = est["course_name"] if est["course_name"] else "N/A"
             self.tree.insert("", "end", values=(est["id"], est["identificacion"], est["nombre"], est["apellido"], course_name))
 
+    def on_student_double_click(self, event):
+        try:
+            selected = self.tree.selection()
+            if selected:
+                item = self.tree.item(selected[0])
+                # Retrieve the student's identification number (column index 1)
+                student_identificacion = item["values"][1]
+                StudentDetailsWindow(self.db, student_identificacion)
+        except Exception as e:
+            error_details = traceback.format_exc()
+            messagebox.showerror("Error", f"Error al abrir los detalles del estudiante:\n{error_details}")
+
     def generar_pdf(self):
         selected = self.tree.selection()
         if not selected:
@@ -273,7 +288,7 @@ class AppUI:
         confirm = messagebox.askyesno("Cerrar Sesión", "¿Está seguro de cerrar la sesión?")
         if confirm:
             self.root.destroy()
-            from src.views.login_ui import LoginUI  # Import local to avoid circular dependency
+            from src.views.login_ui import LoginUI
             LoginUI(self.db).run()
 
     def run(self):

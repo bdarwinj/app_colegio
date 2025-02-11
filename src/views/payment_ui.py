@@ -53,7 +53,9 @@ class PaymentUI:
         self.students_map = {}
         student_names = []
         for student in students:
-            name = f"{student['nombre']} {student['apellido']}"
+            # Capitalize the first letter of the first name and surname.
+            full_name = f"{student['nombre']} {student['apellido']}"
+            name = full_name.title()  # Title-case each word
             student_names.append(name)
             self.students_map[name] = student["id"]
         self.combo_student["values"] = student_names
@@ -79,8 +81,11 @@ class PaymentUI:
             student_id, amount, description
         )
         if success:
-            self.generate_pdf(receipt_number, student_name, amount, description, payment_date)
-            messagebox.showinfo("Éxito", f"Pago registrado exitosamente.\nRecibo Nº: {self.format_receipt_number(receipt_number, payment_date)}")
+            # Ensure student name is in title case.
+            formatted_student_name = student_name.title()
+            self.generate_pdf(receipt_number, formatted_student_name, amount, description, payment_date)
+            formatted_receipt = self.format_receipt_number(receipt_number, payment_date)
+            messagebox.showinfo("Éxito", f"Pago registrado exitosamente.\nRecibo Nº: {formatted_receipt}")
             self.window.destroy()
         else:
             messagebox.showerror("Error", msg)

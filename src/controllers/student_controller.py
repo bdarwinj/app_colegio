@@ -21,3 +21,12 @@ class StudentController:
                    LEFT JOIN courses c ON e.course_id = c.id'''
         self.db.cursor.execute(query)
         return self.db.cursor.fetchall()
+
+    def get_student_by_identification(self, identificacion):
+        try:
+            query = "SELECT * FROM estudiantes WHERE identificacion = ?"
+            self.db.cursor.execute(query, (identificacion,))
+            return self.db.cursor.fetchone()
+        except Exception as e:
+            print(f"Error al obtener estudiante por identificación: {e}")
+            return None
