@@ -17,7 +17,6 @@ class PaymentController:
         Create the 'payments' table if it does not exist.
         """
         try:
-            # Attempt to get a cursor from the db connection.
             if hasattr(self.db, "cursor") and callable(self.db.cursor):
                 cursor = self.db.cursor()
             elif hasattr(self.db, "connection") and hasattr(self.db.connection, "cursor") and callable(self.db.connection.cursor):
@@ -35,7 +34,6 @@ class PaymentController:
                 )
             """
             cursor.execute(create_table_query)
-            # Commit the changes using the appropriate commit method.
             if hasattr(self.db, "commit") and callable(self.db.commit):
                 self.db.commit()
             elif hasattr(self.db, "connection") and hasattr(self.db.connection, "commit") and callable(self.db.connection.commit):
@@ -52,7 +50,6 @@ class PaymentController:
         In case of errors, the full traceback will be printed to the console.
         """
         try:
-            # Attempt to get a cursor from the db connection.
             if hasattr(self.db, "connection") and hasattr(self.db.connection, "cursor") and callable(self.db.connection.cursor):
                 cursor = self.db.connection.cursor()
             elif hasattr(self.db, "cursor") and callable(self.db.cursor):
@@ -67,32 +64,28 @@ class PaymentController:
             payment_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             cursor.execute(query, (student_id, amount, description, payment_date))
             
-            # Commit changes using the appropriate commit method.
             if hasattr(self.db, "commit") and callable(self.db.commit):
                 self.db.commit()
             elif hasattr(self.db, "connection") and hasattr(self.db.connection, "commit") and callable(self.db.connection.commit):
                 self.db.connection.commit()
             else:
-                # If no commit method is available, assume auto-commit or issue a warning.
                 print("Advertencia: No se encontró método commit, verifique la configuración de la base de datos.")
             
-            receipt_number = cursor.lastrowid  # Retrieve the auto-incremented receipt number.
+            receipt_number = cursor.lastrowid
             return True, "Pago registrado exitosamente.", receipt_number, payment_date
 
         except Exception as e:
-            # Capture and print the full traceback for debugging.
             detailed_error = traceback.format_exc()
             print("Error al registrar el pago:")
             print(detailed_error)
             return False, f"Error al registrar el pago: {e}", None, None
 
-    def get_payments_by_student_identification(self, student_identification):
+    def get_payments_by_student_identification(self, student_id):
         """
-        Retrieves all payment records for a given student identification.
-        Returns a list of sqlite3.Row objects (or dictionaries, depending on your DB configuration).
+        Retrieves all payment records for a given student_id.
+        Returns a list of sqlite3.Row objects.
         """
         try:
-            # Attempt to get a cursor from the db connection.
             if hasattr(self.db, "connection") and hasattr(self.db.connection, "cursor") and callable(self.db.connection.cursor):
                 cursor = self.db.connection.cursor()
             elif hasattr(self.db, "cursor") and callable(self.db.cursor):
@@ -101,10 +94,32 @@ class PaymentController:
                 raise AttributeError("El objeto de base de datos no proporciona un cursor válido mediante 'cursor()' o 'connection.cursor()'.")
             
             query = "SELECT * FROM payments WHERE student_id = ?"
-            cursor.execute(query, (student_identification,))
+            cursor.execute(query, (student_id,))
             return cursor.fetchall()
         except Exception as e:
             detailed_error = traceback.format_exc()
-            print(f"Error fetching payments for student {student_identification}:")
+            print(f"Error fetching payments for student {student_id}:")
             print(detailed_error)
             return []
+
+    def get_payment_by_id(self, payment_id):
+        """
+        Retrieves a single payment record by its payment id.
+        Returns a sqlite3.Row object.
+        """
+        try:
+            if hasattr(self.db, "connection") and hasattr(self.db.connection, "cursor") and callable(self.db.connection.cursor):
+                cursor = self.db.connection.cursor()
+            elif hasattr(self.db, "cursor") and callable(self.db.cursor):
+                cursor = self.db.cursor()
+            else:
+                raise AttributeError("El objeto de base de datos no proporciona un cursor válido mediante 'cursor()' o 'connection.cursor()'.")
+            
+            query = "SELECT * FROM payments WHERE id = ?"
+            cursor.execute(query, (payment_id,))
+            return cursor.fetchone()
+        except Exception as e:
+            detailed_error = traceback.format_exc()
+            print(f"Error fetching payment with id {payment_id}:")
+            print(detailed_error)
+            return None
