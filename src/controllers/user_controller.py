@@ -1,6 +1,9 @@
 import hashlib
 import traceback
 import sqlite3
+import logging
+
+logger = logging.getLogger(__name__)
 
 class UserController:
     def __init__(self, db):
@@ -10,6 +13,17 @@ class UserController:
         If using a custom Database object, it should expose a 'connection' attribute.
         """
         self.db = db
+
+    def get_cursor(self):
+        """
+        Returns a valid cursor from the database.
+        """
+        if hasattr(self.db, "cursor") and callable(self.db.cursor):
+            return self.db.cursor()
+        elif hasattr(self.db, "connection"):
+            return self.db.connection.cursor()
+        else:
+            raise AttributeError("El objeto de base de datos no tiene un cursor válido.")
 
     def login(self, username, password):
         """
@@ -22,14 +36,7 @@ class UserController:
         hashed_password = hashlib.sha256(password.encode()).hexdigest()
 
         try:
-            # Obtain a cursor from the database.
-            if hasattr(self.db, "cursor") and callable(self.db.cursor):
-                cursor = self.db.cursor()
-            elif hasattr(self.db, "connection"):
-                cursor = self.db.connection.cursor()
-            else:
-                raise AttributeError("El objeto de base de datos no tiene un cursor válido.")
-
+            cursor = self.get_cursor()
             query = "SELECT username, role FROM users WHERE username = ? AND password = ?"
             cursor.execute(query, (username, hashed_password))
             row = cursor.fetchone()
@@ -40,9 +47,8 @@ class UserController:
                 user.role = row[1]
                 return user
 
-        except Exception as e:
-            error_details = traceback.format_exc()
-            print("Error during login:", error_details)
+        except Exception:
+            logger.exception("Error during login:")
 
         # Fallback: if no record is found and the entered credentials match admin defaults then return admin.
         expected_admin_hash = hashlib.sha256("admin".encode()).hexdigest()
@@ -66,25 +72,52 @@ class UserController:
         hashed_password = hashlib.sha256(password.encode()).hexdigest()
 
         try:
-            # Obtain a cursor from the database.
-            if hasattr(self.db, "cursor") and callable(self.db.cursor):
-                cursor = self.db.cursor()
-            elif hasattr(self.db, "connection"):
-                cursor = self.db.connection.cursor()
-            else:
-                raise AttributeError("El objeto de base de datos no tiene un cursor válido.")
-            
+            cursor = self.get_cursor()
             query = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)"
             cursor.execute(query, (username, hashed_password, role))
 
-            # Commit the changes.
             if hasattr(self.db, "commit") and callable(self.db.commit):
                 self.db.commit()
             elif hasattr(self.db, "connection") and hasattr(self.db.connection, "commit") and callable(self.db.connection.commit):
                 self.db.connection.commit()
 
             return True, "Usuario creado exitosamente."
+        except sqlite3.IntegrityError:
+            logger.exception("Error al crear el usuario:")
+            return False, "Error: El nombre de usuario ya existe."
         except Exception as e:
-            error_details = traceback.format_exc()
-            print("Error al crear el usuario:", error_details)
+            logger.exception("Error al crear el usuario:")
             return False, f"Error al crear el usuario: {e}"
+
+    def change_password(self, username, old_password, new_password):
+        """
+        Changes the password for the given username.
+        Hashes are used to verify the old password and update it with the new password's hash.
+        Returns a tuple (success, message).
+        """
+        try:
+            cursor = self.get_cursor()
+            query = "SELECT password FROM users WHERE username = ?"
+            cursor.execute(query, (username,))
+            row = cursor.fetchone()
+            if not row:
+                return False, "Usuario no encontrado."
+            
+            current_password = row[0]
+            hashed_old_password = hashlib.sha256(old_password.encode()).hexdigest()
+            if current_password != hashed_old_password:
+                return False, "La clave actual ingresada es incorrecta."
+            
+            hashed_new_password = hashlib.sha256(new_password.encode()).hexdigest()
+            update_query = "UPDATE users SET password = ? WHERE username = ?"
+            cursor.execute(update_query, (hashed_new_password, username))
+            
+            if hasattr(self.db, "commit") and callable(self.db.commit):
+                self.db.commit()
+            elif hasattr(self.db, "connection") and hasattr(self.db.connection, "commit") and callable(self.db.connection.commit):
+                self.db.connection.commit()
+                
+            return True, "Clave actualizada correctamente."
+        except Exception as e:
+            logger.exception("Error al cambiar clave:")
+            return False, f"Error al cambiar clave: {e}"

@@ -5,6 +5,9 @@ class StudentController:
         self.db = db
 
     def register_student(self, identificacion, nombre, apellido, course_id, representante, telefono):
+        # Validar que 'identificacion' contenga solo dígitos.
+        if not identificacion.isdigit():
+            return False, "La identificación debe contener solo números."
         try:
             query = '''
                 INSERT INTO estudiantes (identificacion, nombre, apellido, course_id, representante, telefono)

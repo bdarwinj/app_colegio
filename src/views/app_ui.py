@@ -15,6 +15,65 @@ from src.views.payment_ui import PaymentUI
 from src.views.login_ui import LoginUI
 from config import SCHOOL_NAME, LOGO_PATH
 from src.views.student_details_window import StudentDetailsWindow  # Import for student details
+from src.logger import logger  # Import the logger
+
+class ChangePasswordWindow(tk.Toplevel):
+    def __init__(self, master, user_controller, current_user):
+        super().__init__(master)
+        self.user_controller = user_controller
+        self.current_user = current_user
+        self.title("Cambiar Clave")
+        self.geometry("400x250")
+        self.create_widgets()
+
+    def create_widgets(self):
+        frame = ttk.Frame(self, padding="20")
+        frame.pack(expand=True, fill="both")
+        
+        # Old password
+        ttk.Label(frame, text="Clave Actual:").grid(row=0, column=0, sticky="w", pady=5)
+        self.old_password_entry = ttk.Entry(frame, show="*")
+        self.old_password_entry.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
+        
+        # New password
+        ttk.Label(frame, text="Nueva Clave:").grid(row=1, column=0, sticky="w", pady=5)
+        self.new_password_entry = ttk.Entry(frame, show="*")
+        self.new_password_entry.grid(row=1, column=1, padx=5, pady=5, sticky="ew")
+        
+        # Confirm new password
+        ttk.Label(frame, text="Confirmar Nueva Clave:").grid(row=2, column=0, sticky="w", pady=5)
+        self.confirm_password_entry = ttk.Entry(frame, show="*")
+        self.confirm_password_entry.grid(row=2, column=1, padx=5, pady=5, sticky="ew")
+        
+        # Change Button
+        self.change_password_button = ttk.Button(frame, text="Cambiar Clave", command=self.change_password)
+        self.change_password_button.grid(row=3, column=0, columnspan=2, pady=20)
+        
+        frame.columnconfigure(1, weight=1)
+
+    def change_password(self):
+        old_password = self.old_password_entry.get().strip()
+        new_password = self.new_password_entry.get().strip()
+        confirm_password = self.confirm_password_entry.get().strip()
+        
+        if not old_password or not new_password or not confirm_password:
+            messagebox.showerror("Error", "Todos los campos son obligatorios.")
+            return
+        
+        if new_password != confirm_password:
+            messagebox.showerror("Error", "La nueva clave y su confirmación no coinciden.")
+            return
+        
+        try:
+            success, message = self.user_controller.change_password(self.current_user, old_password, new_password)
+            if success:
+                messagebox.showinfo("Éxito", message)
+                self.destroy()
+            else:
+                messagebox.showerror("Error", message)
+        except Exception:
+            logger.exception("Error al cambiar la clave:")
+            messagebox.showerror("Error", "Ocurrió un error al cambiar la clave. Consulte la consola para más detalles.")
 
 class AppUI:
     def __init__(self, db, user):
@@ -25,7 +84,7 @@ class AppUI:
         self.config_controller = ConfigController(db)
         self.user_controller = UserController(self.db)
         self.root = tk.Tk()
-        # Load configuration for school name and logo
+        # Load configuration for school name and logo.
         configs = self.config_controller.get_all_configs()
         school_name = configs.get("SCHOOL_NAME", SCHOOL_NAME)
         logo_path = configs.get("LOGO_PATH", LOGO_PATH)
@@ -35,7 +94,7 @@ class AppUI:
         self.create_widgets()
 
     def create_widgets(self):
-        # Header with logo, name, and logout button
+        # Header with logo, name, and logout & change password buttons
         header_frame = ttk.Frame(self.root)
         header_frame.pack(fill="x", padx=10, pady=10)
         # Logo
@@ -47,12 +106,15 @@ class AppUI:
                 logo_label = ttk.Label(header_frame, image=self.logo_image)
                 logo_label.pack(side="left", padx=5)
             except Exception as e:
-                print(f"Error al cargar el logo: {e}")
+                logger.exception("Error al cargar el logo:")
         else:
-            print(f"No se encontró la imagen en: {self.abs_logo_path}")
-        # School Name
+            logger.error("No se encontró la imagen en: %s", self.abs_logo_path)
+        # School Name (using the title already set in root)
         name_label = ttk.Label(header_frame, text=self.root.title(), font=("Arial", 18, "bold"))
         name_label.pack(side="left", padx=10)
+        # Change Password Button
+        btn_change_password = ttk.Button(header_frame, text="Cambiar Clave", command=self.open_change_password_window)
+        btn_change_password.pack(side="right", padx=10)
         # Logout Button
         btn_logout = ttk.Button(header_frame, text="Cerrar Sesión", command=self.logout)
         btn_logout.pack(side="right", padx=10)
@@ -119,7 +181,6 @@ class AppUI:
         ConfigUI(self.db)
 
     def registrar_pago(self):
-        from src.views.payment_ui import PaymentUI
         PaymentUI(self.db)
 
     def manage_courses(self):
@@ -147,7 +208,6 @@ class AppUI:
         btn_deactivate.grid(row=2, column=0, columnspan=2, padx=5, pady=5)
 
     def manage_users(self):
-        from src.views.user_management_ui import UserManagementUI
         UserManagementUI(self.db)
 
     def load_courses_into_tree(self):
@@ -258,8 +318,8 @@ class AppUI:
                 student_identificacion = item["values"][1]
                 StudentDetailsWindow(self.db, student_identificacion)
         except Exception as e:
-            error_details = traceback.format_exc()
-            messagebox.showerror("Error", f"Error al abrir los detalles del estudiante:\n{error_details}")
+            logger.exception("Error al abrir los detalles del estudiante:")
+            messagebox.showerror("Error", "Ocurrió un error al abrir los detalles del estudiante. Revise la consola para más detalles.")
 
     def generar_pdf(self):
         selected = self.tree.selection()
@@ -288,8 +348,10 @@ class AppUI:
         confirm = messagebox.askyesno("Cerrar Sesión", "¿Está seguro de cerrar la sesión?")
         if confirm:
             self.root.destroy()
-            from src.views.login_ui import LoginUI
             LoginUI(self.db).run()
+
+    def open_change_password_window(self):
+        ChangePasswordWindow(self.root, self.user_controller, self.user.username)
 
     def run(self):
         self.refrescar_lista()

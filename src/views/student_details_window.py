@@ -5,6 +5,7 @@ import traceback
 from fpdf import FPDF
 from src.controllers.student_controller import StudentController
 from src.controllers.payment_controller import PaymentController
+from src.controllers.config_controller import ConfigController
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 logo_path = os.path.join(BASE_DIR, "assets", "logo.png")
@@ -21,6 +22,8 @@ class StudentDetailsWindow:
         self.student_identification = student_identification
         self.student_controller = StudentController(self.db)
         self.payment_controller = PaymentController(self.db)
+        # Instantiate the ConfigController to retrieve school configuration from the database.
+        self.config_controller = ConfigController(self.db)
         # This will hold the student's details once loaded.
         self.student_details = {}
         # Create a new Toplevel window for this student's details.
@@ -112,18 +115,23 @@ class StudentDetailsWindow:
         pdf = FPDF()
         pdf.add_page()
 
-        # Insert logo using absolute path.
+        # Retrieve school configuration from the database.
+        # Using get_all_configs() since get_school_config() is not defined.
+        config = self.config_controller.get_all_configs()
+        school_name = config.get("school_name", "Colegio Ejemplo")
+        logo_path_config = config.get("logo_path", "assets/logo.png")
+
+        # Insert logo using absolute path from the configuration.
         try:
-            # Adjust the following line if the logo is not in "assets/logo.png"
             base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-            logo_path = os.path.join(base_dir, "assets", "logo.png")
-            pdf.image(logo_path, x=10, y=8, w=33)
+            logo_full_path = os.path.join(base_dir, logo_path_config)
+            pdf.image(logo_full_path, x=10, y=8, w=33)
         except Exception as img_error:
             print(f"[WARNING] No se pudo cargar el logo: {img_error}")
 
-        # Set up fonts and add School Name.
+        # Set up fonts and add School Name from the database configuration.
         pdf.set_font("Arial", 'B', 16)
-        pdf.cell(0, 10, "Colegio Ejemplo", ln=True, align="C")
+        pdf.cell(0, 10, school_name, ln=True, align="C")
         pdf.ln(5)
         
         # Title of the receipt.
@@ -153,7 +161,7 @@ class StudentDetailsWindow:
         
         pdf.set_font("Arial", size=12)
         # Student full name, identification, and representative.
-        full_name = f"{self.student_details.get('nombre', '')} {self.student_details.get('apellido', '')}"
+        full_name = f"{self.student_details.get('nombre', '').capitalize()} {self.student_details.get('apellido', '').capitalize()}"
         pdf.cell(50, 10, "Estudiante:")
         pdf.cell(0, 10, full_name, ln=True)
         
@@ -176,7 +184,11 @@ class StudentDetailsWindow:
             if not payment:
                 messagebox.showerror("Error", "No se encontró la información del pago.")
                 return
-            save_path = filedialog.asksaveasfilename(title="Guardar Recibo", defaultextension=".pdf", filetypes=[("PDF Files", "*.pdf")])
+            save_path = filedialog.asksaveasfilename(
+                title="Guardar Recibo",
+                defaultextension=".pdf",
+                filetypes=[("PDF Files", "*.pdf")]
+            )
             if not save_path:
                 return
             pdf = self.generate_receipt_pdf(dict(payment))
