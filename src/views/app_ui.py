@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
+from tkinter.filedialog import asksaveasfilename
 from PIL import Image, ImageTk
 import os
 from fpdf import FPDF
@@ -13,7 +14,7 @@ from src.views.config_ui import ConfigUI
 from src.views.user_management_ui import UserManagementUI
 from src.views.payment_ui import PaymentUI
 from src.views.login_ui import LoginUI
-from src.views.student_details_window import StudentDetailsWindow  # Import for student details
+from src.views.student_details_window import StudentDetailsWindow
 from src.utils.export_students import export_students_to_excel, export_students_to_pdf
 
 class ChangePasswordWindow(tk.Toplevel):
@@ -79,18 +80,21 @@ class AppUI:
         self.config_controller = ConfigController(db)
         self.user_controller = UserController(self.db)
         self.root = tk.Tk()
+        
         # Load configuration for school name and logo.
         configs = self.config_controller.get_all_configs()
-        school_name = configs.get("SCHOOL_NAME") or "School Name"
-        logo_path = configs.get("LOGO_PATH") or ""
-        self.abs_logo_path = os.path.abspath(logo_path)
-        self.root.title(f"{school_name} - Sistema de Pagos (Usuario: {self.user.username})")
+        self.school_name = configs.get("SCHOOL_NAME") or "School Name"
+        self.logo_path = configs.get("LOGO_PATH") or ""
+        self.abs_logo_path = os.path.abspath(self.logo_path)
+        
+        self.root.title(f"{self.school_name} - Sistema de Pagos (Usuario: {self.user.username})")
         self.root.geometry("900x650")
         self.create_widgets()
 
     def create_widgets(self):
         header_frame = ttk.Frame(self.root)
         header_frame.pack(fill="x", padx=10, pady=10)
+        
         if os.path.exists(self.abs_logo_path):
             try:
                 image = Image.open(self.abs_logo_path)
@@ -102,8 +106,10 @@ class AppUI:
                 print(f"Error al cargar el logo: {e}")
         else:
             print(f"No se encontró la imagen en: {self.abs_logo_path}")
+        
         name_label = ttk.Label(header_frame, text=self.root.title(), font=("Arial", 18, "bold"))
         name_label.pack(side="left", padx=10)
+        
         btn_change_password = ttk.Button(header_frame, text="Cambiar Clave", command=self.open_change_password_window)
         btn_change_password.pack(side="right", padx=10)
         btn_logout = ttk.Button(header_frame, text="Cerrar Sesión", command=self.logout)
@@ -171,14 +177,11 @@ class AppUI:
         self.tree.bind("<Double-1>", self.on_student_double_click)
 
     def sort_by(self, col):
-        # Get current items
         data = [(self.tree.set(child, col), child) for child in self.tree.get_children('')]
-        # Try to convert to float for numeric sorting, otherwise sort as string
         try:
             data.sort(key=lambda t: float(t[0]))
         except ValueError:
             data.sort(key=lambda t: t[0])
-        # Rearrange items in sorted positions
         for index, (val, child) in enumerate(data):
             self.tree.move(child, '', index)
 
@@ -352,18 +355,30 @@ class AppUI:
     def export_students_excel(self):
         try:
             estudiantes = self.student_controller.get_all_students()
-            output_filename = f"Listado_Estudiantes_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
-            export_students_to_excel(estudiantes, output_filename)
-            messagebox.showinfo("Exportación exitosa", f"Listado exportado a Excel: {output_filename}")
+            timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+            default_filename = f"{self.school_name}_Listado_Estudiantes_{timestamp}.xlsx"
+            file_path = asksaveasfilename(defaultextension=".xlsx",
+                                          filetypes=[("Excel files", "*.xlsx")],
+                                          initialfile=default_filename)
+            if not file_path:
+                return
+            export_students_to_excel(estudiantes, file_path, self.school_name, self.logo_path)
+            messagebox.showinfo("Exportación exitosa", f"Listado exportado a Excel: {file_path}")
         except Exception as e:
             messagebox.showerror("Error", f"Error al exportar a Excel: {str(e)}")
 
     def export_students_pdf(self):
         try:
             estudiantes = self.student_controller.get_all_students()
-            output_filename = f"Listado_Estudiantes_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
-            export_students_to_pdf(estudiantes, output_filename)
-            messagebox.showinfo("Exportación exitosa", f"Listado exportado a PDF: {output_filename}")
+            timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+            default_filename = f"{self.school_name}_Listado_Estudiantes_{timestamp}.pdf"
+            file_path = asksaveasfilename(defaultextension=".pdf",
+                                          filetypes=[("PDF files", "*.pdf")],
+                                          initialfile=default_filename)
+            if not file_path:
+                return
+            export_students_to_pdf(estudiantes, file_path, self.school_name, self.logo_path)
+            messagebox.showinfo("Exportación exitosa", f"Listado exportado a PDF: {file_path}")
         except Exception as e:
             messagebox.showerror("Error", f"Error al exportar a PDF: {str(e)}")
 
