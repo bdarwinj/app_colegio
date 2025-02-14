@@ -2,17 +2,28 @@ from src.views.login_ui import LoginUI
 from src.models.database import Database
 from config import DB_NAME, SCHOOL_NAME, LOGO_PATH
 from src.controllers.config_controller import ConfigController
+from src.logger import logger  # Import our custom logger
 
 def main():
-    # Inicializa la base de datos y crea tablas (incluye la tabla config)
+    logger.info("Inicializando la aplicación...")
+
+    # Inicializa la base de datos y crea las tablas, incluyendo la tabla de configuración
     db = Database(DB_NAME)
     db.create_tables()
     
     # Inserta usuarios de prueba, si no existen
-    db.cursor.execute("SELECT COUNT(*) FROM users")
-    if db.cursor.fetchone()[0] == 0:
-        db.cursor.execute("INSERT INTO users (username, password, role) VALUES (?, ?, ?)", ("admin", "admin", "admin"))
-        db.cursor.execute("INSERT INTO users (username, password, role) VALUES (?, ?, ?)", ("operador", "operador", "operator"))
+    cursor = db.cursor
+    cursor.execute("SELECT COUNT(*) FROM users")
+    if cursor.fetchone()[0] == 0:
+        logger.info("Insertando usuarios de prueba.")
+        cursor.execute(
+            "INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
+            ("admin", "admin", "admin")
+        )
+        cursor.execute(
+            "INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
+            ("operador", "operador", "operator")
+        )
         db.connection.commit()
     
     # Inicializa la configuración predeterminada en la tabla config si aún no existe
@@ -21,6 +32,7 @@ def main():
         "SCHOOL_NAME": SCHOOL_NAME,
         "LOGO_PATH": LOGO_PATH
     })
+    logger.info("Configuración inicializada.")
 
     # Lanza la ventana de login
     login_window = LoginUI(db)

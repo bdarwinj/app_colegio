@@ -13,9 +13,9 @@ from src.views.config_ui import ConfigUI
 from src.views.user_management_ui import UserManagementUI
 from src.views.payment_ui import PaymentUI
 from src.views.login_ui import LoginUI
-from config import SCHOOL_NAME, LOGO_PATH
 from src.views.student_details_window import StudentDetailsWindow  # Import for student details
-from src.logger import logger  # Import the logger
+from src.utils.export_students import export_students_to_excel, export_students_to_pdf
+from config import SCHOOL_NAME, LOGO_PATH
 
 class ChangePasswordWindow(tk.Toplevel):
     def __init__(self, master, user_controller, current_user):
@@ -72,7 +72,7 @@ class ChangePasswordWindow(tk.Toplevel):
             else:
                 messagebox.showerror("Error", message)
         except Exception:
-            logger.exception("Error al cambiar la clave:")
+            traceback.print_exc()
             messagebox.showerror("Error", "Ocurrió un error al cambiar la clave. Consulte la consola para más detalles.")
 
 class AppUI:
@@ -106,9 +106,9 @@ class AppUI:
                 logo_label = ttk.Label(header_frame, image=self.logo_image)
                 logo_label.pack(side="left", padx=5)
             except Exception as e:
-                logger.exception("Error al cargar el logo:")
+                print(f"Error al cargar el logo: {e}")
         else:
-            logger.error("No se encontró la imagen en: %s", self.abs_logo_path)
+            print(f"No se encontró la imagen en: {self.abs_logo_path}")
         # School Name (using the title already set in root)
         name_label = ttk.Label(header_frame, text=self.root.title(), font=("Arial", 18, "bold"))
         name_label.pack(side="left", padx=10)
@@ -119,16 +119,46 @@ class AppUI:
         btn_logout = ttk.Button(header_frame, text="Cerrar Sesión", command=self.logout)
         btn_logout.pack(side="right", padx=10)
 
-        # Admin Panel
+        # For admin, show admin panel and student registration form.
         if self.user.role == "admin":
             self.create_admin_panel()
-        
-        # Student Registration Frame
+            self.create_student_registration_frame()
+        # For user, provide only the "Registrar Pago" button.
+        elif self.user.role == "user":
+            self.btn_registrar_pago = ttk.Button(self.root, text="Registrar Pago", command=self.registrar_pago)
+            self.btn_registrar_pago.pack(pady=5)
+
+        # Students List Frame (visible to both admin and user)
+        self.create_students_list_frame()
+
+        # Action Buttons always visible
+        actions_frame = ttk.Frame(self.root)
+        actions_frame.pack(pady=5)
+        self.btn_refrescar = ttk.Button(actions_frame, text="Refrescar Lista", command=self.refrescar_lista)
+        self.btn_refrescar.pack(side="left", padx=5)
+        self.btn_pdf = ttk.Button(actions_frame, text="Generar Paz y Salvo", command=self.generar_pdf)
+        self.btn_pdf.pack(side="left", padx=5)
+        # New export buttons
+        self.btn_export_excel = ttk.Button(actions_frame, text="Exportar a Excel", command=self.export_students_excel)
+        self.btn_export_excel.pack(side="left", padx=5)
+        self.btn_export_pdf = ttk.Button(actions_frame, text="Exportar a PDF", command=self.export_students_pdf)
+        self.btn_export_pdf.pack(side="left", padx=5)
+
+    def create_admin_panel(self):
+        self.frame_admin = ttk.LabelFrame(self.root, text="Panel de Administración")
+        self.frame_admin.pack(padx=10, pady=10, fill="x")
+        self.btn_config = ttk.Button(self.frame_admin, text="Editar Configuración", command=self.editar_configuracion)
+        self.btn_config.pack(side="left", padx=5, pady=5)
+        self.btn_registrar_pago = ttk.Button(self.frame_admin, text="Registrar Pago", command=self.registrar_pago)
+        self.btn_registrar_pago.pack(side="left", padx=5, pady=5)
+        self.btn_cursos = ttk.Button(self.frame_admin, text="Administrar Cursos", command=self.manage_courses)
+        self.btn_cursos.pack(side="left", padx=5, pady=5)
+        self.btn_usuarios = ttk.Button(self.frame_admin, text="Administrar Usuarios", command=self.manage_users)
+        self.btn_usuarios.pack(side="left", padx=5, pady=5)
+
+    def create_student_registration_frame(self):
         self.frame_form = ttk.LabelFrame(self.root, text="Registrar Estudiante")
         self.frame_form.pack(padx=10, pady=10, fill="x")
-        if self.user.role != "admin":
-            self.frame_form.configure(text="Registrar Estudiante (Solo Admin)")
-        
         labels = ["Número de Identificación", "Nombre", "Apellido", "Representante", "Teléfono"]
         self.entries = {}
         for idx, text in enumerate(labels):
@@ -144,11 +174,9 @@ class AppUI:
         self.load_courses_into_combobox()
 
         self.btn_registrar = ttk.Button(self.frame_form, text="Registrar Estudiante", command=self.registrar_estudiante)
-        self.btn_registrar.grid(row=len(labels)+1, column=0, columnspan=2, pady=10)
-        if self.user.role != "admin":
-            self.btn_registrar.configure(state="disabled")
+        self.btn_registrar.grid(row=len(labels) + 1, column=0, columnspan=2, pady=10)
 
-        # Students List Frame
+    def create_students_list_frame(self):
         self.frame_lista = ttk.LabelFrame(self.root, text="Lista de Estudiantes")
         self.frame_lista.pack(padx=10, pady=10, fill="both", expand=True)
         columnas = ("id", "identificacion", "nombre", "apellido", "curso")
@@ -156,26 +184,7 @@ class AppUI:
         for col in columnas:
             self.tree.heading(col, text=col.capitalize())
         self.tree.pack(fill="both", expand=True)
-        # Bind double-click event on the treeview to open student details using identification number.
         self.tree.bind("<Double-1>", self.on_student_double_click)
-
-        # Action Buttons
-        self.btn_refrescar = ttk.Button(self.root, text="Refrescar Lista", command=self.refrescar_lista)
-        self.btn_refrescar.pack(pady=5)
-        self.btn_pdf = ttk.Button(self.root, text="Generar Paz y Salvo", command=self.generar_pdf)
-        self.btn_pdf.pack(pady=5)
-
-    def create_admin_panel(self):
-        self.frame_admin = ttk.LabelFrame(self.root, text="Panel de Administración")
-        self.frame_admin.pack(padx=10, pady=10, fill="x")
-        self.btn_config = ttk.Button(self.frame_admin, text="Editar Configuración", command=self.editar_configuracion)
-        self.btn_config.pack(side="left", padx=5, pady=5)
-        self.btn_registrar_pago = ttk.Button(self.frame_admin, text="Registrar Pago", command=self.registrar_pago)
-        self.btn_registrar_pago.pack(side="left", padx=5, pady=5)
-        self.btn_cursos = ttk.Button(self.frame_admin, text="Administrar Cursos", command=self.manage_courses)
-        self.btn_cursos.pack(side="left", padx=5, pady=5)
-        self.btn_usuarios = ttk.Button(self.frame_admin, text="Administrar Usuarios", command=self.manage_users)
-        self.btn_usuarios.pack(side="left", padx=5, pady=5)
 
     def editar_configuracion(self):
         ConfigUI(self.db)
@@ -314,12 +323,11 @@ class AppUI:
             selected = self.tree.selection()
             if selected:
                 item = self.tree.item(selected[0])
-                # Retrieve the student's identification number (column index 1)
                 student_identificacion = item["values"][1]
                 StudentDetailsWindow(self.db, student_identificacion)
         except Exception as e:
-            logger.exception("Error al abrir los detalles del estudiante:")
-            messagebox.showerror("Error", "Ocurrió un error al abrir los detalles del estudiante. Revise la consola para más detalles.")
+            error_details = traceback.format_exc()
+            messagebox.showerror("Error", f"Error al abrir los detalles del estudiante:\n{error_details}")
 
     def generar_pdf(self):
         selected = self.tree.selection()
@@ -343,6 +351,24 @@ class AppUI:
         pdf_file = f"paz_y_salvo_estudiante_{estudiante_data[0]}.pdf"
         pdf.output(pdf_file)
         messagebox.showinfo("PDF generado", f"El PDF '{pdf_file}' ha sido generado correctamente.")
+
+    def export_students_excel(self):
+        try:
+            estudiantes = self.student_controller.get_all_students()
+            output_filename = f"Listado_Estudiantes_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+            export_students_to_excel(estudiantes, output_filename)
+            messagebox.showinfo("Exportación exitosa", f"Listado exportado a Excel: {output_filename}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Error al exportar a Excel: {str(e)}")
+
+    def export_students_pdf(self):
+        try:
+            estudiantes = self.student_controller.get_all_students()
+            output_filename = f"Listado_Estudiantes_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+            export_students_to_pdf(estudiantes, output_filename)
+            messagebox.showinfo("Exportación exitosa", f"Listado exportado a PDF: {output_filename}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Error al exportar a PDF: {str(e)}")
 
     def logout(self):
         confirm = messagebox.askyesno("Cerrar Sesión", "¿Está seguro de cerrar la sesión?")

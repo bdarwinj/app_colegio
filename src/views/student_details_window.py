@@ -6,6 +6,7 @@ from fpdf import FPDF
 from src.controllers.student_controller import StudentController
 from src.controllers.payment_controller import PaymentController
 from src.controllers.config_controller import ConfigController
+from config import SCHOOL_NAME as DEFAULT_SCHOOL_NAME, LOGO_PATH as DEFAULT_LOGO_PATH
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 logo_path = os.path.join(BASE_DIR, "assets", "logo.png")
@@ -118,7 +119,7 @@ class StudentDetailsWindow:
         # Retrieve school configuration from the database.
         # Using get_all_configs() since get_school_config() is not defined.
         config = self.config_controller.get_all_configs()
-        school_name = config.get("school_name", "Colegio Ejemplo")
+        school_name = config.get("SCHOOL_NAME", DEFAULT_SCHOOL_NAME).title()
         logo_path_config = config.get("logo_path", "assets/logo.png")
 
         # Insert logo using absolute path from the configuration.
