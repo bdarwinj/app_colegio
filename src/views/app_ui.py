@@ -15,7 +15,6 @@ from src.views.payment_ui import PaymentUI
 from src.views.login_ui import LoginUI
 from src.views.student_details_window import StudentDetailsWindow  # Import for student details
 from src.utils.export_students import export_students_to_excel, export_students_to_pdf
-from config import SCHOOL_NAME, LOGO_PATH
 
 class ChangePasswordWindow(tk.Toplevel):
     def __init__(self, master, user_controller, current_user):
@@ -30,22 +29,18 @@ class ChangePasswordWindow(tk.Toplevel):
         frame = ttk.Frame(self, padding="20")
         frame.pack(expand=True, fill="both")
         
-        # Old password
         ttk.Label(frame, text="Clave Actual:").grid(row=0, column=0, sticky="w", pady=5)
         self.old_password_entry = ttk.Entry(frame, show="*")
         self.old_password_entry.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
         
-        # New password
         ttk.Label(frame, text="Nueva Clave:").grid(row=1, column=0, sticky="w", pady=5)
         self.new_password_entry = ttk.Entry(frame, show="*")
         self.new_password_entry.grid(row=1, column=1, padx=5, pady=5, sticky="ew")
         
-        # Confirm new password
         ttk.Label(frame, text="Confirmar Nueva Clave:").grid(row=2, column=0, sticky="w", pady=5)
         self.confirm_password_entry = ttk.Entry(frame, show="*")
         self.confirm_password_entry.grid(row=2, column=1, padx=5, pady=5, sticky="ew")
         
-        # Change Button
         self.change_password_button = ttk.Button(frame, text="Cambiar Clave", command=self.change_password)
         self.change_password_button.grid(row=3, column=0, columnspan=2, pady=20)
         
@@ -86,18 +81,16 @@ class AppUI:
         self.root = tk.Tk()
         # Load configuration for school name and logo.
         configs = self.config_controller.get_all_configs()
-        school_name = configs.get("SCHOOL_NAME", SCHOOL_NAME)
-        logo_path = configs.get("LOGO_PATH", LOGO_PATH)
+        school_name = configs.get("SCHOOL_NAME") or "School Name"
+        logo_path = configs.get("LOGO_PATH") or ""
         self.abs_logo_path = os.path.abspath(logo_path)
         self.root.title(f"{school_name} - Sistema de Pagos (Usuario: {self.user.username})")
         self.root.geometry("900x650")
         self.create_widgets()
 
     def create_widgets(self):
-        # Header with logo, name, and logout & change password buttons
         header_frame = ttk.Frame(self.root)
         header_frame.pack(fill="x", padx=10, pady=10)
-        # Logo
         if os.path.exists(self.abs_logo_path):
             try:
                 image = Image.open(self.abs_logo_path)
@@ -109,36 +102,28 @@ class AppUI:
                 print(f"Error al cargar el logo: {e}")
         else:
             print(f"No se encontró la imagen en: {self.abs_logo_path}")
-        # School Name (using the title already set in root)
         name_label = ttk.Label(header_frame, text=self.root.title(), font=("Arial", 18, "bold"))
         name_label.pack(side="left", padx=10)
-        # Change Password Button
         btn_change_password = ttk.Button(header_frame, text="Cambiar Clave", command=self.open_change_password_window)
         btn_change_password.pack(side="right", padx=10)
-        # Logout Button
         btn_logout = ttk.Button(header_frame, text="Cerrar Sesión", command=self.logout)
         btn_logout.pack(side="right", padx=10)
 
-        # For admin, show admin panel and student registration form.
         if self.user.role == "admin":
             self.create_admin_panel()
             self.create_student_registration_frame()
-        # For user, provide only the "Registrar Pago" button.
         elif self.user.role == "user":
             self.btn_registrar_pago = ttk.Button(self.root, text="Registrar Pago", command=self.registrar_pago)
             self.btn_registrar_pago.pack(pady=5)
 
-        # Students List Frame (visible to both admin and user)
         self.create_students_list_frame()
 
-        # Action Buttons always visible
         actions_frame = ttk.Frame(self.root)
         actions_frame.pack(pady=5)
         self.btn_refrescar = ttk.Button(actions_frame, text="Refrescar Lista", command=self.refrescar_lista)
         self.btn_refrescar.pack(side="left", padx=5)
         self.btn_pdf = ttk.Button(actions_frame, text="Generar Paz y Salvo", command=self.generar_pdf)
         self.btn_pdf.pack(side="left", padx=5)
-        # New export buttons
         self.btn_export_excel = ttk.Button(actions_frame, text="Exportar a Excel", command=self.export_students_excel)
         self.btn_export_excel.pack(side="left", padx=5)
         self.btn_export_pdf = ttk.Button(actions_frame, text="Exportar a PDF", command=self.export_students_pdf)
@@ -167,7 +152,6 @@ class AppUI:
             entry.grid(row=idx, column=1, padx=5, pady=5)
             self.entries[text] = entry
 
-        # Course Combobox
         ttk.Label(self.frame_form, text="Curso:").grid(row=len(labels), column=0, sticky="w", padx=5, pady=5)
         self.combo_course = ttk.Combobox(self.frame_form, state="readonly")
         self.combo_course.grid(row=len(labels), column=1, padx=5, pady=5)
@@ -179,12 +163,24 @@ class AppUI:
     def create_students_list_frame(self):
         self.frame_lista = ttk.LabelFrame(self.root, text="Lista de Estudiantes")
         self.frame_lista.pack(padx=10, pady=10, fill="both", expand=True)
-        columnas = ("id", "identificacion", "nombre", "apellido", "curso")
-        self.tree = ttk.Treeview(self.frame_lista, columns=columnas, show="headings")
-        for col in columnas:
-            self.tree.heading(col, text=col.capitalize())
+        self.columns = ("id", "identificacion", "nombre", "apellido", "curso")
+        self.tree = ttk.Treeview(self.frame_lista, columns=self.columns, show="headings")
+        for col in self.columns:
+            self.tree.heading(col, text=col.capitalize(), command=lambda _col=col: self.sort_by(_col))
         self.tree.pack(fill="both", expand=True)
         self.tree.bind("<Double-1>", self.on_student_double_click)
+
+    def sort_by(self, col):
+        # Get current items
+        data = [(self.tree.set(child, col), child) for child in self.tree.get_children('')]
+        # Try to convert to float for numeric sorting, otherwise sort as string
+        try:
+            data.sort(key=lambda t: float(t[0]))
+        except ValueError:
+            data.sort(key=lambda t: t[0])
+        # Rearrange items in sorted positions
+        for index, (val, child) in enumerate(data):
+            self.tree.move(child, '', index)
 
     def editar_configuracion(self):
         ConfigUI(self.db)
@@ -217,6 +213,7 @@ class AppUI:
         btn_deactivate.grid(row=2, column=0, columnspan=2, padx=5, pady=5)
 
     def manage_users(self):
+        from src.views.user_management_ui import UserManagementUI
         UserManagementUI(self.db)
 
     def load_courses_into_tree(self):
@@ -374,6 +371,7 @@ class AppUI:
         confirm = messagebox.askyesno("Cerrar Sesión", "¿Está seguro de cerrar la sesión?")
         if confirm:
             self.root.destroy()
+            from src.views.login_ui import LoginUI
             LoginUI(self.db).run()
 
     def open_change_password_window(self):

@@ -6,8 +6,9 @@ from fpdf import FPDF
 
 def export_students_to_excel(students, output_filename):
     """
-    Exports a list of student dictionaries to an Excel file.
-    Each student must have keys: identificacion, nombre, apellido, course_name, representante, telefono.
+    Exports a list of student records to an Excel file.
+    Each student record is expected to have the keys:
+    identificacion, nombre, apellido, course_name, representante, telefono.
     The students are sorted by course_name (grado).
     """
     wb = openpyxl.Workbook()
@@ -23,8 +24,9 @@ def export_students_to_excel(students, output_filename):
         cell = ws.cell(row=1, column=col)
         cell.font = Font(bold=True)
     
-    # Sort students by course (grado)
-    students_sorted = sorted(students, key=lambda x: x.get("course_name", ""))
+    # Convert each sqlite3.Row to a dictionary if necessary and sort students by course (grado)
+    students_as_dict = [dict(student) for student in students]
+    students_sorted = sorted(students_as_dict, key=lambda x: x.get("course_name", ""))
     
     # Append student rows
     for student in students_sorted:
@@ -43,7 +45,7 @@ def export_students_to_excel(students, output_filename):
 
 def export_students_to_pdf(students, output_filename):
     """
-    Exports a list of student dictionaries to a PDF file.
+    Exports a list of student records to a PDF file.
     The PDF is formatted as a table with the columns:
     Numero de Identificacion, Nombre, Apellido, Grado, Representante, Numero de Telefono.
     The students are sorted by course (grado).
@@ -62,8 +64,10 @@ def export_students_to_pdf(students, output_filename):
     pdf.ln()
     
     pdf.set_font("Arial", "", 12)
-    # Sort students by course (grado)
-    students_sorted = sorted(students, key=lambda x: x.get("course_name", ""))
+    
+    # Convert each sqlite3.Row to a dictionary if necessary and sort students by course (grado)
+    students_as_dict = [dict(student) for student in students]
+    students_sorted = sorted(students_as_dict, key=lambda x: x.get("course_name", ""))
     
     # Print each student row
     for student in students_sorted:
