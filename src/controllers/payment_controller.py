@@ -5,16 +5,17 @@ from datetime import datetime
 class PaymentController:
     def __init__(self, db):
         """
-        Initialize the PaymentController with a database object.
-        'db' is expected to be a sqlite3.Connection or a custom Database object exposing a connection attribute.
-        This initialization ensures that the 'payments' table exists.
+        Inicializa el PaymentController con un objeto de base de datos.
+        'db' debe ser una sqlite3.Connection o un objeto de base de datos personalizado que exponga un atributo connection.
+        Esta inicialización asegura que la tabla 'payments' exista.
         """
         self.db = db
         self.initialize_payments_table()
 
     def initialize_payments_table(self):
         """
-        Create the 'payments' table if it does not exist.
+        Crea la tabla 'payments' si no existe.
+        Ahora se incluye la columna receipt_number para almacenar el número de recibo.
         """
         try:
             if hasattr(self.db, "cursor") and callable(self.db.cursor):
@@ -30,7 +31,8 @@ class PaymentController:
                     student_id INTEGER,
                     amount REAL,
                     description TEXT,
-                    payment_date TEXT
+                    payment_date TEXT,
+                    receipt_number INTEGER
                 )
             """
             cursor.execute(create_table_query)
@@ -45,9 +47,10 @@ class PaymentController:
 
     def register_payment(self, student_id, amount, description):
         """
-        Inserts a new payment record into the payments table.
-        Returns a tuple: (success, message, receipt_number, payment_date)
-        In case of errors, the full traceback will be printed to the console.
+        Inserta un nuevo registro de pago en la tabla payments.
+        Retorna una tupla: (éxito, mensaje, receipt_number, payment_date).
+        En caso de error se imprime el traceback completo en consola.
+        Se asigna el receipt_number igual al id generado.
         """
         try:
             if hasattr(self.db, "connection") and hasattr(self.db.connection, "cursor") and callable(self.db.connection.cursor):
@@ -72,6 +75,14 @@ class PaymentController:
                 print("Advertencia: No se encontró método commit, verifique la configuración de la base de datos.")
             
             receipt_number = cursor.lastrowid
+            # Actualizamos el registro para asignar el número de recibo
+            update_query = "UPDATE payments SET receipt_number = ? WHERE id = ?"
+            cursor.execute(update_query, (receipt_number, receipt_number))
+            if hasattr(self.db, "commit") and callable(self.db.commit):
+                self.db.commit()
+            elif hasattr(self.db, "connection") and hasattr(self.db.connection, "commit") and callable(self.db.connection.commit):
+                self.db.connection.commit()
+            
             return True, "Pago registrado exitosamente.", receipt_number, payment_date
 
         except Exception as e:
@@ -80,10 +91,10 @@ class PaymentController:
             print(detailed_error)
             return False, f"Error al registrar el pago: {e}", None, None
 
-    def get_payments_by_student_identification(self, student_id):
+    def get_payments_by_student(self, student_id):
         """
-        Retrieves all payment records for a given student_id.
-        Returns a list of sqlite3.Row objects.
+        Recupera todos los registros de pago para un determinado student_id.
+        Retorna una lista de objetos sqlite3.Row.
         """
         try:
             if hasattr(self.db, "connection") and hasattr(self.db.connection, "cursor") and callable(self.db.connection.cursor):
@@ -93,7 +104,7 @@ class PaymentController:
             else:
                 raise AttributeError("El objeto de base de datos no proporciona un cursor válido mediante 'cursor()' o 'connection.cursor()'.")
             
-            query = "SELECT * FROM payments WHERE student_id = ?"
+            query = "SELECT * FROM payments WHERE student_id = ? ORDER BY payment_date DESC"
             cursor.execute(query, (student_id,))
             return cursor.fetchall()
         except Exception as e:
@@ -104,8 +115,8 @@ class PaymentController:
 
     def get_payment_by_id(self, payment_id):
         """
-        Retrieves a single payment record by its payment id.
-        Returns a sqlite3.Row object.
+        Recupera un registro de pago individual por su id.
+        Retorna un objeto sqlite3.Row.
         """
         try:
             if hasattr(self.db, "connection") and hasattr(self.db.connection, "cursor") and callable(self.db.connection.cursor):

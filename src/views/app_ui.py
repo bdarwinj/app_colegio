@@ -77,7 +77,7 @@ class AppUI:
         self.user = user
         self.student_controller = StudentController(self.db)
         self.course_controller = CourseController(self.db)
-        self.config_controller = ConfigController(db)
+        self.config_controller = ConfigController(self.db)
         self.user_controller = UserController(self.db)
         self.root = tk.Tk()
         
@@ -216,7 +216,6 @@ class AppUI:
         btn_deactivate.grid(row=2, column=0, columnspan=2, padx=5, pady=5)
 
     def manage_users(self):
-        from src.views.user_management_ui import UserManagementUI
         UserManagementUI(self.db)
 
     def load_courses_into_tree(self):
@@ -313,10 +312,19 @@ class AppUI:
     def refrescar_lista(self):
         for item in self.tree.get_children():
             self.tree.delete(item)
+        # Obtain all students from the controller.
+        # We assume that get_all_students returns a list of dictionaries.
         estudiantes = self.student_controller.get_all_students()
-        for est in estudiantes:
-            course_name = est["course_name"] if est["course_name"] else "N/A"
-            self.tree.insert("", "end", values=(est["id"], est["identificacion"], est["nombre"], est["apellido"], course_name))
+        if estudiantes:
+            for est in estudiantes:
+                # If the returned row is not a dict, convert it:
+                if not isinstance(est, dict):
+                    keys = ["id", "identificacion", "nombre", "apellido", "course_name", "representante", "telefono", "active"]
+                    est = dict(zip(keys, est))
+                course_name = est["course_name"] if est["course_name"] else "N/A"
+                self.tree.insert("", "end", values=(est["id"], est["identificacion"], est["nombre"], est["apellido"], course_name))
+        else:
+            messagebox.showinfo("Información", "No se han encontrado estudiantes.")
 
     def on_student_double_click(self, event):
         try:
@@ -386,7 +394,6 @@ class AppUI:
         confirm = messagebox.askyesno("Cerrar Sesión", "¿Está seguro de cerrar la sesión?")
         if confirm:
             self.root.destroy()
-            from src.views.login_ui import LoginUI
             LoginUI(self.db).run()
 
     def open_change_password_window(self):
