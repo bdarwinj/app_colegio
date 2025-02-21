@@ -16,7 +16,7 @@ class Database:
                 role TEXT
             )
         ''')
-        # Tabla de Estudiantes
+    # Crear la tabla estudiantes si no existe
         self.cursor.execute('''
             CREATE TABLE IF NOT EXISTS estudiantes (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -26,9 +26,17 @@ class Database:
                 course_id INTEGER,
                 representante TEXT,
                 telefono TEXT,
+                active INTEGER DEFAULT 1,
                 FOREIGN KEY(course_id) REFERENCES courses(id)
             )
         ''')
+        # Verificar si la columna 'active' existe y añadirla si no
+        self.cursor.execute("PRAGMA table_info(estudiantes)")
+        columns = [col[1] for col in self.cursor.fetchall()]
+        if 'active' not in columns:
+            self.cursor.execute("ALTER TABLE estudiantes ADD COLUMN active INTEGER DEFAULT 1")
+        self.connection.commit()
+        
         # Tabla de Pagos
         self.cursor.execute('''
             CREATE TABLE IF NOT EXISTS pagos (

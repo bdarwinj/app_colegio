@@ -3,23 +3,39 @@ from tkinter import ttk, messagebox, filedialog
 from fpdf import FPDF
 from src.controllers.payment_controller import PaymentController
 from src.controllers.student_controller import StudentController
-from src.controllers.config_controller import ConfigController  # To retrieve school settings from the DB
+from src.controllers.config_controller import ConfigController
 from config import SCHOOL_NAME as DEFAULT_SCHOOL_NAME, LOGO_PATH as DEFAULT_LOGO_PATH
 import datetime
 import traceback
+import logging
+
+# Configure logging
+logging.basicConfig(filename='payment_ui.log', level=logging.INFO, 
+                    format='%(asctime)s - %(levelname)s - %(message)s')
+
+# Constants for messages
+MSG_ERROR = "Error"
+MSG_SUCCESS = "Éxito"
+MSG_FIELDS_INCOMPLETE = "Campos incompletos"
+MSG_INVALID_VALUE = "Valor inválido"
+MSG_SELECTION_REQUIRED = "Selección requerida"
+MSG_CONFIRMATION = "¿Está seguro de registrar este pago?"
 
 class PaymentUI:
     def __init__(self, db):
         self.db = db
         self.payment_controller = PaymentController(db)
         self.student_controller = StudentController(db)
-        # Create a ConfigController to fetch configuration values from the database.
         self.config_controller = ConfigController(db)
         
         self.selected_student = None
         self.window = tk.Toplevel()
         self.window.title("Registrar Pago")
         self.window.geometry("600x400")
+        
+        # Cache all students for efficient searching
+        self.all_students = self.student_controller.get_all_students()
+        
         self.create_widgets()
 
     def create_widgets(self):
@@ -38,54 +54,56 @@ class PaymentUI:
         self.results_listbox.pack(fill="both", padx=5, pady=5)
         self.results_listbox.bind("<<ListboxSelect>>", self.on_student_select)
         
-        # Frame for displaying selected student and payment details.
+        # Frame for displaying selected student and payment details
         details_frame = ttk.LabelFrame(self.window, text="Detalles del Pago")
         details_frame.pack(padx=10, pady=10, fill="x")
         
-        # Selected student field (read only)
+        # Selected student field (read-only)
         ttk.Label(details_frame, text="Alumno Seleccionado:").grid(row=0, column=0, sticky="w", pady=5)
         self.selected_student_var = tk.StringVar()
         self.selected_student_entry = ttk.Entry(details_frame, textvariable=self.selected_student_var, state="readonly", width=45)
         self.selected_student_entry.grid(row=0, column=1, pady=5, padx=5)
         
-        # Payment amount field.
+        # Payment amount field
         ttk.Label(details_frame, text="Monto:").grid(row=1, column=0, sticky="w", pady=5)
         self.entry_amount = ttk.Entry(details_frame, width=45)
         self.entry_amount.grid(row=1, column=1, pady=5, padx=5)
         
-        # Payment description field.
+        # Payment description field
         ttk.Label(details_frame, text="Descripción:").grid(row=2, column=0, sticky="w", pady=5)
         self.entry_description = ttk.Entry(details_frame, width=45)
         self.entry_description.grid(row=2, column=1, pady=5, padx=5)
         
+        # Register payment button
         btn_register = ttk.Button(self.window, text="Registrar Pago", command=self.register_payment)
         btn_register.pack(pady=10)
         
-        # Initially populate the listbox with all students.
-        self.populate_students_listbox(self.student_controller.get_all_students())
+        # Bind Enter key to register payment
+        self.window.bind('<Return>', lambda event: self.register_payment())
+        
+        # Initially populate the listbox with all students
+        self.populate_students_listbox(self.all_students)
 
     def on_search(self, event):
         query = self.search_var.get().lower().strip()
         try:
-            # Fetch all students from the database.
-            all_students = self.student_controller.get_all_students()
             if query:
                 filtered_students = [
-                    student for student in all_students
+                    student for student in self.all_students
                     if query in str(student["identificacion"]).lower() or 
                        query in student["nombre"].lower() or 
                        query in student["apellido"].lower()
                 ]
             else:
-                filtered_students = all_students
+                filtered_students = self.all_students
             self.populate_students_listbox(filtered_students)
         except Exception as e:
-            traceback.print_exc()
-            messagebox.showerror("Error", f"Error al buscar alumnos: {e}")
+            logging.error(f"Error searching students: {e}")
+            messagebox.showerror(MSG_ERROR, f"Error al buscar alumnos: {e}")
 
     def populate_students_listbox(self, students):
         self.results_listbox.delete(0, tk.END)
-        self.students_data = []  # Mapping between listbox indices and student data.
+        self.students_data = []  # Mapping between listbox indices and student data
         for student in students:
             full_name = f"{student['identificacion']} - {student['nombre']} {student['apellido']}"
             self.results_listbox.insert(tk.END, full_name.title())
@@ -103,34 +121,52 @@ class PaymentUI:
                 self.selected_student = None
                 self.selected_student_var.set("")
         except Exception as e:
-            traceback.print_exc()
-            messagebox.showerror("Error", f"Error al seleccionar alumno: {e}")
+            logging.error(f"Error selecting student: {e}")
+            messagebox.showerror(MSG_ERROR, f"Error al seleccionar alumno: {e}")
 
     def register_payment(self):
         if not self.selected_student:
-            messagebox.showwarning("Selección requerida", "Seleccione un alumno.")
+            messagebox.showwarning(MSG_SELECTION_REQUIRED, "Seleccione un alumno.")
             return
+        
         amount_text = self.entry_amount.get().strip()
         if not amount_text:
-            messagebox.showwarning("Campos incompletos", "Ingrese el monto.")
+            messagebox.showwarning(MSG_FIELDS_INCOMPLETE, "Ingrese el monto.")
             return
         try:
             amount = float(amount_text)
-        except ValueError:
-            messagebox.showwarning("Valor inválido", "El monto debe ser numérico.")
+            if amount <= 0:
+                raise ValueError("El monto debe ser positivo.")
+        except ValueError as ve:
+            messagebox.showwarning(MSG_INVALID_VALUE, str(ve))
             return
-        description = self.entry_description.get()
-        success, msg, receipt_number, payment_date = self.payment_controller.register_payment(
-            self.selected_student["id"], amount, description
-        )
-        if success:
-            formatted_student_name = f"{self.selected_student['nombre']} {self.selected_student['apellido']}".title()
-            self.generate_pdf(receipt_number, formatted_student_name, amount, description, payment_date)
-            formatted_receipt = self.format_receipt_number(receipt_number, payment_date)
-            messagebox.showinfo("Éxito", f"Pago registrado exitosamente.\nRecibo Nº: {formatted_receipt}")
-            self.window.destroy()
-        else:
-            messagebox.showerror("Error", msg)
+        
+        description = self.entry_description.get().strip()
+        if not description:
+            messagebox.showwarning(MSG_FIELDS_INCOMPLETE, "Ingrese una descripción.")
+            return
+        
+        # Payment confirmation
+        if not messagebox.askyesno("Confirmar", MSG_CONFIRMATION):
+            return
+        
+        try:
+            success, msg, receipt_number, payment_date = self.payment_controller.register_payment(
+                self.selected_student["id"], amount, description
+            )
+            if success:
+                formatted_student_name = f"{self.selected_student['nombre']} {self.selected_student['apellido']}".title()
+                self.generate_pdf(receipt_number, formatted_student_name, amount, description, payment_date)
+                formatted_receipt = self.format_receipt_number(receipt_number, payment_date)
+                messagebox.showinfo(MSG_SUCCESS, f"Pago registrado exitosamente.\nRecibo Nº: {formatted_receipt}")
+                logging.info(f"Payment registered: Receipt {formatted_receipt}, Student: {formatted_student_name}, Amount: {amount}")
+                self.window.destroy()
+            else:
+                messagebox.showerror(MSG_ERROR, msg)
+                logging.warning(f"Failed payment attempt: {msg}")
+        except Exception as e:
+            logging.error(f"Error registering payment: {e}")
+            messagebox.showerror(MSG_ERROR, f"Error al registrar pago: {e}")
 
     def format_receipt_number(self, receipt_number, payment_date):
         """
@@ -144,6 +180,7 @@ class PaymentUI:
             formatted_number = f"{date_part}-{int(receipt_number):04d}"
             return formatted_number
         except Exception as e:
+            logging.error(f"Error formatting receipt number: {e}")
             return f"{receipt_number}"
 
     def format_amount(self, amount):
@@ -152,12 +189,12 @@ class PaymentUI:
         E.g., 1234567.89 becomes "1.234.567,89"
         """
         formatted = "{:,.2f}".format(amount)
-        # Swap comma and period.
+        # Swap comma and period
         formatted = formatted.replace(",", "X").replace(".", ",").replace("X", ".")
         return formatted
 
     def generate_pdf(self, receipt_number, student_name, amount, description, payment_date):
-        # Retrieve configuration from the database.
+        # Retrieve configuration from the database
         configs = self.config_controller.get_all_configs()
         school_name = configs.get("SCHOOL_NAME", DEFAULT_SCHOOL_NAME)
         logo_path = configs.get("LOGO_PATH", DEFAULT_LOGO_PATH)
@@ -165,12 +202,12 @@ class PaymentUI:
         pdf = FPDF()
         pdf.add_page()
 
-        # Insert the logo if available.
+        # Insert the logo if available
         if logo_path:
             try:
                 pdf.image(logo_path, x=10, y=8, w=30)
             except Exception as e:
-                print("Error al cargar el logo en el PDF:", e)
+                logging.error(f"Error loading logo in PDF: {e}")
 
         pdf.set_font("Arial", "B", 16)
         pdf.cell(0, 10, school_name, ln=True, align="C")

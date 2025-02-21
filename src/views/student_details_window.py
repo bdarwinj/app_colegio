@@ -7,7 +7,8 @@ import os
 import locale
 from src.controllers.student_controller import StudentController
 from src.controllers.payment_controller import PaymentController
-from src.controllers.config_controller import ConfigController  # To retrieve school settings from the DB
+from src.controllers.config_controller import ConfigController
+from src.controllers.course_controller import CourseController
 from config import SCHOOL_NAME as DEFAULT_SCHOOL_NAME, LOGO_PATH as DEFAULT_LOGO_PATH
 
 class StudentDetailsWindow(tk.Toplevel):
@@ -18,6 +19,7 @@ class StudentDetailsWindow(tk.Toplevel):
         self.student_controller = StudentController(db)
         self.payment_controller = PaymentController(db)
         self.config_controller = ConfigController(db)
+        self.course_controller = CourseController(db)  # Para obtener datos del curso
         self.title("Detalles del Estudiante")
         self.geometry("700x550")
         self.create_widgets()
@@ -77,19 +79,17 @@ class StudentDetailsWindow(tk.Toplevel):
 
             student = dict(student_row)
             # Formatear primera letra de nombre, apellido y representante en mayúscula
-            nombre = student.get('nombre', '').capitalize()
-            apellido = student.get('apellido', '').capitalize()
-            representante = student.get('representante', '')
-            if representante:
-                representante = representante.capitalize()
+            student['nombre'] = student.get('nombre', '').capitalize()
+            student['apellido'] = student.get('apellido', '').capitalize()
+            student['representante'] = student.get('representante', '').capitalize()
 
             info = (
                 f"ID: {student.get('id', '')}\n"
                 f"Identificación: {student.get('identificacion', '')}\n"
-                f"Nombre: {nombre}\n"
-                f"Apellido: {apellido}\n"
+                f"Nombre: {student['nombre']}\n"
+                f"Apellido: {student['apellido']}\n"
                 f"Curso: {student.get('course_name', '')}\n"
-                f"Representante: {representante}\n"
+                f"Representante: {student['representante']}\n"
                 f"Teléfono: {student.get('telefono', '')}\n"
                 f"Estado: {'Activo' if student.get('active', 1) == 1 else 'Desactivado'}\n"
             )
@@ -100,24 +100,28 @@ class StudentDetailsWindow(tk.Toplevel):
             self.details_text.configure(state="disabled")
             
             # Cargar y mostrar el historial de pagos en la tabla
-            for row in self.tree_payments.get_children():
-                self.tree_payments.delete(row)
-            
-            history_rows = self.payment_controller.get_payments_by_student(student.get("id"))
-            if history_rows:
-                for payment_row in history_rows:
-                    payment = dict(payment_row)
-                    self.tree_payments.insert("", tk.END, values=(
-                        payment.get("receipt_number", ""),
-                        payment.get("amount", ""),
-                        payment.get("payment_date", ""),
-                        payment.get("description", "")
-                    ))
-            else:
-                self.tree_payments.insert("", tk.END, values=("No hay registros", "", "", ""))
+            self.update_payment_history(student.get("id"))
         except Exception as e:
             traceback.print_exc()
             messagebox.showerror("Error", f"Error al cargar los detalles del estudiante: {e}")
+
+    def update_payment_history(self, student_id):
+        """Actualiza la tabla de historial de pagos con los pagos del estudiante."""
+        for row in self.tree_payments.get_children():
+            self.tree_payments.delete(row)
+        
+        history_rows = self.payment_controller.get_payments_by_student(student_id)
+        if history_rows:
+            for payment_row in history_rows:
+                payment = dict(payment_row)
+                self.tree_payments.insert("", tk.END, values=(
+                    payment.get("receipt_number", ""),
+                    payment.get("amount", ""),
+                    payment.get("payment_date", ""),
+                    payment.get("description", "")
+                ))
+        else:
+            self.tree_payments.insert("", tk.END, values=("No hay registros", "", "", ""))
 
     def on_payment_double_click(self, event):
         try:
@@ -125,28 +129,21 @@ class StudentDetailsWindow(tk.Toplevel):
             if not selected_item:
                 return
             values = self.tree_payments.item(selected_item, "values")
-            # Verificar si hay un registro válido (evitar el mensaje "No hay registros")
             if values[0] == "No hay registros":
                 return
             
-            # Extraer datos del pago seleccionado
             receipt_number, amount, payment_date, description = values
-
-            # Obtener datos del colegio desde la configuración
             configs = self.config_controller.get_all_configs()
             school_name = configs.get("SCHOOL_NAME", DEFAULT_SCHOOL_NAME).title()
             logo_path = configs.get("LOGO_PATH", DEFAULT_LOGO_PATH)
             
-            # Formatear el monto con coma como separador de miles y punto decimal
             try:
                 formatted_amount = f"{float(amount):,.2f}"
             except Exception:
                 formatted_amount = amount
 
-            # Generar PDF del recibo de pago
             pdf = FPDF()
             pdf.add_page()
-            
             add_pdf_header(pdf, logo_path, school_name, f"Recibo de Pago Nº {receipt_number}")
 
             pdf.set_font("Arial", "", 12)
@@ -154,7 +151,6 @@ class StudentDetailsWindow(tk.Toplevel):
             pdf.cell(0, 10, f"Fecha de Pago: {payment_date}", ln=True)
             pdf.multi_cell(0, 10, f"Descripción: {description}")
             
-            # Permitir guardar el PDF
             default_filename = f"recibo_{receipt_number}.pdf"
             file_path = filedialog.asksaveasfilename(
                 defaultextension=".pdf",
@@ -171,8 +167,7 @@ class StudentDetailsWindow(tk.Toplevel):
 
     def deactivate_student(self):
         try:
-            confirm = messagebox.askyesno("Confirmar", "¿Está seguro de desactivar este estudiante?")
-            if not confirm:
+            if not messagebox.askyesno("Confirmar", "¿Está seguro de desactivar este estudiante?"):
                 return
             success, msg = self.student_controller.deactivate_student(self.student_identificacion)
             if success:
@@ -186,8 +181,7 @@ class StudentDetailsWindow(tk.Toplevel):
 
     def delete_student(self):
         try:
-            confirm = messagebox.askyesno("Confirmar", "¿Está seguro de eliminar este estudiante?")
-            if not confirm:
+            if not messagebox.askyesno("Confirmar", "¿Está seguro de eliminar este estudiante?"):
                 return
             success, msg = self.student_controller.delete_student(self.student_identificacion)
             if success:
@@ -201,91 +195,105 @@ class StudentDetailsWindow(tk.Toplevel):
 
     def export_pdf(self):
         try:
-            # Establecer la configuración regional a español para las fechas
             try:
                 locale.setlocale(locale.LC_TIME, "es_ES.utf8")
             except Exception:
                 pass
 
-            # Obtener configuraciones de colegio
             configs = self.config_controller.get_all_configs()
             school_name = configs.get("SCHOOL_NAME", DEFAULT_SCHOOL_NAME).title()
             logo_path = configs.get("LOGO_PATH", DEFAULT_LOGO_PATH)
-            
-            pdf = FPDF()
-            pdf.add_page()
-            
-            add_pdf_header(pdf, logo_path, school_name)
-
+        
             student_row = self.student_controller.get_student_by_identification(self.student_identificacion)
             if not student_row:
                 messagebox.showerror("Error", "No se encontró el estudiante.")
                 return
-            
+        
             student = dict(student_row)
-            nombre = student.get('nombre', '').capitalize()
-            apellido = student.get('apellido', '').capitalize()
-            representante = student.get('representante', '')
-            if representante:
-                representante = representante.capitalize()
-            
-            # Tabla con Datos del Estudiante con todos los bordes y encabezados
+            student['nombre'] = student.get('nombre', '').capitalize()
+            student['apellido'] = student.get('apellido', '').capitalize()
+            student['representante'] = student.get('representante', '').capitalize()
+        
+            # Obtener el nombre del curso. Si no está en student, se busca a partir del course_id.
+            curso = student.get('course_name', '')
+            course_id = student.get('course_id')
+            if course_id:
+                course_data = self.course_controller.get_course_by_id(course_id)
+                if course_data:
+                    curso = course_data.get('name', '')
+        
+            pdf = FPDF()
+            pdf.add_page()
+            add_pdf_header(pdf, logo_path, school_name)
+        
             pdf.set_font("Arial", "B", 12)
             cell_width1, cell_width2 = 50, 130
             pdf.cell(cell_width1, 10, "Campo", border=1, align="C")
             pdf.cell(cell_width2, 10, "Valor", border=1, align="C", ln=True)
-            
+        
             pdf.set_font("Arial", "", 12)
             datos = [
                 ("Identificación", student.get('identificacion', '')),
-                ("Nombre", nombre),
-                ("Apellido", apellido),
-                ("Curso", student.get('course_name', '')),
-                ("Representante", representante),
+                ("Nombre", student['nombre']),
+                ("Apellido", student['apellido']),
+                ("Curso", curso),
+                ("Representante", student['representante']),
                 ("Teléfono", student.get('telefono', '')),
                 ("Estado", "Activo" if student.get('active', 1) == 1 else "Desactivado")
             ]
             for campo, valor in datos:
                 pdf.cell(cell_width1, 10, campo, border=1)
                 pdf.cell(cell_width2, 10, str(valor), border=1, ln=True)
-            
+        
             pdf.ln(10)
-            
-            # Tabla del Historial de Pagos con bordes y encabezados
             pdf.set_font("Arial", "B", 14)
             pdf.cell(0, 10, "Historial de Pagos", ln=True)
             pdf.ln(5)
-            
+        
             pdf.set_font("Arial", "B", 12)
             col_widths = [30, 30, 40, 70]
             headers = ["Nº Recibo", "Monto", "Fecha de Pago", "Descripción"]
             for i, header in enumerate(headers):
                 pdf.cell(col_widths[i], 10, header, border=1, align="C")
             pdf.ln()
-            
+        
             pdf.set_font("Arial", "", 12)
             history_rows = self.payment_controller.get_payments_by_student(student.get("id"))
             if history_rows:
                 for payment_row in history_rows:
                     payment = dict(payment_row)
+                    descripcion = payment.get("description", "")
+                    receipt_raw = str(payment.get("receipt_number", ""))
+                    payment_date = str(payment.get("payment_date", ""))
+                    try:
+                        date_obj = datetime.datetime.strptime(payment_date, "%Y-%m-%d")
+                        formatted_date = date_obj.strftime("%Y%m%d")
+                    except Exception:
+                        formatted_date = payment_date.replace("-", "")
+                    try:
+                        receipt_int = int(receipt_raw)
+                        receipt_str = f"{receipt_int:04d}"
+                    except Exception:
+                        receipt_str = receipt_raw
+                    descripcion_completa = f"{descripcion} - {formatted_date}-{receipt_str}"
                     row_data = [
                         str(payment.get("receipt_number", "")),
                         str(payment.get("amount", "")),
                         str(payment.get("payment_date", "")),
-                        str(payment.get("description", ""))
+                        descripcion_completa
                     ]
                     for i, data in enumerate(row_data):
                         pdf.cell(col_widths[i], 10, data, border=1)
                     pdf.ln()
             else:
                 pdf.cell(sum(col_widths), 10, "No se han encontrado pagos.", border=1, ln=True)
-            
+        
             pdf.ln(10)
             pdf.set_font("Arial", "", 10)
             emission_date = datetime.datetime.now().strftime("%d de %B de %Y")
             pdf.cell(0, 10, f"Generado el {emission_date}", ln=True, align="R")
-            
-            default_filename = f"{student.get('identificacion','')}_{student.get('nombre','')}_{student.get('apellido','')}.pdf"
+        
+            default_filename = f"{student.get('identificacion','')}_{student['nombre']}_{student['apellido']}.pdf"
             file_path = filedialog.asksaveasfilename(
                 defaultextension=".pdf",
                 initialfile=default_filename,
@@ -306,7 +314,7 @@ def add_pdf_header(pdf, logo_path=DEFAULT_LOGO_PATH, school_name=DEFAULT_SCHOOL_
     if logo_path and os.path.exists(logo_path):
         try:
             pdf.image(logo_path, x=10, y=8, w=30)
-            pdf.ln(5) 
+            pdf.ln(5)
         except Exception as e:
             print("Error al cargar el logo en el PDF:", e)
     else:

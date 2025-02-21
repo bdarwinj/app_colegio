@@ -10,7 +10,30 @@ class PaymentController:
         Esta inicialización asegura que la tabla 'payments' exista.
         """
         self.db = db
+        self.cursor = self._get_cursor()
         self.initialize_payments_table()
+
+    def _get_cursor(self):
+        """
+        Obtiene un cursor válido del objeto de base de datos.
+        """
+        if hasattr(self.db, "cursor") and callable(self.db.cursor):
+            return self.db.cursor()
+        elif hasattr(self.db, "connection") and hasattr(self.db.connection, "cursor") and callable(self.db.connection.cursor):
+            return self.db.connection.cursor()
+        else:
+            raise AttributeError("El objeto de base de datos no proporciona un cursor válido mediante 'cursor()' o 'connection.cursor()'.")
+
+    def _commit(self):
+        """
+        Realiza el commit en la base de datos según la configuración.
+        """
+        if hasattr(self.db, "commit") and callable(self.db.commit):
+            self.db.commit()
+        elif hasattr(self.db, "connection") and hasattr(self.db.connection, "commit") and callable(self.db.connection.commit):
+            self.db.connection.commit()
+        else:
+            print("Advertencia: No se encontró método commit, verifique la configuración de la base de datos.")
 
     def initialize_payments_table(self):
         """
@@ -18,13 +41,6 @@ class PaymentController:
         Ahora se incluye la columna receipt_number para almacenar el número de recibo.
         """
         try:
-            if hasattr(self.db, "cursor") and callable(self.db.cursor):
-                cursor = self.db.cursor()
-            elif hasattr(self.db, "connection") and hasattr(self.db.connection, "cursor") and callable(self.db.connection.cursor):
-                cursor = self.db.connection.cursor()
-            else:
-                raise AttributeError("El objeto de base de datos no proporciona un cursor válido mediante 'cursor()' o 'connection.cursor()'.")
-            
             create_table_query = """
                 CREATE TABLE IF NOT EXISTS payments (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -35,11 +51,8 @@ class PaymentController:
                     receipt_number INTEGER
                 )
             """
-            cursor.execute(create_table_query)
-            if hasattr(self.db, "commit") and callable(self.db.commit):
-                self.db.commit()
-            elif hasattr(self.db, "connection") and hasattr(self.db.connection, "commit") and callable(self.db.connection.commit):
-                self.db.connection.commit()
+            self.cursor.execute(create_table_query)
+            self._commit()
         except Exception as e:
             detailed_error = traceback.format_exc()
             print("Error al inicializar la tabla 'payments':")
@@ -53,38 +66,18 @@ class PaymentController:
         Se asigna el receipt_number igual al id generado.
         """
         try:
-            if hasattr(self.db, "connection") and hasattr(self.db.connection, "cursor") and callable(self.db.connection.cursor):
-                cursor = self.db.connection.cursor()
-            elif hasattr(self.db, "cursor") and callable(self.db.cursor):
-                cursor = self.db.cursor()
-            else:
-                raise AttributeError("El objeto de base de datos no proporciona un cursor válido mediante 'cursor()' o 'connection.cursor()'.")
-            
+            payment_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             query = """
                 INSERT INTO payments (student_id, amount, description, payment_date)
                 VALUES (?, ?, ?, ?)
             """
-            payment_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            cursor.execute(query, (student_id, amount, description, payment_date))
-            
-            if hasattr(self.db, "commit") and callable(self.db.commit):
-                self.db.commit()
-            elif hasattr(self.db, "connection") and hasattr(self.db.connection, "commit") and callable(self.db.connection.commit):
-                self.db.connection.commit()
-            else:
-                print("Advertencia: No se encontró método commit, verifique la configuración de la base de datos.")
-            
-            receipt_number = cursor.lastrowid
-            # Actualizamos el registro para asignar el número de recibo
+            self.cursor.execute(query, (student_id, amount, description, payment_date))
+            self._commit()
+            receipt_number = self.cursor.lastrowid
             update_query = "UPDATE payments SET receipt_number = ? WHERE id = ?"
-            cursor.execute(update_query, (receipt_number, receipt_number))
-            if hasattr(self.db, "commit") and callable(self.db.commit):
-                self.db.commit()
-            elif hasattr(self.db, "connection") and hasattr(self.db.connection, "commit") and callable(self.db.connection.commit):
-                self.db.connection.commit()
-            
+            self.cursor.execute(update_query, (receipt_number, receipt_number))
+            self._commit()
             return True, "Pago registrado exitosamente.", receipt_number, payment_date
-
         except Exception as e:
             detailed_error = traceback.format_exc()
             print("Error al registrar el pago:")
@@ -97,16 +90,9 @@ class PaymentController:
         Retorna una lista de objetos sqlite3.Row.
         """
         try:
-            if hasattr(self.db, "connection") and hasattr(self.db.connection, "cursor") and callable(self.db.connection.cursor):
-                cursor = self.db.connection.cursor()
-            elif hasattr(self.db, "cursor") and callable(self.db.cursor):
-                cursor = self.db.cursor()
-            else:
-                raise AttributeError("El objeto de base de datos no proporciona un cursor válido mediante 'cursor()' o 'connection.cursor()'.")
-            
             query = "SELECT * FROM payments WHERE student_id = ? ORDER BY payment_date DESC"
-            cursor.execute(query, (student_id,))
-            return cursor.fetchall()
+            self.cursor.execute(query, (student_id,))
+            return self.cursor.fetchall()
         except Exception as e:
             detailed_error = traceback.format_exc()
             print(f"Error fetching payments for student {student_id}:")
@@ -119,16 +105,9 @@ class PaymentController:
         Retorna un objeto sqlite3.Row.
         """
         try:
-            if hasattr(self.db, "connection") and hasattr(self.db.connection, "cursor") and callable(self.db.connection.cursor):
-                cursor = self.db.connection.cursor()
-            elif hasattr(self.db, "cursor") and callable(self.db.cursor):
-                cursor = self.db.cursor()
-            else:
-                raise AttributeError("El objeto de base de datos no proporciona un cursor válido mediante 'cursor()' o 'connection.cursor()'.")
-            
             query = "SELECT * FROM payments WHERE id = ?"
-            cursor.execute(query, (payment_id,))
-            return cursor.fetchone()
+            self.cursor.execute(query, (payment_id,))
+            return self.cursor.fetchone()
         except Exception as e:
             detailed_error = traceback.format_exc()
             print(f"Error fetching payment with id {payment_id}:")

@@ -16,6 +16,8 @@ from src.views.payment_ui import PaymentUI
 from src.views.login_ui import LoginUI
 from src.views.student_details_window import StudentDetailsWindow
 from src.utils.export_students import export_students_to_excel, export_students_to_pdf
+# Agregar la importación de PaymentController
+from src.controllers.payment_controller import PaymentController
 
 class ChangePasswordWindow(tk.Toplevel):
     def __init__(self, master, user_controller, current_user):
@@ -47,18 +49,25 @@ class ChangePasswordWindow(tk.Toplevel):
         
         frame.columnconfigure(1, weight=1)
 
-    def change_password(self):
+    def validate_inputs(self):
         old_password = self.old_password_entry.get().strip()
         new_password = self.new_password_entry.get().strip()
         confirm_password = self.confirm_password_entry.get().strip()
         
         if not old_password or not new_password or not confirm_password:
             messagebox.showerror("Error", "Todos los campos son obligatorios.")
-            return
-        
+            return False
         if new_password != confirm_password:
             messagebox.showerror("Error", "La nueva clave y su confirmación no coinciden.")
+            return False
+        return True
+
+    def change_password(self):
+        if not self.validate_inputs():
             return
+        
+        old_password = self.old_password_entry.get().strip()
+        new_password = self.new_password_entry.get().strip()
         
         try:
             success, message = self.user_controller.change_password(self.current_user, old_password, new_password)
@@ -67,9 +76,8 @@ class ChangePasswordWindow(tk.Toplevel):
                 self.destroy()
             else:
                 messagebox.showerror("Error", message)
-        except Exception:
-            traceback.print_exc()
-            messagebox.showerror("Error", "Ocurrió un error al cambiar la clave. Consulte la consola para más detalles.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Ocurrió un error al cambiar la clave: {str(e)}")
 
 class AppUI:
     def __init__(self, db, user):
@@ -79,9 +87,10 @@ class AppUI:
         self.course_controller = CourseController(self.db)
         self.config_controller = ConfigController(self.db)
         self.user_controller = UserController(self.db)
+        self.payment_controller = PaymentController(self.db)
         self.root = tk.Tk()
         
-        # Load configuration for school name and logo.
+        # Cargar configuración para el nombre de la escuela y el logo.
         configs = self.config_controller.get_all_configs()
         self.school_name = configs.get("SCHOOL_NAME") or "School Name"
         self.logo_path = configs.get("LOGO_PATH") or ""
@@ -153,11 +162,8 @@ class AppUI:
         labels = ["Número de Identificación", "Nombre", "Apellido", "Representante", "Teléfono"]
         self.entries = {}
         for idx, text in enumerate(labels):
-            ttk.Label(self.frame_form, text=f"{text}:").grid(row=idx, column=0, sticky="w", padx=5, pady=5)
-            entry = ttk.Entry(self.frame_form)
-            entry.grid(row=idx, column=1, padx=5, pady=5)
-            self.entries[text] = entry
-
+            self._create_label_entry(self.frame_form, text, idx)
+        
         ttk.Label(self.frame_form, text="Curso:").grid(row=len(labels), column=0, sticky="w", padx=5, pady=5)
         self.combo_course = ttk.Combobox(self.frame_form, state="readonly")
         self.combo_course.grid(row=len(labels), column=1, padx=5, pady=5)
@@ -165,6 +171,12 @@ class AppUI:
 
         self.btn_registrar = ttk.Button(self.frame_form, text="Registrar Estudiante", command=self.registrar_estudiante)
         self.btn_registrar.grid(row=len(labels) + 1, column=0, columnspan=2, pady=10)
+
+    def _create_label_entry(self, parent, text, row):
+        ttk.Label(parent, text=f"{text}:").grid(row=row, column=0, sticky="w", padx=5, pady=5)
+        entry = ttk.Entry(parent)
+        entry.grid(row=row, column=1, padx=5, pady=5)
+        self.entries[text] = entry
 
     def create_students_list_frame(self):
         self.frame_lista = ttk.LabelFrame(self.root, text="Lista de Estudiantes")
@@ -312,12 +324,9 @@ class AppUI:
     def refrescar_lista(self):
         for item in self.tree.get_children():
             self.tree.delete(item)
-        # Obtain all students from the controller.
-        # We assume that get_all_students returns a list of dictionaries.
         estudiantes = self.student_controller.get_all_students()
         if estudiantes:
             for est in estudiantes:
-                # If the returned row is not a dict, convert it:
                 if not isinstance(est, dict):
                     keys = ["id", "identificacion", "nombre", "apellido", "course_name", "representante", "telefono", "active"]
                     est = dict(zip(keys, est))
@@ -334,61 +343,81 @@ class AppUI:
                 student_identificacion = item["values"][1]
                 StudentDetailsWindow(self.db, student_identificacion)
         except Exception as e:
-            error_details = traceback.format_exc()
-            messagebox.showerror("Error", f"Error al abrir los detalles del estudiante:\n{error_details}")
+            messagebox.showerror("Error", f"Error al abrir los detalles del estudiante: {str(e)}")
 
     def generar_pdf(self):
         selected = self.tree.selection()
         if not selected:
             messagebox.showwarning("Sin selección", "Seleccione un estudiante para generar el PDF")
             return
+
         item = self.tree.item(selected[0])
         estudiante_data = item["values"]
+
         pdf = FPDF()
         pdf.add_page()
-        pdf.set_font("Arial", size=12)
+
+        # Agregar logo del colegio si existe
+        if os.path.exists(self.abs_logo_path):
+            try:
+                pdf.image(self.abs_logo_path, x=10, y=8, w=30)
+            except Exception as e:
+                print(f"Error al insertar logo en PDF: {e}")
+        pdf.set_font("Arial", "B", 16)
+        pdf.cell(200, 10, txt=self.school_name, ln=True, align="C")
+        pdf.ln(5)
         pdf.cell(200, 10, txt="Paz y Salvo", ln=True, align="C")
         pdf.ln(10)
+
+        # Mostrar datos del estudiante
         campos = ["ID", "Identificación", "Nombre", "Apellido", "Curso"]
         for idx, campo in enumerate(campos):
+            pdf.set_font("Arial", "B", 12)
             pdf.cell(50, 10, txt=f"{campo}:")
+            pdf.set_font("Arial", "", 12)
             pdf.cell(50, 10, txt=str(estudiante_data[idx]))
             pdf.ln(8)
         pdf.ln(10)
+
+        # Usar PaymentController para obtener y sumar los pagos del estudiante
+        student_id = estudiante_data[0]  # Se asume que el id del estudiante está en la posición 0.
+        pagos = self.payment_controller.get_payments_by_student(student_id)
+        total_pagado = sum(float(payment["amount"]) for payment in pagos if payment["amount"] is not None)
+        pdf.set_font("Arial", "B", 12)
+        pdf.cell(50, 10, txt="Total Pagado:")
+        pdf.set_font("Arial", "", 12)
+        formatted_total = f"{total_pagado:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+        pdf.cell(50, 10, txt=f"${formatted_total}")
+        pdf.ln(10)
+
+        # Agregar la fecha de emisión
         pdf.cell(50, 10, txt="Fecha de emisión: " + datetime.date.today().strftime("%d/%m/%Y"))
-        pdf_file = f"paz_y_salvo_estudiante_{estudiante_data[0]}.pdf"
+
+        pdf_file = f"paz_y_salvo_estudiante_{estudiante_data[2]}.pdf"
         pdf.output(pdf_file)
         messagebox.showinfo("PDF generado", f"El PDF '{pdf_file}' ha sido generado correctamente.")
 
-    def export_students_excel(self):
+    def _export_students(self, export_func, file_extension, file_type):
         try:
             estudiantes = self.student_controller.get_all_students()
             timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-            default_filename = f"{self.school_name}_Listado_Estudiantes_{timestamp}.xlsx"
-            file_path = asksaveasfilename(defaultextension=".xlsx",
-                                          filetypes=[("Excel files", "*.xlsx")],
+            default_filename = f"{self.school_name}_Listado_Estudiantes_{timestamp}{file_extension}"
+            file_path = asksaveasfilename(defaultextension=file_extension,
+                                          filetypes=[(file_type, f"*{file_extension}")],
                                           initialfile=default_filename)
             if not file_path:
                 return
-            export_students_to_excel(estudiantes, file_path, self.school_name, self.logo_path)
-            messagebox.showinfo("Exportación exitosa", f"Listado exportado a Excel: {file_path}")
+            # Se pasa la instancia de course_controller como quinto argumento
+            export_func(estudiantes, file_path, self.school_name, self.logo_path, self.course_controller)
+            messagebox.showinfo("Exportación exitosa", f"Listado exportado a {file_type}: {file_path}")
         except Exception as e:
-            messagebox.showerror("Error", f"Error al exportar a Excel: {str(e)}")
+            messagebox.showerror("Error", f"Error al exportar a {file_type}: {str(e)}")
+
+    def export_students_excel(self):
+        self._export_students(export_students_to_excel, ".xlsx", "Excel")
 
     def export_students_pdf(self):
-        try:
-            estudiantes = self.student_controller.get_all_students()
-            timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-            default_filename = f"{self.school_name}_Listado_Estudiantes_{timestamp}.pdf"
-            file_path = asksaveasfilename(defaultextension=".pdf",
-                                          filetypes=[("PDF files", "*.pdf")],
-                                          initialfile=default_filename)
-            if not file_path:
-                return
-            export_students_to_pdf(estudiantes, file_path, self.school_name, self.logo_path)
-            messagebox.showinfo("Exportación exitosa", f"Listado exportado a PDF: {file_path}")
-        except Exception as e:
-            messagebox.showerror("Error", f"Error al exportar a PDF: {str(e)}")
+        self._export_students(export_students_to_pdf, ".pdf", "PDF")
 
     def logout(self):
         confirm = messagebox.askyesno("Cerrar Sesión", "¿Está seguro de cerrar la sesión?")
