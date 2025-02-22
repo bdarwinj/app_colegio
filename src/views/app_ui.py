@@ -1,23 +1,33 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
-from tkinter.filedialog import asksaveasfilename
+from tkinter import ttk, messagebox, filedialog
 from PIL import Image, ImageTk
 import os
 from fpdf import FPDF
 import datetime
-import traceback
+import logging
 from src.controllers.student_controller import StudentController
 from src.controllers.course_controller import CourseController
 from src.controllers.config_controller import ConfigController
 from src.controllers.user_controller import UserController
+from src.controllers.payment_controller import PaymentController
 from src.views.config_ui import ConfigUI
 from src.views.user_management_ui import UserManagementUI
 from src.views.payment_ui import PaymentUI
 from src.views.login_ui import LoginUI
 from src.views.student_details_window import StudentDetailsWindow
 from src.utils.export_students import export_students_to_excel, export_students_to_pdf
-# Agregar la importación de PaymentController
-from src.controllers.payment_controller import PaymentController
+
+# Configuración de logging para registrar eventos y errores
+logging.basicConfig(filename='app_ui.log', level=logging.INFO, 
+                    format='%(asctime)s - %(levelname)s - %(message)s')
+
+# Constantes para mensajes
+MSG_ERROR = "Error"
+MSG_SUCCESS = "Éxito"
+MSG_FIELDS_INCOMPLETE = "Campos incompletos"
+MSG_INVALID_VALUE = "Valor inválido"
+MSG_SELECTION_REQUIRED = "Selección requerida"
+MSG_CONFIRMATION = "¿Está seguro de cerrar la sesión?"
 
 class ChangePasswordWindow(tk.Toplevel):
     def __init__(self, master, user_controller, current_user):
@@ -55,10 +65,10 @@ class ChangePasswordWindow(tk.Toplevel):
         confirm_password = self.confirm_password_entry.get().strip()
         
         if not old_password or not new_password or not confirm_password:
-            messagebox.showerror("Error", "Todos los campos son obligatorios.")
+            messagebox.showerror(MSG_ERROR, "Todos los campos son obligatorios.")
             return False
         if new_password != confirm_password:
-            messagebox.showerror("Error", "La nueva clave y su confirmación no coinciden.")
+            messagebox.showerror(MSG_ERROR, "La nueva clave y su confirmación no coinciden.")
             return False
         return True
 
@@ -72,12 +82,15 @@ class ChangePasswordWindow(tk.Toplevel):
         try:
             success, message = self.user_controller.change_password(self.current_user, old_password, new_password)
             if success:
-                messagebox.showinfo("Éxito", message)
+                messagebox.showinfo(MSG_SUCCESS, message)
+                logging.info(f"Contraseña cambiada exitosamente para usuario: {self.current_user}")
                 self.destroy()
             else:
-                messagebox.showerror("Error", message)
+                messagebox.showerror(MSG_ERROR, message)
+                logging.warning(f"Intento fallido de cambio de contraseña para usuario: {self.current_user}")
         except Exception as e:
-            messagebox.showerror("Error", f"Ocurrió un error al cambiar la clave: {str(e)}")
+            logging.error(f"Error al cambiar la contraseña: {e}")
+            messagebox.showerror(MSG_ERROR, f"Ocurrió un error al cambiar la clave: {str(e)}")
 
 class AppUI:
     def __init__(self, db, user):
@@ -90,7 +103,7 @@ class AppUI:
         self.payment_controller = PaymentController(self.db)
         self.root = tk.Tk()
         
-        # Cargar configuración para el nombre de la escuela y el logo.
+        # Cargar configuración para el nombre de la escuela y el logo
         configs = self.config_controller.get_all_configs()
         self.school_name = configs.get("SCHOOL_NAME") or "School Name"
         self.logo_path = configs.get("LOGO_PATH") or ""
@@ -112,9 +125,9 @@ class AppUI:
                 logo_label = ttk.Label(header_frame, image=self.logo_image)
                 logo_label.pack(side="left", padx=5)
             except Exception as e:
-                print(f"Error al cargar el logo: {e}")
+                logging.error(f"Error al cargar el logo: {e}")
         else:
-            print(f"No se encontró la imagen en: {self.abs_logo_path}")
+            logging.warning(f"No se encontró la imagen en: {self.abs_logo_path}")
         
         name_label = ttk.Label(header_frame, text=self.root.title(), font=("Arial", 18, "bold"))
         name_label.pack(side="left", padx=10)
@@ -241,39 +254,39 @@ class AppUI:
     def add_course(self):
         name = self.entry_course_name.get().strip()
         if not name:
-            messagebox.showwarning("Campos incompletos", "Ingrese el nombre del curso.")
+            messagebox.showwarning(MSG_FIELDS_INCOMPLETE, "Ingrese el nombre del curso.")
             return
         success, msg = self.course_controller.add_course(name)
         if success:
-            messagebox.showinfo("Éxito", msg)
+            messagebox.showinfo(MSG_SUCCESS, msg)
             self.load_courses_into_tree()
             self.entry_course_name.delete(0, tk.END)
         else:
-            messagebox.showerror("Error", msg)
+            messagebox.showerror(MSG_ERROR, msg)
 
     def edit_course(self):
         selected = self.courses_tree.selection()
         if not selected:
-            messagebox.showwarning("Sin selección", "Seleccione un curso para editar.")
+            messagebox.showwarning(MSG_SELECTION_REQUIRED, "Seleccione un curso para editar.")
             return
         course_item = self.courses_tree.item(selected[0])
         course_id = course_item["values"][0]
         new_name = self.entry_course_name.get().strip()
         if not new_name:
-            messagebox.showwarning("Campos incompletos", "Ingrese el nuevo nombre del curso.")
+            messagebox.showwarning(MSG_FIELDS_INCOMPLETE, "Ingrese el nuevo nombre del curso.")
             return
         success, msg = self.course_controller.edit_course(course_id, new_name)
         if success:
-            messagebox.showinfo("Éxito", msg)
+            messagebox.showinfo(MSG_SUCCESS, msg)
             self.load_courses_into_tree()
             self.entry_course_name.delete(0, tk.END)
         else:
-            messagebox.showerror("Error", msg)
+            messagebox.showerror(MSG_ERROR, msg)
 
     def deactivate_course(self):
         selected = self.courses_tree.selection()
         if not selected:
-            messagebox.showwarning("Sin selección", "Seleccione un curso para desactivar.")
+            messagebox.showwarning(MSG_SELECTION_REQUIRED, "Seleccione un curso para desactivar.")
             return
         course_item = self.courses_tree.item(selected[0])
         course_id = course_item["values"][0]
@@ -281,10 +294,10 @@ class AppUI:
         if confirm:
             success, msg = self.course_controller.deactivate_course(course_id)
             if success:
-                messagebox.showinfo("Éxito", msg)
+                messagebox.showinfo(MSG_SUCCESS, msg)
                 self.load_courses_into_tree()
             else:
-                messagebox.showerror("Error", msg)
+                messagebox.showerror(MSG_ERROR, msg)
 
     def load_courses_into_combobox(self):
         courses = self.course_controller.get_active_courses()
@@ -304,17 +317,17 @@ class AppUI:
         telefono = self.entries["Teléfono"].get()
         course_name = self.combo_course.get()
         if not (identificacion and nombre and apellido and representante and telefono and course_name):
-            messagebox.showwarning("Campos incompletos", "Por favor, llene todos los campos.")
+            messagebox.showwarning(MSG_FIELDS_INCOMPLETE, "Por favor, llene todos los campos.")
             return
         course_id = self.course_map.get(course_name)
         success, msg = self.student_controller.register_student(
             identificacion, nombre, apellido, course_id, representante, telefono)
         if success:
-            messagebox.showinfo("Éxito", msg)
+            messagebox.showinfo(MSG_SUCCESS, msg)
             self.limpiar_formulario()
             self.refrescar_lista()
         else:
-            messagebox.showerror("Error", msg)
+            messagebox.showerror(MSG_ERROR, msg)
 
     def limpiar_formulario(self):
         for entry in self.entries.values():
@@ -322,17 +335,22 @@ class AppUI:
         self.combo_course.set("")
 
     def refrescar_lista(self):
-        for item in self.tree.get_children():
-            self.tree.delete(item)
-        estudiantes = self.student_controller.get_all_students()
-        if estudiantes:
-            for est in estudiantes:
-                if not isinstance(est, dict):
-                    keys = ["id", "identificacion", "nombre", "apellido", "course_name", "representante", "telefono", "active"]
-                    est = dict(zip(keys, est))
-                course_name = est["course_name"] if est["course_name"] else "N/A"
+        current_ids = {self.tree.item(item)['values'][0] for item in self.tree.get_children()}
+        new_estudiantes = self.student_controller.get_all_students()
+        new_ids = set()
+        
+        for est in new_estudiantes:
+            new_ids.add(est['id'])
+            if est['id'] not in current_ids:
+                course_name = est.get("course_name", "N/A")  # Usa .get para evitar errores
                 self.tree.insert("", "end", values=(est["id"], est["identificacion"], est["nombre"], est["apellido"], course_name))
-        else:
+        
+        # Eliminar elementos que ya no están
+        for item in self.tree.get_children():
+            if self.tree.item(item)['values'][0] not in new_ids:
+                self.tree.delete(item)
+        
+        if not new_estudiantes:
             messagebox.showinfo("Información", "No se han encontrado estudiantes.")
 
     def on_student_double_click(self, event):
@@ -343,12 +361,13 @@ class AppUI:
                 student_identificacion = item["values"][1]
                 StudentDetailsWindow(self.db, student_identificacion)
         except Exception as e:
-            messagebox.showerror("Error", f"Error al abrir los detalles del estudiante: {str(e)}")
+            logging.error(f"Error al abrir detalles del estudiante: {e}")
+            messagebox.showerror(MSG_ERROR, f"Error al abrir los detalles del estudiante: {str(e)}")
 
     def generar_pdf(self):
         selected = self.tree.selection()
         if not selected:
-            messagebox.showwarning("Sin selección", "Seleccione un estudiante para generar el PDF")
+            messagebox.showwarning(MSG_SELECTION_REQUIRED, "Seleccione un estudiante para generar el PDF")
             return
 
         item = self.tree.item(selected[0])
@@ -362,7 +381,7 @@ class AppUI:
             try:
                 pdf.image(self.abs_logo_path, x=10, y=8, w=30)
             except Exception as e:
-                print(f"Error al insertar logo en PDF: {e}")
+                logging.error(f"Error al insertar logo en PDF: {e}")
         pdf.set_font("Arial", "B", 16)
         pdf.cell(200, 10, txt=self.school_name, ln=True, align="C")
         pdf.ln(5)
@@ -380,7 +399,7 @@ class AppUI:
         pdf.ln(10)
 
         # Usar PaymentController para obtener y sumar los pagos del estudiante
-        student_id = estudiante_data[0]  # Se asume que el id del estudiante está en la posición 0.
+        student_id = estudiante_data[0]
         pagos = self.payment_controller.get_payments_by_student(student_id)
         total_pagado = sum(float(payment["amount"]) for payment in pagos if payment["amount"] is not None)
         pdf.set_font("Arial", "B", 12)
@@ -393,25 +412,35 @@ class AppUI:
         # Agregar la fecha de emisión
         pdf.cell(50, 10, txt="Fecha de emisión: " + datetime.date.today().strftime("%d/%m/%Y"))
 
-        pdf_file = f"paz_y_salvo_estudiante_{estudiante_data[2]}.pdf"
-        pdf.output(pdf_file)
-        messagebox.showinfo("PDF generado", f"El PDF '{pdf_file}' ha sido generado correctamente.")
+        # Definir nombre de archivo predeterminado usando el nombre del estudiante
+        default_filename = f"paz_y_salvo_{estudiante_data[2]}.pdf"
+
+        # Preguntar dónde guardar el PDF y sugerir el nombre predeterminado
+        file_path = filedialog.asksaveasfilename(
+            defaultextension=".pdf",
+            filetypes=[("PDF files", "*.pdf")],
+            initialfile=default_filename,
+            title="Guardar Paz y Salvo"
+        )
+        if file_path:
+            pdf.output(file_path)
+            messagebox.showinfo("PDF generado", f"El PDF '{file_path}' ha sido generado correctamente.")
 
     def _export_students(self, export_func, file_extension, file_type):
         try:
             estudiantes = self.student_controller.get_all_students()
             timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
             default_filename = f"{self.school_name}_Listado_Estudiantes_{timestamp}{file_extension}"
-            file_path = asksaveasfilename(defaultextension=file_extension,
+            file_path = filedialog.asksaveasfilename(defaultextension=file_extension,
                                           filetypes=[(file_type, f"*{file_extension}")],
                                           initialfile=default_filename)
             if not file_path:
                 return
-            # Se pasa la instancia de course_controller como quinto argumento
             export_func(estudiantes, file_path, self.school_name, self.logo_path, self.course_controller)
             messagebox.showinfo("Exportación exitosa", f"Listado exportado a {file_type}: {file_path}")
         except Exception as e:
-            messagebox.showerror("Error", f"Error al exportar a {file_type}: {str(e)}")
+            logging.error(f"Error al exportar a {file_type}: {e}")
+            messagebox.showerror(MSG_ERROR, f"Error al exportar a {file_type}: {str(e)}")
 
     def export_students_excel(self):
         self._export_students(export_students_to_excel, ".xlsx", "Excel")
@@ -420,7 +449,7 @@ class AppUI:
         self._export_students(export_students_to_pdf, ".pdf", "PDF")
 
     def logout(self):
-        confirm = messagebox.askyesno("Cerrar Sesión", "¿Está seguro de cerrar la sesión?")
+        confirm = messagebox.askyesno("Cerrar Sesión", MSG_CONFIRMATION)
         if confirm:
             self.root.destroy()
             LoginUI(self.db).run()

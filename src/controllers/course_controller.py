@@ -1,4 +1,5 @@
 from src.models.course import Course
+import sqlite3
 
 class CourseController:
     def __init__(self, db):
@@ -8,6 +9,23 @@ class CourseController:
         :param db: Objeto de conexión a la base de datos.
         """
         self.db = db
+
+    def _get_cursor(self):
+        """
+        Método auxiliar para obtener un cursor válido de la base de datos.
+        
+        :return: Cursor de la base de datos.
+        :raises AttributeError: Si el objeto de base de datos no tiene un método 'cursor'.
+        """
+        try:
+            if hasattr(self.db, "cursor") and callable(self.db.cursor):
+                return self.db.cursor()
+            elif hasattr(self.db, "connection") and hasattr(self.db.connection, "cursor") and callable(self.db.connection.cursor):
+                return self.db.connection.cursor()
+            else:
+                raise AttributeError("El objeto de base de datos no tiene un método 'cursor'.")
+        except AttributeError as e:
+            raise
 
     def add_course(self, name):
         """
@@ -20,9 +38,12 @@ class CourseController:
             return False, "El nombre del curso debe ser una cadena no vacía."
         try:
             query = "INSERT INTO courses (name, active) VALUES (?, 1)"
-            self.db.cursor.execute(query, (name,))
+            cursor = self._get_cursor()
+            cursor.execute(query, (name,))
             self.db.connection.commit()
             return True, "Curso agregado correctamente."
+        except sqlite3.IntegrityError:
+            return False, "El curso ya existe."
         except Exception as e:
             return False, f"Error al agregar curso: {e}"
 
@@ -38,7 +59,8 @@ class CourseController:
             return False, "El nuevo nombre del curso debe ser una cadena no vacía."
         try:
             query = "UPDATE courses SET name = ? WHERE id = ?"
-            self.db.cursor.execute(query, (new_name, course_id))
+            cursor = self._get_cursor()
+            cursor.execute(query, (new_name, course_id))
             self.db.connection.commit()
             return True, "Curso editado correctamente."
         except Exception as e:
@@ -53,7 +75,8 @@ class CourseController:
         """
         try:
             query = "UPDATE courses SET active = 0 WHERE id = ?"
-            self.db.cursor.execute(query, (course_id,))
+            cursor = self._get_cursor()
+            cursor.execute(query, (course_id,))
             self.db.connection.commit()
             return True, "Curso desactivado correctamente."
         except Exception as e:
@@ -63,12 +86,14 @@ class CourseController:
         """
         Obtiene todos los cursos activos.
         
-        :return: Lista de cursos activos.
+        :return: Lista de diccionarios con los datos de los cursos activos.
         """
         try:
             query = "SELECT * FROM courses WHERE active = 1"
-            self.db.cursor.execute(query)
-            return self.db.cursor.fetchall()
+            cursor = self._get_cursor()
+            cursor.execute(query)
+            rows = cursor.fetchall()
+            return [dict(row) for row in rows]
         except Exception as e:
             return []
 
@@ -76,12 +101,14 @@ class CourseController:
         """
         Obtiene todos los cursos, activos e inactivos.
         
-        :return: Lista de todos los cursos.
+        :return: Lista de diccionarios con los datos de todos los cursos.
         """
         try:
             query = "SELECT * FROM courses"
-            self.db.cursor.execute(query)
-            return self.db.cursor.fetchall()
+            cursor = self._get_cursor()
+            cursor.execute(query)
+            rows = cursor.fetchall()
+            return [dict(row) for row in rows]
         except Exception as e:
             return []
 
@@ -92,10 +119,13 @@ class CourseController:
         :param course_id: ID del curso a obtener.
         :return: Diccionario con los datos del curso o None si no se encuentra.
         """
+        if not isinstance(course_id, int):
+            return None
         try:
             query = "SELECT * FROM courses WHERE id = ?"
-            self.db.cursor.execute(query, (course_id,))
-            course_data = self.db.cursor.fetchone()
+            cursor = self._get_cursor()
+            cursor.execute(query, (course_id,))
+            course_data = cursor.fetchone()
             if course_data:
                 return dict(course_data)
             return None
