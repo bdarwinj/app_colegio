@@ -174,9 +174,24 @@ class AppUI:
         self.frame_form.pack(padx=10, pady=10, fill="x")
         labels = ["Número de Identificación", "Nombre", "Apellido", "Representante", "Teléfono"]
         self.entries = {}
-        for idx, text in enumerate(labels):
-            self._create_label_entry(self.frame_form, text, idx)
         
+        # Función de validación para que solo se acepten dígitos o cadena vacía.
+        def validate_numeric(P):
+            return P.isdigit() or P == ""
+        
+        # Registrar la función de validación.
+        vcmd = (self.root.register(validate_numeric), '%P')
+        
+        for idx, text in enumerate(labels):
+            ttk.Label(self.frame_form, text=f"{text}:").grid(row=idx, column=0, sticky="w", padx=5, pady=5)
+            # Aplicar validación en "Número de Identificación" y "Teléfono"
+            if text in ["Número de Identificación", "Teléfono"]:
+                entry = ttk.Entry(self.frame_form, validate="key", validatecommand=vcmd)
+            else:
+                entry = ttk.Entry(self.frame_form)
+            entry.grid(row=idx, column=1, padx=5, pady=5)
+            self.entries[text] = entry
+
         ttk.Label(self.frame_form, text="Curso:").grid(row=len(labels), column=0, sticky="w", padx=5, pady=5)
         self.combo_course = ttk.Combobox(self.frame_form, state="readonly")
         self.combo_course.grid(row=len(labels), column=1, padx=5, pady=5)

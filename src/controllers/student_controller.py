@@ -57,7 +57,6 @@ class StudentController:
         result = cursor.fetchone()
         if result:
             name = result[0]
-            # Asegurarse de que haya una sección y no esté vacía
             seccion = result[1] if len(result) > 1 else ""
             if seccion and seccion.strip():
                 return f"{name} - {seccion}"
@@ -112,7 +111,12 @@ class StudentController:
     def register_student(self, identificacion, nombre, apellido, course_id, representante, telefono):
         """
         Registra un nuevo estudiante en la base de datos.
+        Verifica que el número de identificación sea numérico.
         """
+        # Validar que la identificación sea numérica
+        if not identificacion.isdigit():
+            return False, "El número de identificación debe ser numérico."
+        
         query = """
             INSERT INTO estudiantes (identificacion, nombre, apellido, course_id, representante, telefono, active)
             VALUES (?, ?, ?, ?, ?, ?, 1)
