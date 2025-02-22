@@ -46,14 +46,23 @@ class StudentController:
 
     def get_course_name(self, course_id):
         """
-        Obtiene el nombre del curso basado en el course_id.
+        Obtiene el nombre completo del curso basado en el course_id.
+        Ahora incluye la sección si existe (por ejemplo, "Tercero - A").
         """
         if course_id is None:
             return "N/A"
         cursor = self._get_cursor()
-        cursor.execute("SELECT name FROM courses WHERE id = ?", (course_id,))
+        # Selecciona tanto el nombre como la sección
+        cursor.execute("SELECT name, seccion FROM courses WHERE id = ?", (course_id,))
         result = cursor.fetchone()
-        return result[0] if result else "N/A"
+        if result:
+            name = result[0]
+            # Asegurarse de que haya una sección y no esté vacía
+            seccion = result[1] if len(result) > 1 else ""
+            if seccion and seccion.strip():
+                return f"{name} - {seccion}"
+            return name
+        return "N/A"
 
     def get_all_students(self):
         """
@@ -64,6 +73,7 @@ class StudentController:
         rows = cursor.fetchall()
         students = []
         for row in rows:
+            # Usar get_course_name para obtener el nombre completo del curso
             course_name = self.get_course_name(row[4]) if row[4] else "N/A"
             students.append({
                 "id": row[0],

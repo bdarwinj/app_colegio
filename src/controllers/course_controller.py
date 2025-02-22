@@ -27,40 +27,47 @@ class CourseController:
         except AttributeError as e:
             raise
 
-    def add_course(self, name):
+    def add_course(self, name, seccion=None):
         """
         Agrega un nuevo curso a la base de datos.
         
-        :param name: Nombre del curso a agregar.
+        :param name: Nombre del curso a agregar (por ejemplo, "Tercero").
+        :param seccion: Sección del curso (por ejemplo, "A", "B"). Opcional.
         :return: Tupla (éxito: bool, mensaje: str)
         """
         if not name or not isinstance(name, str):
             return False, "El nombre del curso debe ser una cadena no vacía."
+        # La sección es opcional; si no se proporciona, se usará una cadena vacía.
+        if seccion is None:
+            seccion = ""
         try:
-            query = "INSERT INTO courses (name, active) VALUES (?, 1)"
+            query = "INSERT INTO courses (name, seccion, active) VALUES (?, ?, 1)"
             cursor = self._get_cursor()
-            cursor.execute(query, (name,))
+            cursor.execute(query, (name, seccion))
             self.db.connection.commit()
             return True, "Curso agregado correctamente."
         except sqlite3.IntegrityError:
-            return False, "El curso ya existe."
+            return False, "El curso con esa sección ya existe."
         except Exception as e:
             return False, f"Error al agregar curso: {e}"
 
-    def edit_course(self, course_id, new_name):
+    def edit_course(self, course_id, new_name, new_seccion=None):
         """
-        Edita el nombre de un curso existente.
+        Edita el nombre y la sección de un curso existente.
         
         :param course_id: ID del curso a editar.
         :param new_name: Nuevo nombre para el curso.
+        :param new_seccion: Nueva sección para el curso. Opcional.
         :return: Tupla (éxito: bool, mensaje: str)
         """
         if not new_name or not isinstance(new_name, str):
             return False, "El nuevo nombre del curso debe ser una cadena no vacía."
+        if new_seccion is None:
+            new_seccion = ""
         try:
-            query = "UPDATE courses SET name = ? WHERE id = ?"
+            query = "UPDATE courses SET name = ?, seccion = ? WHERE id = ?"
             cursor = self._get_cursor()
-            cursor.execute(query, (new_name, course_id))
+            cursor.execute(query, (new_name, new_seccion, course_id))
             self.db.connection.commit()
             return True, "Curso editado correctamente."
         except Exception as e:

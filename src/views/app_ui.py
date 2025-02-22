@@ -233,12 +233,16 @@ class AppUI:
         ttk.Label(frame_form, text="Nombre:").grid(row=0, column=0, padx=5, pady=5, sticky="w")
         self.entry_course_name = ttk.Entry(frame_form)
         self.entry_course_name.grid(row=0, column=1, padx=5, pady=5)
+        # Campo para la sección (opcional)
+        ttk.Label(frame_form, text="Sección (opcional):").grid(row=1, column=0, padx=5, pady=5, sticky="w")
+        self.entry_course_section = ttk.Entry(frame_form)
+        self.entry_course_section.grid(row=1, column=1, padx=5, pady=5)
         btn_add = ttk.Button(frame_form, text="Agregar", command=self.add_course)
-        btn_add.grid(row=1, column=0, padx=5, pady=5)
+        btn_add.grid(row=2, column=0, padx=5, pady=5)
         btn_edit = ttk.Button(frame_form, text="Editar", command=self.edit_course)
-        btn_edit.grid(row=1, column=1, padx=5, pady=5)
+        btn_edit.grid(row=2, column=1, padx=5, pady=5)
         btn_deactivate = ttk.Button(frame_form, text="Desactivar", command=self.deactivate_course)
-        btn_deactivate.grid(row=2, column=0, columnspan=2, padx=5, pady=5)
+        btn_deactivate.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
 
     def manage_users(self):
         UserManagementUI(self.db)
@@ -248,19 +252,24 @@ class AppUI:
             self.courses_tree.delete(item)
         courses = self.course_controller.get_all_courses()
         for course in courses:
-            self.courses_tree.insert("", "end", values=(course["id"], course["name"], "Sí" if course["active"] == 1 else "No"))
+            # Construir el nombre completo del curso (grado - sección)
+            full_name = f"{course['name']} - {course['seccion']}" if course.get("seccion") and course["seccion"].strip() else course["name"]
+            self.courses_tree.insert("", "end", values=(course["id"], full_name, "Sí" if course["active"] == 1 else "No"))
         self.load_courses_into_combobox()
 
     def add_course(self):
         name = self.entry_course_name.get().strip()
+        section = self.entry_course_section.get().strip()  # Puede ser vacío
         if not name:
             messagebox.showwarning(MSG_FIELDS_INCOMPLETE, "Ingrese el nombre del curso.")
             return
-        success, msg = self.course_controller.add_course(name)
+        # Se pasa la sección, que puede estar vacía (opcional)
+        success, msg = self.course_controller.add_course(name, section)
         if success:
             messagebox.showinfo(MSG_SUCCESS, msg)
             self.load_courses_into_tree()
             self.entry_course_name.delete(0, tk.END)
+            self.entry_course_section.delete(0, tk.END)
         else:
             messagebox.showerror(MSG_ERROR, msg)
 
@@ -272,14 +281,16 @@ class AppUI:
         course_item = self.courses_tree.item(selected[0])
         course_id = course_item["values"][0]
         new_name = self.entry_course_name.get().strip()
+        new_section = self.entry_course_section.get().strip()  # Opcional
         if not new_name:
             messagebox.showwarning(MSG_FIELDS_INCOMPLETE, "Ingrese el nuevo nombre del curso.")
             return
-        success, msg = self.course_controller.edit_course(course_id, new_name)
+        success, msg = self.course_controller.edit_course(course_id, new_name, new_section)
         if success:
             messagebox.showinfo(MSG_SUCCESS, msg)
             self.load_courses_into_tree()
             self.entry_course_name.delete(0, tk.END)
+            self.entry_course_section.delete(0, tk.END)
         else:
             messagebox.showerror(MSG_ERROR, msg)
 
@@ -304,7 +315,8 @@ class AppUI:
         course_names = []
         course_ids = []
         for course in courses:
-            course_names.append(course["name"])
+            full_name = f"{course['name']} - {course['seccion']}" if course.get("seccion") and course["seccion"].strip() else course["name"]
+            course_names.append(full_name)
             course_ids.append(course["id"])
         self.combo_course["values"] = course_names
         self.course_map = dict(zip(course_names, course_ids))
@@ -342,7 +354,7 @@ class AppUI:
         for est in new_estudiantes:
             new_ids.add(est['id'])
             if est['id'] not in current_ids:
-                course_name = est.get("course_name", "N/A")  # Usa .get para evitar errores
+                course_name = est.get("course_name", "N/A")
                 self.tree.insert("", "end", values=(est["id"], est["identificacion"], est["nombre"], est["apellido"], course_name))
         
         # Eliminar elementos que ya no están
@@ -399,7 +411,7 @@ class AppUI:
         pdf.ln(10)
 
         # Usar PaymentController para obtener y sumar los pagos del estudiante
-        student_id = estudiante_data[0]
+        student_id = estudiante_data[0]  # Se asume que el id del estudiante está en la posición 0.
         pagos = self.payment_controller.get_payments_by_student(student_id)
         total_pagado = sum(float(payment["amount"]) for payment in pagos if payment["amount"] is not None)
         pdf.set_font("Arial", "B", 12)
@@ -412,10 +424,7 @@ class AppUI:
         # Agregar la fecha de emisión
         pdf.cell(50, 10, txt="Fecha de emisión: " + datetime.date.today().strftime("%d/%m/%Y"))
 
-        # Definir nombre de archivo predeterminado usando el nombre del estudiante
         default_filename = f"paz_y_salvo_{estudiante_data[2]}.pdf"
-
-        # Preguntar dónde guardar el PDF y sugerir el nombre predeterminado
         file_path = filedialog.asksaveasfilename(
             defaultextension=".pdf",
             filetypes=[("PDF files", "*.pdf")],
@@ -436,6 +445,7 @@ class AppUI:
                                           initialfile=default_filename)
             if not file_path:
                 return
+            # Se pasa la instancia de course_controller como quinto argumento
             export_func(estudiantes, file_path, self.school_name, self.logo_path, self.course_controller)
             messagebox.showinfo("Exportación exitosa", f"Listado exportado a {file_type}: {file_path}")
         except Exception as e:

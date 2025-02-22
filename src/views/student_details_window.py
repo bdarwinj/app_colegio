@@ -19,7 +19,7 @@ class StudentDetailsWindow(tk.Toplevel):
         self.student_controller = StudentController(db)
         self.payment_controller = PaymentController(db)
         self.config_controller = ConfigController(db)
-        self.course_controller = CourseController(db)  # Para obtener datos del curso
+        self.course_controller = CourseController(db)  # Para obtener datos del curso (incluyendo sección)
         self.title("Detalles del Estudiante")
         self.geometry("700x550")
         self.create_widgets()
@@ -78,17 +78,28 @@ class StudentDetailsWindow(tk.Toplevel):
                 return
 
             student = dict(student_row)
-            # Formatear primera letra de nombre, apellido y representante en mayúscula
+            # Capitalizar nombre, apellido y representante
             student['nombre'] = student.get('nombre', '').capitalize()
             student['apellido'] = student.get('apellido', '').capitalize()
             student['representante'] = student.get('representante', '').capitalize()
+            
+            # Obtener el nombre completo del curso: si student ya trae "course_name", se usa; si no, se consulta
+            curso = student.get('course_name', '')
+            if not curso:
+                course_id = student.get('course_id')
+                if course_id:
+                    course_data = self.course_controller.get_course_by_id(course_id)
+                    if course_data:
+                        name = course_data.get('name', '')
+                        seccion = course_data.get('seccion', '')
+                        curso = f"{name} - {seccion}" if seccion and seccion.strip() else name
 
             info = (
                 f"ID: {student.get('id', '')}\n"
                 f"Identificación: {student.get('identificacion', '')}\n"
                 f"Nombre: {student['nombre']}\n"
                 f"Apellido: {student['apellido']}\n"
-                f"Curso: {student.get('course_name', '')}\n"
+                f"Curso: {curso}\n"
                 f"Representante: {student['representante']}\n"
                 f"Teléfono: {student.get('telefono', '')}\n"
                 f"Estado: {'Activo' if student.get('active', 1) == 1 else 'Desactivado'}\n"
@@ -214,13 +225,16 @@ class StudentDetailsWindow(tk.Toplevel):
             student['apellido'] = student.get('apellido', '').capitalize()
             student['representante'] = student.get('representante', '').capitalize()
         
-            # Obtener el nombre del curso. Si no está en student, se busca a partir del course_id.
+            # Obtener el nombre completo del curso (grado y sección)
             curso = student.get('course_name', '')
-            course_id = student.get('course_id')
-            if course_id:
-                course_data = self.course_controller.get_course_by_id(course_id)
-                if course_data:
-                    curso = course_data.get('name', '')
+            if not curso:
+                course_id = student.get('course_id')
+                if course_id:
+                    course_data = self.course_controller.get_course_by_id(course_id)
+                    if course_data:
+                        name = course_data.get('name', '')
+                        seccion = course_data.get('seccion', '')
+                        curso = f"{name} - {seccion}" if seccion and seccion.strip() else name
         
             pdf = FPDF()
             pdf.add_page()

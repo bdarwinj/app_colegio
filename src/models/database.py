@@ -16,7 +16,8 @@ class Database:
                 role TEXT
             )
         ''')
-    # Crear la tabla estudiantes si no existe
+        
+        # Tabla de Estudiantes
         self.cursor.execute('''
             CREATE TABLE IF NOT EXISTS estudiantes (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -48,14 +49,18 @@ class Database:
                 FOREIGN KEY(estudiante_id) REFERENCES estudiantes(id)
             )
         ''')
-        # Tabla de Cursos (Grados)
+        
+        # Tabla de Cursos (Grados) con columna "seccion"
         self.cursor.execute('''
             CREATE TABLE IF NOT EXISTS courses (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT UNIQUE,
-                active INTEGER DEFAULT 1
+                name TEXT,
+                seccion TEXT,
+                active INTEGER DEFAULT 1,
+                UNIQUE(name, seccion)
             )
         ''')
+        
         # Tabla de Configuración
         self.cursor.execute('''
             CREATE TABLE IF NOT EXISTS config (

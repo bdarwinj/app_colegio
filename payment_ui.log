@@ -11,3 +11,13 @@
 2025-02-21 20:36:07,717 - INFO - Payment registered: Receipt 20250221-0004, Student: Elkin Valderrama, Amount: 65200.0
 2025-02-21 20:36:41,740 - INFO - Contraseña cambiada exitosamente para usuario: jose
 2025-02-21 20:37:27,723 - WARNING - Intento fallido de cambio de contraseña para usuario: admin
+2025-02-21 21:32:17,772 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
+2025-02-21 21:33:54,309 - ERROR - Error loading logo in PDF: [Errno 2] No such file or directory: 'logo.png'
+2025-02-21 21:33:56,941 - INFO - Payment registered: Receipt 20250221-0001, Student: Darwin Bolivar, Amount: 75400.0
+2025-02-21 21:38:45,192 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
+2025-02-21 21:41:56,836 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
+2025-02-21 21:44:31,835 - ERROR - Error loading logo in PDF: [Errno 2] No such file or directory: 'logo.png'
+2025-02-21 21:44:34,371 - INFO - Payment registered: Receipt 20250221-0002, Student: Nicol Rojas, Amount: 75000.0
+2025-02-21 21:45:21,405 - ERROR - Error loading logo in PDF: [Errno 2] No such file or directory: 'logo.png'
+2025-02-21 21:45:24,447 - INFO - Payment registered: Receipt 20250221-0003, Student: Darwin Bolivar, Amount: 73200.0
+2025-02-22 07:47:10,134 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
