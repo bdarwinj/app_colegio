@@ -68,6 +68,21 @@ class Database:
                 value TEXT
             )
         ''')
+        
+        # Tabla de Inscripciones (Enrollments)
+        self.cursor.execute('''
+            CREATE TABLE IF NOT EXISTS enrollments (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                student_id INTEGER,
+                course_id INTEGER,
+                academic_year INTEGER,
+                status TEXT,
+                date_enrolled TEXT,
+                FOREIGN KEY(student_id) REFERENCES estudiantes(id),
+                FOREIGN KEY(course_id) REFERENCES courses(id)
+            )
+        ''')
+        
         self.connection.commit()
 
     def close(self):

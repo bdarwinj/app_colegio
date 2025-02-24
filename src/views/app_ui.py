@@ -6,6 +6,7 @@ from fpdf import FPDF
 import datetime
 import logging
 from src.controllers.student_controller import StudentController
+from src.controllers.enrollment_controller import EnrollmentController
 from src.controllers.course_controller import CourseController
 from src.controllers.config_controller import ConfigController
 from src.controllers.user_controller import UserController
@@ -15,6 +16,7 @@ from src.views.user_management_ui import UserManagementUI
 from src.views.payment_ui import PaymentUI
 from src.views.login_ui import LoginUI
 from src.views.student_details_window import StudentDetailsWindow
+from src.views.enrollment_management_ui import EnrollmentManagementUI
 from src.utils.export_students import export_students_to_excel, export_students_to_pdf
 
 # Configuración de logging para registrar eventos y errores
@@ -119,6 +121,7 @@ class AppUI:
         
         if os.path.exists(self.abs_logo_path):
             try:
+                from PIL import Image  # Asegurarse de importar Image
                 image = Image.open(self.abs_logo_path)
                 image = image.resize((80, 80), Image.LANCZOS)
                 self.logo_image = ImageTk.PhotoImage(image)
@@ -156,6 +159,11 @@ class AppUI:
         self.btn_export_excel.pack(side="left", padx=5)
         self.btn_export_pdf = ttk.Button(actions_frame, text="Exportar a PDF", command=self.export_students_pdf)
         self.btn_export_pdf.pack(side="left", padx=5)
+        
+        # Botón adicional para gestionar inscripciones (para admin)
+        if self.user.role == "admin":
+            self.btn_manage_enrollments = ttk.Button(actions_frame, text="Gestionar Inscripciones", command=self.manage_enrollments)
+            self.btn_manage_enrollments.pack(side="left", padx=5)
 
     def create_admin_panel(self):
         self.frame_admin = ttk.LabelFrame(self.root, text="Panel de Administración")
@@ -175,18 +183,23 @@ class AppUI:
         labels = ["Número de Identificación", "Nombre", "Apellido", "Representante", "Teléfono"]
         self.entries = {}
         
-        # Función de validación para que solo se acepten dígitos o cadena vacía.
+        # Función de validación para que solo se acepten dígitos (o cadena vacía)
         def validate_numeric(P):
             return P.isdigit() or P == ""
         
-        # Registrar la función de validación.
         vcmd = (self.root.register(validate_numeric), '%P')
+        
+        # Al perder foco, obligar que el campo no quede vacío
+        def on_focusout_numeric(event):
+            if event.widget.get().strip() == "":
+                messagebox.showwarning(MSG_FIELDS_INCOMPLETE, "Este campo es obligatorio y debe ser numérico.")
+                event.widget.focus_set()
         
         for idx, text in enumerate(labels):
             ttk.Label(self.frame_form, text=f"{text}:").grid(row=idx, column=0, sticky="w", padx=5, pady=5)
-            # Aplicar validación en "Número de Identificación" y "Teléfono"
             if text in ["Número de Identificación", "Teléfono"]:
                 entry = ttk.Entry(self.frame_form, validate="key", validatecommand=vcmd)
+                entry.bind("<FocusOut>", on_focusout_numeric)
             else:
                 entry = ttk.Entry(self.frame_form)
             entry.grid(row=idx, column=1, padx=5, pady=5)
@@ -248,7 +261,6 @@ class AppUI:
         ttk.Label(frame_form, text="Nombre:").grid(row=0, column=0, padx=5, pady=5, sticky="w")
         self.entry_course_name = ttk.Entry(frame_form)
         self.entry_course_name.grid(row=0, column=1, padx=5, pady=5)
-        # Campo para la sección (opcional)
         ttk.Label(frame_form, text="Sección (opcional):").grid(row=1, column=0, padx=5, pady=5, sticky="w")
         self.entry_course_section = ttk.Entry(frame_form)
         self.entry_course_section.grid(row=1, column=1, padx=5, pady=5)
@@ -267,18 +279,16 @@ class AppUI:
             self.courses_tree.delete(item)
         courses = self.course_controller.get_all_courses()
         for course in courses:
-            # Construir el nombre completo del curso (grado - sección)
             full_name = f"{course['name']} - {course['seccion']}" if course.get("seccion") and course["seccion"].strip() else course["name"]
             self.courses_tree.insert("", "end", values=(course["id"], full_name, "Sí" if course["active"] == 1 else "No"))
         self.load_courses_into_combobox()
 
     def add_course(self):
         name = self.entry_course_name.get().strip()
-        section = self.entry_course_section.get().strip()  # Puede ser vacío
+        section = self.entry_course_section.get().strip()  # Puede estar vacío
         if not name:
             messagebox.showwarning(MSG_FIELDS_INCOMPLETE, "Ingrese el nombre del curso.")
             return
-        # Se pasa la sección, que puede estar vacía (opcional)
         success, msg = self.course_controller.add_course(name, section)
         if success:
             messagebox.showinfo(MSG_SUCCESS, msg)
@@ -351,6 +361,21 @@ class AppUI:
             identificacion, nombre, apellido, course_id, representante, telefono)
         if success:
             messagebox.showinfo(MSG_SUCCESS, msg)
+            # Crear inscripción para el año académico actual
+            student_record = self.student_controller.get_student_by_identification(identificacion)
+            if student_record:
+                student_id = student_record["id"]
+                current_year = datetime.datetime.now().year
+                enrollment_controller = EnrollmentController(self.db)
+                enroll_success, enroll_msg, enrollment_id = enrollment_controller.create_enrollment(
+                    student_id, course_id, current_year, status="inscrito"
+                )
+                if enroll_success:
+                    logging.info(f"Inscripción creada correctamente para el estudiante {identificacion} (Enrollment ID: {enrollment_id}).")
+                else:
+                    logging.error(f"Error al crear inscripción para el estudiante {identificacion}: {enroll_msg}")
+            else:
+                logging.error("No se pudo recuperar el registro del estudiante recién creado.")
             self.limpiar_formulario()
             self.refrescar_lista()
         else:
@@ -481,6 +506,13 @@ class AppUI:
 
     def open_change_password_window(self):
         ChangePasswordWindow(self.root, self.user_controller, self.user.username)
+
+    def manage_enrollments(self):
+        """
+        Abre la interfaz de Gestión de Inscripciones.
+        """
+        from src.views.enrollment_management_ui import EnrollmentManagementUI
+        EnrollmentManagementUI(self.db)
 
     def run(self):
         self.refrescar_lista()

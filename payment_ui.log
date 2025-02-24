@@ -21,3 +21,12 @@
 2025-02-21 21:45:21,405 - ERROR - Error loading logo in PDF: [Errno 2] No such file or directory: 'logo.png'
 2025-02-21 21:45:24,447 - INFO - Payment registered: Receipt 20250221-0003, Student: Darwin Bolivar, Amount: 73200.0
 2025-02-22 07:47:10,134 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
+2025-02-22 22:17:19,898 - INFO - Contraseña cambiada exitosamente para usuario: elkin
+2025-02-23 08:02:59,536 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
+2025-02-23 08:05:29,186 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
+2025-02-23 08:23:35,696 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
+2025-02-23 08:36:15,304 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
+2025-02-23 08:38:46,163 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
+2025-02-24 08:06:16,446 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
+2025-02-24 09:05:14,279 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
+2025-02-24 09:05:42,906 - INFO - Inscripción creada correctamente para el estudiante 19383228 (Enrollment ID: 1).
