@@ -23,6 +23,14 @@ class EnrollmentController:
             print("Advertencia: No se encontró método commit.")
 
     def create_enrollment(self, student_id, course_id, academic_year, status="inscrito"):
+        """
+        Crea una nueva inscripción para un estudiante en un año académico determinado.
+        :param student_id: ID del estudiante.
+        :param course_id: ID del curso (grado y sección) en el que se inscribe.
+        :param academic_year: Año académico (por ejemplo, 2025).
+        :param status: Estado inicial (por defecto "inscrito").
+        :return: Tupla (éxito: bool, mensaje: str, enrollment_id: int o None)
+        """
         try:
             date_enrolled = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             query = """
@@ -38,6 +46,12 @@ class EnrollmentController:
             return False, f"Error al crear inscripción: {e}", None
 
     def update_enrollment_status(self, enrollment_id, new_status):
+        """
+        Actualiza el estado de una inscripción.
+        :param enrollment_id: ID de la inscripción.
+        :param new_status: Nuevo estado (por ejemplo, "promovido", "repetido").
+        :return: Tupla (éxito: bool, mensaje: str)
+        """
         try:
             query = "UPDATE enrollments SET status = ? WHERE id = ?"
             cursor = self._get_cursor()
@@ -50,7 +64,8 @@ class EnrollmentController:
 
     def get_all_enrollments(self):
         """
-        Recupera todas las inscripciones sin filtrar, ordenadas por año académico descendente.
+        Recupera todas las inscripciones ordenadas por año académico descendente.
+        :return: Lista de diccionarios con los datos de las inscripciones.
         """
         try:
             query = "SELECT * FROM enrollments ORDER BY academic_year DESC"
@@ -62,10 +77,11 @@ class EnrollmentController:
             traceback.print_exc()
             return []
 
-    # Si ya tenías otro método, puedes mantenerlo y agregar este para obtener todos los registros.
-    def get_enrollments_by_student(self, student_id):
+    def get_enrollment_history(self, student_id):
         """
-        Recupera todas las inscripciones para un estudiante específico.
+        Recupera el historial completo de inscripciones de un estudiante.
+        :param student_id: ID del estudiante.
+        :return: Lista de inscripciones (diccionarios) ordenadas por año académico descendente.
         """
         try:
             query = "SELECT * FROM enrollments WHERE student_id = ? ORDER BY academic_year DESC"

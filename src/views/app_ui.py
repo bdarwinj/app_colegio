@@ -6,7 +6,6 @@ from fpdf import FPDF
 import datetime
 import logging
 from src.controllers.student_controller import StudentController
-from src.controllers.enrollment_controller import EnrollmentController
 from src.controllers.course_controller import CourseController
 from src.controllers.config_controller import ConfigController
 from src.controllers.user_controller import UserController
@@ -16,8 +15,8 @@ from src.views.user_management_ui import UserManagementUI
 from src.views.payment_ui import PaymentUI
 from src.views.login_ui import LoginUI
 from src.views.student_details_window import StudentDetailsWindow
-from src.views.enrollment_management_ui import EnrollmentManagementUI
 from src.utils.export_students import export_students_to_excel, export_students_to_pdf
+from src.utils.backup_restore import backup_database, restore_database  # NUEVO: Importa funciones de backup/restore
 
 # Configuración de logging para registrar eventos y errores
 logging.basicConfig(filename='app_ui.log', level=logging.INFO, 
@@ -160,9 +159,16 @@ class AppUI:
         self.btn_export_pdf = ttk.Button(actions_frame, text="Exportar a PDF", command=self.export_students_pdf)
         self.btn_export_pdf.pack(side="left", padx=5)
         
-        # Botón adicional para gestionar inscripciones (para admin)
+        # NUEVO: Botones para Backup y Restaurar la base de datos (para admin)
         if self.user.role == "admin":
-            self.btn_manage_enrollments = ttk.Button(actions_frame, text="Gestionar Inscripciones", command=self.manage_enrollments)
+            backup_restore_frame = ttk.Frame(self.root)
+            backup_restore_frame.pack(pady=5)
+            btn_backup = ttk.Button(backup_restore_frame, text="Backup DB", command=self.backup_database)
+            btn_backup.pack(side="left", padx=5)
+            btn_restore = ttk.Button(backup_restore_frame, text="Restaurar DB", command=self.restore_database)
+            btn_restore.pack(side="left", padx=5)
+            # Botón para gestionar inscripciones
+            self.btn_manage_enrollments = ttk.Button(backup_restore_frame, text="Gestionar Inscripciones", command=self.manage_enrollments)
             self.btn_manage_enrollments.pack(side="left", padx=5)
 
     def create_admin_panel(self):
@@ -361,21 +367,6 @@ class AppUI:
             identificacion, nombre, apellido, course_id, representante, telefono)
         if success:
             messagebox.showinfo(MSG_SUCCESS, msg)
-            # Crear inscripción para el año académico actual
-            student_record = self.student_controller.get_student_by_identification(identificacion)
-            if student_record:
-                student_id = student_record["id"]
-                current_year = datetime.datetime.now().year
-                enrollment_controller = EnrollmentController(self.db)
-                enroll_success, enroll_msg, enrollment_id = enrollment_controller.create_enrollment(
-                    student_id, course_id, current_year, status="inscrito"
-                )
-                if enroll_success:
-                    logging.info(f"Inscripción creada correctamente para el estudiante {identificacion} (Enrollment ID: {enrollment_id}).")
-                else:
-                    logging.error(f"Error al crear inscripción para el estudiante {identificacion}: {enroll_msg}")
-            else:
-                logging.error("No se pudo recuperar el registro del estudiante recién creado.")
             self.limpiar_formulario()
             self.refrescar_lista()
         else:
@@ -513,6 +504,37 @@ class AppUI:
         """
         from src.views.enrollment_management_ui import EnrollmentManagementUI
         EnrollmentManagementUI(self.db)
+
+    def backup_database(self):
+        """
+        Realiza un respaldo (backup) de la base de datos.
+        """
+        from src.utils.backup_restore import backup_database
+        try:
+            backup_file = backup_database()
+            messagebox.showinfo(MSG_SUCCESS, f"Backup realizado correctamente:\n{backup_file}")
+            logging.info(f"Backup realizado: {backup_file}")
+        except Exception as e:
+            messagebox.showerror(MSG_ERROR, f"Error al realizar backup: {e}")
+            logging.error(f"Error en backup: {e}")
+
+    def restore_database(self):
+        """
+        Restaura la base de datos desde un archivo de backup.
+        """
+        from src.utils.backup_restore import restore_database
+        backup_file = filedialog.askopenfilename(
+            title="Seleccionar archivo de backup",
+            filetypes=[("Database files", "*.db"), ("All Files", "*.*")]
+        )
+        if backup_file:
+            try:
+                restore_database(backup_file)
+                messagebox.showinfo(MSG_SUCCESS, "Base de datos restaurada correctamente.")
+                logging.info(f"Base de datos restaurada desde: {backup_file}")
+            except Exception as e:
+                messagebox.showerror(MSG_ERROR, f"Error al restaurar la base de datos: {e}")
+                logging.error(f"Error al restaurar DB: {e}")
 
     def run(self):
         self.refrescar_lista()

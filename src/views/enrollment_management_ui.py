@@ -67,7 +67,7 @@ class EnrollmentManagementUI:
     def process_enrollment(self):
         """
         Permite al administrador actualizar el estado de la inscripción seleccionada.
-        Por ejemplo, si el estudiante fue evaluado y se decide que pasó el grado (promovido) o debe repetir.
+        Por ejemplo, si el estudiante fue evaluado y se decide que pasó (promovido) o debe repetir.
         """
         selected = self.tree.selection()
         if not selected:
