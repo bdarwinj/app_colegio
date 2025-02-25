@@ -15,8 +15,9 @@ from src.views.user_management_ui import UserManagementUI
 from src.views.payment_ui import PaymentUI
 from src.views.login_ui import LoginUI
 from src.views.student_details_window import StudentDetailsWindow
+from src.views.enrollment_management_ui import EnrollmentManagementUI
 from src.utils.export_students import export_students_to_excel, export_students_to_pdf
-from src.utils.backup_restore import backup_database, restore_database  # NUEVO: Importa funciones de backup/restore
+from src.utils.backup_restore import backup_database, restore_database
 
 # Configuración de logging para registrar eventos y errores
 logging.basicConfig(filename='app_ui.log', level=logging.INFO, 
@@ -120,7 +121,7 @@ class AppUI:
         
         if os.path.exists(self.abs_logo_path):
             try:
-                from PIL import Image  # Asegurarse de importar Image
+                from PIL import Image
                 image = Image.open(self.abs_logo_path)
                 image = image.resize((80, 80), Image.LANCZOS)
                 self.logo_image = ImageTk.PhotoImage(image)
@@ -159,7 +160,7 @@ class AppUI:
         self.btn_export_pdf = ttk.Button(actions_frame, text="Exportar a PDF", command=self.export_students_pdf)
         self.btn_export_pdf.pack(side="left", padx=5)
         
-        # NUEVO: Botones para Backup y Restaurar la base de datos (para admin)
+        # Botones de Backup/Restore y Gestión de Inscripciones para admin
         if self.user.role == "admin":
             backup_restore_frame = ttk.Frame(self.root)
             backup_restore_frame.pack(pady=5)
@@ -167,7 +168,6 @@ class AppUI:
             btn_backup.pack(side="left", padx=5)
             btn_restore = ttk.Button(backup_restore_frame, text="Restaurar DB", command=self.restore_database)
             btn_restore.pack(side="left", padx=5)
-            # Botón para gestionar inscripciones
             self.btn_manage_enrollments = ttk.Button(backup_restore_frame, text="Gestionar Inscripciones", command=self.manage_enrollments)
             self.btn_manage_enrollments.pack(side="left", padx=5)
 
@@ -226,6 +226,16 @@ class AppUI:
         self.entries[text] = entry
 
     def create_students_list_frame(self):
+        # Frame para búsqueda
+        search_frame = ttk.Frame(self.root)
+        search_frame.pack(fill="x", padx=10, pady=5)
+        ttk.Label(search_frame, text="Buscar:").pack(side="left", padx=5)
+        self.search_var = tk.StringVar()
+        self.search_entry = ttk.Entry(search_frame, textvariable=self.search_var, width=50)
+        self.search_entry.pack(side="left", padx=5)
+        self.search_entry.bind("<KeyRelease>", self.on_search_students)
+        
+        # Frame para la lista de estudiantes
         self.frame_lista = ttk.LabelFrame(self.root, text="Lista de Estudiantes")
         self.frame_lista.pack(padx=10, pady=10, fill="both", expand=True)
         self.columns = ("id", "identificacion", "nombre", "apellido", "curso")
@@ -234,6 +244,28 @@ class AppUI:
             self.tree.heading(col, text=col.capitalize(), command=lambda _col=col: self.sort_by(_col))
         self.tree.pack(fill="both", expand=True)
         self.tree.bind("<Double-1>", self.on_student_double_click)
+        # Inicialmente, carga todos los estudiantes
+        self.all_students = self.student_controller.get_all_students()
+        self.populate_student_list(self.all_students)
+
+    def on_search_students(self, event):
+        query = self.search_var.get().lower().strip()
+        if query:
+            filtered = [stu for stu in self.all_students if query in str(stu["identificacion"]).lower() 
+                        or query in stu["nombre"].lower() 
+                        or query in stu["apellido"].lower()]
+        else:
+            filtered = self.all_students
+        self.populate_student_list(filtered)
+
+    def populate_student_list(self, students):
+        # Limpiar Treeview
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+        # Insertar estudiantes filtrados
+        for est in students:
+            course_name = est.get("course_name", "N/A")
+            self.tree.insert("", "end", values=(est["id"], est["identificacion"], est["nombre"], est["apellido"], course_name))
 
     def sort_by(self, col):
         data = [(self.tree.set(child, col), child) for child in self.tree.get_children('')]
@@ -378,23 +410,17 @@ class AppUI:
         self.combo_course.set("")
 
     def refrescar_lista(self):
-        current_ids = {self.tree.item(item)['values'][0] for item in self.tree.get_children()}
-        new_estudiantes = self.student_controller.get_all_students()
-        new_ids = set()
-        
-        for est in new_estudiantes:
-            new_ids.add(est['id'])
-            if est['id'] not in current_ids:
-                course_name = est.get("course_name", "N/A")
-                self.tree.insert("", "end", values=(est["id"], est["identificacion"], est["nombre"], est["apellido"], course_name))
-        
-        # Eliminar elementos que ya no están
+        self.all_students = self.student_controller.get_all_students()
+        self.populate_student_list(self.all_students)
+
+    def populate_student_list(self, students):
+        # Limpiar el Treeview
         for item in self.tree.get_children():
-            if self.tree.item(item)['values'][0] not in new_ids:
-                self.tree.delete(item)
-        
-        if not new_estudiantes:
-            messagebox.showinfo("Información", "No se han encontrado estudiantes.")
+            self.tree.delete(item)
+        # Insertar cada estudiante
+        for est in students:
+            course_name = est.get("course_name", "N/A")
+            self.tree.insert("", "end", values=(est["id"], est["identificacion"], est["nombre"], est["apellido"], course_name))
 
     def on_student_double_click(self, event):
         try:
@@ -476,7 +502,6 @@ class AppUI:
                                           initialfile=default_filename)
             if not file_path:
                 return
-            # Se pasa la instancia de course_controller como quinto argumento
             export_func(estudiantes, file_path, self.school_name, self.logo_path, self.course_controller)
             messagebox.showinfo("Exportación exitosa", f"Listado exportado a {file_type}: {file_path}")
         except Exception as e:
@@ -499,16 +524,10 @@ class AppUI:
         ChangePasswordWindow(self.root, self.user_controller, self.user.username)
 
     def manage_enrollments(self):
-        """
-        Abre la interfaz de Gestión de Inscripciones.
-        """
         from src.views.enrollment_management_ui import EnrollmentManagementUI
         EnrollmentManagementUI(self.db)
 
     def backup_database(self):
-        """
-        Realiza un respaldo (backup) de la base de datos.
-        """
         from src.utils.backup_restore import backup_database
         try:
             backup_file = backup_database()
@@ -519,9 +538,6 @@ class AppUI:
             logging.error(f"Error en backup: {e}")
 
     def restore_database(self):
-        """
-        Restaura la base de datos desde un archivo de backup.
-        """
         from src.utils.backup_restore import restore_database
         backup_file = filedialog.askopenfilename(
             title="Seleccionar archivo de backup",
