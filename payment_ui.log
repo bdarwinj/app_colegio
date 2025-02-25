@@ -33,3 +33,7 @@
 2025-02-24 11:40:36,054 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
 2025-02-24 22:13:49,902 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
 2025-02-24 22:14:41,914 - INFO - Backup realizado: backups\backup_20250224_221439.db
+2025-02-24 22:48:36,283 - INFO - Backup realizado: backups\backup_20250224_224835.db
+2025-02-24 22:58:05,898 - ERROR - Error al refrescar lista: 'first_name'
+2025-02-24 23:04:39,089 - ERROR - Error al refrescar lista: 'first_name'
+2025-02-24 23:15:05,532 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
