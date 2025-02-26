@@ -398,7 +398,6 @@ class AppUI:
         self.course_map = dict(zip(course_names, course_ids))
 
     def registrar_estudiante(self):
-        """Registra un estudiante en la base de datos."""
         identificacion = self.entries["Número de Identificación"].get()
         nombre = self.entries["Nombre"].get()
         apellido = self.entries["Apellido"].get()
@@ -413,6 +412,22 @@ class AppUI:
             identificacion, nombre, apellido, course_id, representante, telefono)
         if success:
             messagebox.showinfo(MSG_SUCCESS, msg)
+            # Crear inscripción para el año académico actual
+            student_record = self.student_controller.get_student_by_identification(identificacion)
+            if student_record:
+                student_id = student_record["id"]
+                current_year = datetime.datetime.now().year
+                from src.controllers.enrollment_controller import EnrollmentController
+                enrollment_controller = EnrollmentController(self.db)
+                enroll_success, enroll_msg, enrollment_id = enrollment_controller.create_enrollment(
+                    student_id, course_id, current_year, status="inscrito"
+                )
+                if enroll_success:
+                    logging.info(f"Inscripción creada correctamente para el estudiante {identificacion} (ID: {enrollment_id}).")
+                else:
+                    logging.error(f"Error al crear inscripción para el estudiante {identificacion}: {enroll_msg}")
+            else:
+                logging.error("No se pudo recuperar el registro del estudiante recién creado.")
             self.limpiar_formulario()
             self.refrescar_lista()
         else:

@@ -37,3 +37,16 @@
 2025-02-24 22:58:05,898 - ERROR - Error al refrescar lista: 'first_name'
 2025-02-24 23:04:39,089 - ERROR - Error al refrescar lista: 'first_name'
 2025-02-24 23:15:05,532 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
+2025-02-25 08:04:36,034 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
+2025-02-25 08:12:25,163 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
+2025-02-25 08:13:21,389 - INFO - Inscripción creada correctamente para el estudiante 1094068751 (ID: 1).
+2025-02-25 08:29:29,326 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
+2025-02-25 08:29:48,147 - ERROR - Error loading logo in PDF: [Errno 2] No such file or directory: 'logo.png'
+2025-02-25 08:29:51,088 - INFO - Payment registered: Receipt 20250225-0001, Student: Emmanuel Felipe Maurello Vega, Amount: 75300.0
+2025-02-25 22:02:35,418 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
+2025-02-25 22:02:47,992 - WARNING - Intento fallido de cambio de contraseña para usuario: admin
+2025-02-25 22:06:47,637 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
+2025-02-25 22:09:02,494 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
+2025-02-25 22:13:28,257 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
+2025-02-25 22:14:29,623 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
+2025-02-25 22:21:26,582 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
