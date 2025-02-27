@@ -6,8 +6,8 @@ class InitialSetupUI:
     def __init__(self, master, user_controller):
         """
         Ventana para la configuración inicial, en la que se solicita establecer la contraseña del administrador.
-        :param master: La ventana raíz.
-        :param user_controller: Instancia de UserController para crear el usuario admin.
+        :param master: la ventana raíz.
+        :param user_controller: instancia de UserController para crear el usuario admin.
         """
         self.master = master
         self.user_controller = user_controller

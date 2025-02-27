@@ -5,9 +5,9 @@ import traceback
 class ChangePasswordWindow:
     def __init__(self, master, user_controller, current_user):
         """
-        master: the parent Tkinter window.
-        user_controller: an instance of UserController to handle the password change.
-        current_user: the username (or other identifier) of the logged-in user.
+        master: la ventana padre de Tkinter.
+        user_controller: instancia de UserController para manejar el cambio de contraseña.
+        current_user: el username (u otro identificador) del usuario actualmente logueado.
         """
         self.master = master
         self.user_controller = user_controller
@@ -21,22 +21,22 @@ class ChangePasswordWindow:
         frame = ttk.Frame(self.window, padding="20")
         frame.pack(expand=True, fill="both")
         
-        # Old password
+        # Clave actual
         ttk.Label(frame, text="Clave Actual:").grid(row=0, column=0, sticky="w", pady=5)
         self.old_password_entry = ttk.Entry(frame, show="*")
         self.old_password_entry.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
         
-        # New password
+        # Nueva clave
         ttk.Label(frame, text="Nueva Clave:").grid(row=1, column=0, sticky="w", pady=5)
         self.new_password_entry = ttk.Entry(frame, show="*")
         self.new_password_entry.grid(row=1, column=1, padx=5, pady=5, sticky="ew")
         
-        # Confirm new password
+        # Confirmar nueva clave
         ttk.Label(frame, text="Confirmar Nueva Clave:").grid(row=2, column=0, sticky="w", pady=5)
         self.confirm_password_entry = ttk.Entry(frame, show="*")
         self.confirm_password_entry.grid(row=2, column=1, padx=5, pady=5, sticky="ew")
         
-        # Change Button
+        # Botón para cambiar la clave
         self.change_password_button = ttk.Button(frame, text="Cambiar Clave", command=self.change_password)
         self.change_password_button.grid(row=3, column=0, columnspan=2, pady=20)
         
@@ -56,7 +56,7 @@ class ChangePasswordWindow:
             return
         
         try:
-            # Call the method to change password for the current user.
+            # Se llama al método para cambiar la clave del usuario actual.
             success, message = self.user_controller.change_password(self.current_user, old_password, new_password)
             if success:
                 messagebox.showinfo("Éxito", message)

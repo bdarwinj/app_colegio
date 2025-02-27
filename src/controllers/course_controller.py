@@ -139,3 +139,18 @@ class CourseController:
         except Exception as e:
             print(f"Error al obtener el curso: {e}")
             return None
+    def get_courses_by_grade(self, grade):
+        """
+        Obtiene todos los cursos activos que coinciden con el nombre del grado especificado.
+        
+        :param grade: Nombre del grado (por ejemplo, "segundo").
+        :return: Lista de cursos (diccionarios) que coinciden con el grado.
+        """
+        try:
+            query = "SELECT * FROM courses WHERE name = ? AND active = 1"
+            cursor = self._get_cursor()
+            cursor.execute(query, (grade,))
+            rows = cursor.fetchall()
+            return [dict(row) for row in rows]
+        except Exception as e:
+            return []

@@ -3,11 +3,17 @@ import traceback
 
 class StudentController:
     def __init__(self, db):
+        """
+        Inicializa el controlador de estudiantes.
+        :param db: Instancia de base de datos o conexión.
+        """
         self.db = db
+        self.cursor = self._get_cursor()
 
     def _get_cursor(self):
         """
         Método auxiliar para obtener un cursor válido.
+        :return: Cursor de la conexión SQLite.
         """
         try:
             if hasattr(self.db, "cursor") and callable(self.db.cursor):
@@ -22,10 +28,12 @@ class StudentController:
     def _execute_and_commit(self, query, params=None):
         """
         Ejecuta una consulta SQL y realiza commit si es posible.
+        :param query: Consulta SQL a ejecutar.
+        :param params: Parámetros para la consulta.
+        :return: True si la ejecución es exitosa, False si falla.
         """
         try:
-            cursor = self._get_cursor()
-            cursor.execute(query, params or ())
+            self.cursor.execute(query, params or ())
             if hasattr(self.db, "commit") and callable(self.db.commit):
                 self.db.commit()
             elif hasattr(self.db, "connection") and hasattr(self.db.connection, "commit") and callable(self.db.connection.commit):
@@ -38,73 +46,82 @@ class StudentController:
     def get_student_by_identification(self, identificacion):
         """
         Obtiene un estudiante por su identificación.
+        :param identificacion: Identificación del estudiante.
+        :return: Registro del estudiante como sqlite3.Row o None.
         """
-        cursor = self._get_cursor()
-        query = "SELECT * FROM estudiantes WHERE identificacion = ?"
-        cursor.execute(query, (identificacion,))
-        return cursor.fetchone()
+        try:
+            query = "SELECT * FROM estudiantes WHERE identificacion = ?"
+            self.cursor.execute(query, (identificacion,))
+            return self.cursor.fetchone()
+        except sqlite3.Error as e:
+            traceback.print_exc()
+            return None
 
     def get_course_name(self, course_id):
         """
         Obtiene el nombre completo del curso basado en el course_id.
         Ahora incluye la sección si existe (por ejemplo, "Tercero - A").
+        :param course_id: ID del curso.
+        :return: Nombre del curso o "N/A" si no se encuentra.
         """
         if course_id is None:
             return "N/A"
-        cursor = self._get_cursor()
-        # Selecciona tanto el nombre como la sección
-        cursor.execute("SELECT name, seccion FROM courses WHERE id = ?", (course_id,))
-        result = cursor.fetchone()
-        if result:
-            name = result[0]
-            seccion = result[1] if len(result) > 1 else ""
-            if seccion and seccion.strip():
-                return f"{name} - {seccion}"
-            return name
-        return "N/A"
+        try:
+            self.cursor.execute("SELECT name, seccion FROM courses WHERE id = ?", (course_id,))
+            result = self.cursor.fetchone()
+            if result:
+                name = result[0]
+                seccion = result[1] if len(result) > 1 and result[1] else ""
+                return f"{name} - {seccion}" if seccion.strip() else name
+            return "N/A"
+        except sqlite3.Error as e:
+            traceback.print_exc()
+            return "N/A"
 
     def get_all_students(self):
         """
         Obtiene todos los estudiantes con información del curso.
+        :return: Lista de diccionarios con datos de los estudiantes.
         """
-        cursor = self._get_cursor()
-        cursor.execute("SELECT id, identificacion, nombre, apellido, course_id, representante, telefono, active FROM estudiantes")
-        rows = cursor.fetchall()
-        students = []
-        for row in rows:
-            # Usar get_course_name para obtener el nombre completo del curso
-            course_name = self.get_course_name(row[4]) if row[4] else "N/A"
-            students.append({
+        try:
+            query = "SELECT id, identificacion, nombre, apellido, course_id, representante, telefono, active FROM estudiantes"
+            self.cursor.execute(query)
+            rows = self.cursor.fetchall()
+            return [{
                 "id": row[0],
                 "identificacion": row[1],
                 "nombre": row[2],
                 "apellido": row[3],
-                "course_name": course_name,
+                "course_name": self.get_course_name(row[4]),
                 "representante": row[5],
                 "telefono": row[6],
                 "active": row[7]
-            })
-        return students
+            } for row in rows] if rows else []
+        except sqlite3.Error as e:
+            traceback.print_exc()
+            return []
 
     def delete_student(self, identificacion):
         """
         Elimina un estudiante basado en su identificación.
+        :param identificacion: Identificación del estudiante.
+        :return: Tupla (éxito: bool, mensaje: str).
         """
         if not self.get_student_by_identification(identificacion):
             return False, "Estudiante no encontrado."
-        query = "DELETE FROM estudiantes WHERE identificacion = ?"
-        if self._execute_and_commit(query, (identificacion,)):
+        if self._execute_and_commit("DELETE FROM estudiantes WHERE identificacion = ?", (identificacion,)):
             return True, "Estudiante eliminado correctamente."
         return False, "Error al eliminar el estudiante."
 
     def deactivate_student(self, identificacion):
         """
         Desactiva un estudiante basado en su identificación.
+        :param identificacion: Identificación del estudiante.
+        :return: Tupla (éxito: bool, mensaje: str).
         """
         if not self.get_student_by_identification(identificacion):
             return False, "Estudiante no encontrado."
-        query = "UPDATE estudiantes SET active = 0 WHERE identificacion = ?"
-        if self._execute_and_commit(query, (identificacion,)):
+        if self._execute_and_commit("UPDATE estudiantes SET active = 0 WHERE identificacion = ?", (identificacion,)):
             return True, "Estudiante desactivado correctamente."
         return False, "Error al desactivar el estudiante."
 
@@ -112,11 +129,14 @@ class StudentController:
         """
         Registra un nuevo estudiante en la base de datos.
         Verifica que el número de identificación sea numérico.
+        :return: Tupla (éxito: bool, mensaje: str).
         """
-        # Validar que la identificación sea numérica
-        if not identificacion.isdigit():
-            return False, "El número de identificación debe ser numérico."
-        
+        if not identificacion or not identificacion.isdigit():
+            return False, "El número de identificación debe ser numérico y no vacío."
+        if not nombre or not isinstance(nombre, str):
+            return False, "El nombre debe ser una cadena no vacía."
+        if not apellido or not isinstance(apellido, str):
+            return False, "El apellido debe ser una cadena no vacía."
         query = """
             INSERT INTO estudiantes (identificacion, nombre, apellido, course_id, representante, telefono, active)
             VALUES (?, ?, ?, ?, ?, ?, 1)
@@ -129,43 +149,33 @@ class StudentController:
         """
         Retorna una lista de pagos asociados al estudiante.
         Cada pago se devuelve como un diccionario con la clave "amount".
+        :param student_identificacion: Identificación del estudiante.
+        :return: Lista de diccionarios con los pagos.
         """
         try:
-            # Obtener el id del estudiante usando su identificación
-            query_student = "SELECT id FROM estudiantes WHERE identificacion = ?"
-            cursor = self._get_cursor()
-            cursor.execute(query_student, (student_identificacion,))
-            student_record = cursor.fetchone()
+            self.cursor.execute("SELECT id FROM estudiantes WHERE identificacion = ?", (student_identificacion,))
+            student_record = self.cursor.fetchone()
             if not student_record:
                 return []
-
+            
             student_id = student_record[0]
-
-            # Consultar los pagos asociados al id del estudiante
-            query_payments = "SELECT monto FROM pagos WHERE estudiante_id = ?"
-            cursor.execute(query_payments, (student_id,))
-            results = cursor.fetchall()
-            payments = [{"amount": row[0]} for row in results]
-            return payments
-
-        except Exception as e:
-            print(f"Error al obtener pagos del estudiante: {e}")
+            self.cursor.execute("SELECT monto FROM pagos WHERE estudiante_id = ?", (student_id,))
+            return [{"amount": row[0]} for row in self.cursor.fetchall()] if self.cursor.rowcount > 0 else []
+        except sqlite3.Error as e:
+            traceback.print_exc()
             return []
 
-    def get_all_configs(self):
+    def update_student_course(self, student_id, new_course_id):
         """
-        Obtiene todas las configuraciones desde la tabla config.
-        Nota: Este método podría ser movido a un ConfigController.
+        Actualiza el course_id de un estudiante en la tabla estudiantes.
+        :param student_id: ID del estudiante.
+        :param new_course_id: Nuevo course_id a asignar.
+        :return: Tupla (éxito: bool, mensaje: str).
         """
         try:
-            cursor = self._get_cursor()
-            query = "SELECT key, value FROM config"
-            cursor.execute(query)
-            rows = cursor.fetchall()
-            return {key: value for key, value in rows}
-        except Exception:
+            if self._execute_and_commit("UPDATE estudiantes SET course_id = ? WHERE id = ?", (new_course_id, student_id)):
+                return True, "Curso actualizado correctamente."
+            return False, "Error al actualizar el curso."
+        except sqlite3.Error as e:
             traceback.print_exc()
-            return {
-                "SCHOOL_NAME": "Nombre del Colegio",
-                "LOGO_PATH": "D:\\laragon\\www\\colegio_app\\assets\\logo.png"
-            }
+            return False, f"Error al actualizar el curso: {e}"

@@ -4,26 +4,23 @@ import datetime
 from src.controllers.enrollment_controller import EnrollmentController
 from src.controllers.course_controller import CourseController
 
-class EnrollmentHistoryUI:
-    def __init__(self, db, student_id):
-        """
-        Ventana que muestra el historial completo de inscripciones de un estudiante.
-        :param db: Objeto de conexión a la base de datos.
-        :param student_id: ID del estudiante.
-        """
+class EnrollmentHistoryUI(tk.Toplevel):
+    def __init__(self, root, db, student_controller, course_controller, student_id):
+        super().__init__(root)
         self.db = db
+        self.student_controller = student_controller
+        self.course_controller = course_controller
         self.student_id = student_id
-        self.enrollment_controller = EnrollmentController(db)
-        self.course_controller = CourseController(db)
-        self.window = tk.Toplevel()
-        self.window.title("Historial de Inscripciones")
-        self.window.geometry("600x400")
+        # Instanciar EnrollmentController con los tres parámetros requeridos
+        self.enrollment_controller = EnrollmentController(self.db, self.student_controller, self.course_controller)
+        self.title(f"Historial de Inscripciones - Estudiante {student_id}")
+        self.geometry("700x500")
         self.create_widgets()
         self.load_history()
 
     def create_widgets(self):
         self.tree = ttk.Treeview(
-            self.window,
+            self,
             columns=("id", "course", "academic_year", "status", "date_enrolled"),
             show="headings"
         )
