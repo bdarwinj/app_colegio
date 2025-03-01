@@ -1,8 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, messagebox, filedialog
-from PIL import Image, ImageTk
-import os
-from fpdf import FPDF
+from tkinter import messagebox, filedialog
 import datetime
 import logging
 from src.controllers.student_controller import StudentController
@@ -16,84 +13,28 @@ from src.views.user_management_ui import UserManagementUI
 from src.views.payment_ui import PaymentUI
 from src.views.login_ui import LoginUI
 from src.views.student_details_window import StudentDetailsWindow
+from src.views.header_frame import HeaderFrame
+from src.views.admin_panel import AdminPanel
+from src.views.student_registration_frame import StudentRegistrationFrame
+from src.views.students_list_frame import StudentsListFrame
+from src.views.action_buttons import ActionButtons
+from src.views.backup_restore_frame import BackupRestoreFrame
+from src.views.change_password_window import ChangePasswordWindow
+from src.views.course_management_window import CourseManagementWindow
 from src.utils.export_students import export_students_to_excel, export_students_to_pdf
 from src.utils.backup_restore import backup_database, restore_database
+import os
+from tkinter import ttk
 
-# Configuración de logging para registrar eventos y errores
 logging.basicConfig(filename='app_ui.log', level=logging.INFO, 
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Constantes para mensajes
 MSG_ERROR = "Error"
 MSG_SUCCESS = "Éxito"
 MSG_FIELDS_INCOMPLETE = "Campos incompletos"
 MSG_INVALID_VALUE = "Valor inválido"
 MSG_SELECTION_REQUIRED = "Selección requerida"
 MSG_CONFIRMATION = "¿Está seguro de cerrar la sesión?"
-
-class ChangePasswordWindow(tk.Toplevel):
-    def __init__(self, master, user_controller, current_user):
-        super().__init__(master)
-        self.user_controller = user_controller
-        self.current_user = current_user
-        self.title("Cambiar Clave")
-        self.geometry("400x250")
-        self.create_widgets()
-
-    def create_widgets(self):
-        frame = ttk.Frame(self, padding="20")
-        frame.pack(expand=True, fill="both")
-        
-        ttk.Label(frame, text="Clave Actual:").grid(row=0, column=0, sticky="w", pady=5)
-        self.old_password_entry = ttk.Entry(frame, show="*")
-        self.old_password_entry.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
-        
-        ttk.Label(frame, text="Nueva Clave:").grid(row=1, column=0, sticky="w", pady=5)
-        self.new_password_entry = ttk.Entry(frame, show="*")
-        self.new_password_entry.grid(row=1, column=1, padx=5, pady=5, sticky="ew")
-        
-        ttk.Label(frame, text="Confirmar Nueva Clave:").grid(row=2, column=0, sticky="w", pady=5)
-        self.confirm_password_entry = ttk.Entry(frame, show="*")
-        self.confirm_password_entry.grid(row=2, column=1, padx=5, pady=5, sticky="ew")
-        
-        self.change_password_button = ttk.Button(frame, text="Cambiar Clave", command=self.change_password)
-        self.change_password_button.grid(row=3, column=0, columnspan=2, pady=20)
-        
-        frame.columnconfigure(1, weight=1)
-
-    def validate_inputs(self):
-        old_password = self.old_password_entry.get().strip()
-        new_password = self.new_password_entry.get().strip()
-        confirm_password = self.confirm_password_entry.get().strip()
-        
-        if not old_password or not new_password or not confirm_password:
-            messagebox.showerror(MSG_ERROR, "Todos los campos son obligatorios.")
-            return False
-        if new_password != confirm_password:
-            messagebox.showerror(MSG_ERROR, "La nueva clave y su confirmación no coinciden.")
-            return False
-        return True
-
-    def change_password(self):
-        if not self.validate_inputs():
-            return
-        
-        old_password = self.old_password_entry.get().strip()
-        new_password = self.new_password_entry.get().strip()
-        
-        try:
-            username = self.current_user.username if hasattr(self.current_user, "username") else self.current_user
-            success, message = self.user_controller.change_password(username, old_password, new_password)
-            if success:
-                messagebox.showinfo(MSG_SUCCESS, message)
-                logging.info(f"Contraseña cambiada exitosamente para usuario: {username}")
-                self.destroy()
-            else:
-                messagebox.showerror(MSG_ERROR, message)
-                logging.warning(f"Intento fallido de cambio de contraseña para usuario: {username}")
-        except Exception as e:
-            logging.error(f"Error al cambiar la contraseña: {e}")
-            messagebox.showerror(MSG_ERROR, f"Ocurrió un error al cambiar la clave: {str(e)}")
 
 class AppUI:
     def __init__(self, db, user):
@@ -112,161 +53,34 @@ class AppUI:
         self.abs_logo_path = os.path.abspath(self.logo_path)
         
         self.root.title(f"{self.school_name} - Sistema de Pagos (Usuario: {self.user.username})")
-        self.root.geometry("900x650")
+        self.root.state("zoomed")
         self.create_widgets()
 
     def create_widgets(self):
-        header_frame = ttk.Frame(self.root)
+        header_frame = HeaderFrame(self.root, self.school_name, self.abs_logo_path, self.open_change_password_window, self.logout)
         header_frame.pack(fill="x", padx=10, pady=10)
         
-        self.logo_image = self._load_logo(header_frame)
-        
-        name_label = ttk.Label(header_frame, text=self.root.title(), font=("Arial", 18, "bold"))
-        name_label.pack(side="left", padx=10)
-        
-        btn_change_password = ttk.Button(header_frame, text="Cambiar Clave", command=self.open_change_password_window)
-        btn_change_password.pack(side="right", padx=10)
-        btn_logout = ttk.Button(header_frame, text="Cerrar Sesión", command=self.logout)
-        btn_logout.pack(side="right", padx=10)
-
         if self.user.role == "admin":
-            self.create_admin_panel()
-            self.create_student_registration_frame()
+            self.frame_admin = AdminPanel(self.root, self.editar_configuracion, self.registrar_pago, self.manage_courses, self.manage_users)
+            self.frame_admin.pack(padx=10, pady=10, fill="x")
+            self.frame_form = StudentRegistrationFrame(self.root, self.course_controller, self.registrar_estudiante)
+            self.frame_form.pack(fill="both", expand=True, padx=(5,5))
+            self.frame_form.populate_courses()
         elif self.user.role == "user":
             self.btn_registrar_pago = ttk.Button(self.root, text="Registrar Pago", command=self.registrar_pago)
             self.btn_registrar_pago.pack(pady=5)
 
-        self.create_students_list_frame()
+        self.frame_lista = StudentsListFrame(self.root, self.student_controller, self.on_student_double_click)
+        self.frame_lista.pack(padx=10, pady=10, fill="both", expand=True)
 
-        actions_frame = ttk.Frame(self.root)
+        actions_frame = ActionButtons(self.root, self.refrescar_lista, self.generar_pdf, self.export_students_excel, self.export_students_pdf)
         actions_frame.pack(pady=5)
-        self.btn_refrescar = ttk.Button(actions_frame, text="Refrescar Lista", command=self.refrescar_lista)
-        self.btn_refrescar.pack(side="left", padx=5)
-        self.btn_pdf = ttk.Button(actions_frame, text="Generar Paz y Salvo", command=self.generar_pdf)
-        self.btn_pdf.pack(side="left", padx=5)
-        self.btn_export_excel = ttk.Button(actions_frame, text="Exportar a Excel", command=self.export_students_excel)
-        self.btn_export_excel.pack(side="left", padx=5)
-        self.btn_export_pdf = ttk.Button(actions_frame, text="Exportar a PDF", command=self.export_students_pdf)
-        self.btn_export_pdf.pack(side="left", padx=5)
         
         if self.user.role == "admin":
-            backup_restore_frame = ttk.Frame(self.root)
+            backup_restore_frame = BackupRestoreFrame(self.root, self.backup_database, self.restore_database, self.manage_enrollments)
             backup_restore_frame.pack(pady=5)
-            btn_backup = ttk.Button(backup_restore_frame, text="Backup DB", command=self.backup_database)
-            btn_backup.pack(side="left", padx=5)
-            btn_restore = ttk.Button(backup_restore_frame, text="Restaurar DB", command=self.restore_database)
-            btn_restore.pack(side="left", padx=5)
-            self.btn_manage_enrollments = ttk.Button(backup_restore_frame, text="Gestionar Inscripciones", command=self.manage_enrollments)
-            self.btn_manage_enrollments.pack(side="left", padx=5)
 
-    def _load_logo(self, parent):
-        if os.path.exists(self.abs_logo_path):
-            try:
-                image = Image.open(self.abs_logo_path)
-                image = image.resize((80, 80), Image.LANCZOS)
-                logo_image = ImageTk.PhotoImage(image)
-                logo_label = ttk.Label(parent, image=logo_image)
-                logo_label.pack(side="left", padx=5)
-                return logo_image
-            except Exception as e:
-                logging.error(f"Error al cargar el logo: {e}")
-                return None
-        else:
-            logging.warning(f"No se encontró la imagen en: {self.abs_logo_path}")
-            return None
-
-    def create_admin_panel(self):
-        self.frame_admin = ttk.LabelFrame(self.root, text="Panel de Administración")
-        self.frame_admin.pack(padx=10, pady=10, fill="x")
-        self.btn_config = ttk.Button(self.frame_admin, text="Editar Configuración", command=self.editar_configuracion)
-        self.btn_config.pack(side="left", padx=5, pady=5)
-        self.btn_registrar_pago = ttk.Button(self.frame_admin, text="Registrar Pago", command=self.registrar_pago)
-        self.btn_registrar_pago.pack(side="left", padx=5, pady=5)
-        self.btn_cursos = ttk.Button(self.frame_admin, text="Administrar Cursos", command=self.manage_courses)
-        self.btn_cursos.pack(side="left", padx=5, pady=5)
-        self.btn_usuarios = ttk.Button(self.frame_admin, text="Administrar Usuarios", command=self.manage_users)
-        self.btn_usuarios.pack(side="left", padx=5, pady=5)
-
-    def create_student_registration_frame(self):
-        self.frame_form = ttk.LabelFrame(self.root, text="Registrar Estudiante")
-        self.frame_form.pack(padx=10, pady=10, fill="x")
-        labels = ["Número de Identificación", "Nombre", "Apellido", "Representante", "Teléfono"]
-        self.entries = {}
-        
-        def validate_numeric(P):
-            return P.isdigit() or P == ""
-        
-        vcmd = (self.root.register(validate_numeric), '%P')
-        
-        def on_focusout_numeric(event):
-            if event.widget.get().strip() == "":
-                messagebox.showwarning(MSG_FIELDS_INCOMPLETE, "Este campo es obligatorio y debe ser numérico.")
-                event.widget.focus_set()
-        
-        for idx, text in enumerate(labels):
-            ttk.Label(self.frame_form, text=f"{text}:").grid(row=idx, column=0, sticky="w", padx=5, pady=5)
-            if text in ["Número de Identificación", "Teléfono"]:
-                entry = ttk.Entry(self.frame_form, validate="key", validatecommand=vcmd)
-                entry.bind("<FocusOut>", on_focusout_numeric)
-            else:
-                entry = ttk.Entry(self.frame_form)
-            entry.grid(row=idx, column=1, padx=5, pady=5)
-            self.entries[text] = entry
-
-        ttk.Label(self.frame_form, text="Curso:").grid(row=len(labels), column=0, sticky="w", padx=5, pady=5)
-        self.combo_course = ttk.Combobox(self.frame_form, state="readonly")
-        self.combo_course.grid(row=len(labels), column=1, padx=5, pady=5)
-        self.load_courses_into_combobox()
-
-        self.btn_registrar = ttk.Button(self.frame_form, text="Registrar Estudiante", command=self.registrar_estudiante)
-        self.btn_registrar.grid(row=len(labels) + 1, column=0, columnspan=2, pady=10)
-
-    def create_students_list_frame(self):
-        search_frame = ttk.Frame(self.root)
-        search_frame.pack(fill="x", padx=10, pady=5)
-        ttk.Label(search_frame, text="Buscar:").pack(side="left", padx=5)
-        self.search_var = tk.StringVar()
-        self.search_entry = ttk.Entry(search_frame, textvariable=self.search_var, width=50)
-        self.search_entry.pack(side="left", padx=5)
-        self.search_entry.bind("<KeyRelease>", self.on_search_students)
-        
-        self.frame_lista = ttk.LabelFrame(self.root, text="Lista de Estudiantes")
-        self.frame_lista.pack(padx=10, pady=10, fill="both", expand=True)
-        self.columns = ("id", "identificacion", "nombre", "apellido", "curso")
-        self.tree = ttk.Treeview(self.frame_lista, columns=self.columns, show="headings")
-        for col in self.columns:
-            self.tree.heading(col, text=col.capitalize(), command=lambda _col=col: self.sort_by(_col))
-        self.tree.pack(fill="both", expand=True)
-        self.tree.bind("<Double-1>", self.on_student_double_click)
-        self.all_students = self.student_controller.get_all_students()
-        self.populate_student_list(self.all_students)
-
-    def on_search_students(self, event):
-        query = self.search_var.get().lower().strip()
-        if query:
-            filtered = [stu for stu in self.all_students if query in str(stu["identificacion"]).lower() 
-                        or query in stu["nombre"].lower() 
-                        or query in stu["apellido"].lower()]
-        else:
-            filtered = self.all_students
-        self.populate_student_list(filtered)
-
-    def populate_student_list(self, students):
-        for item in self.tree.get_children():
-            self.tree.delete(item)
-        for est in students:
-            course_name = est.get("course_name", "N/A")
-            self.tree.insert("", "end", values=(est["id"], est["identificacion"], est["nombre"], est["apellido"], course_name))
-
-    def sort_by(self, col):
-        data = [(self.tree.set(child, col), child) for child in self.tree.get_children('')]
-        try:
-            data.sort(key=lambda t: float(t[0]))
-        except ValueError:
-            data.sort(key=lambda t: t[0])
-        for index, (val, child) in enumerate(data):
-            self.tree.move(child, '', index)
-
+    # Métodos de funcionalidad básica (mantienen nombres y lógica original)
     def editar_configuracion(self):
         ConfigUI(self.db)
 
@@ -274,118 +88,22 @@ class AppUI:
         PaymentUI(self.db)
 
     def manage_courses(self):
-        win = tk.Toplevel(self.root)
-        win.title("Administración de Cursos")
-        win.geometry("400x400")
-        frame_list = ttk.LabelFrame(win, text="Cursos Existentes")
-        frame_list.pack(padx=10, pady=10, fill="both", expand=True)
-        self.courses_tree = ttk.Treeview(frame_list, columns=("id", "name", "active"), show="headings")
-        self.courses_tree.heading("id", text="ID")
-        self.courses_tree.heading("name", text="Nombre")
-        self.courses_tree.heading("active", text="Activo")
-        self.courses_tree.pack(fill="both", expand=True)
-        self.load_courses_into_tree()
-        frame_form = ttk.LabelFrame(win, text="Agregar / Editar Curso")
-        frame_form.pack(padx=10, pady=10, fill="x")
-        ttk.Label(frame_form, text="Nombre:").grid(row=0, column=0, padx=5, pady=5, sticky="w")
-        self.entry_course_name = ttk.Entry(frame_form)
-        self.entry_course_name.grid(row=0, column=1, padx=5, pady=5)
-        ttk.Label(frame_form, text="Sección (opcional):").grid(row=1, column=0, padx=5, pady=5, sticky="w")
-        self.entry_course_section = ttk.Entry(frame_form)
-        self.entry_course_section.grid(row=1, column=1, padx=5, pady=5)
-        btn_add = ttk.Button(frame_form, text="Agregar", command=self.add_course)
-        btn_add.grid(row=2, column=0, padx=5, pady=5)
-        btn_edit = ttk.Button(frame_form, text="Editar", command=self.edit_course)
-        btn_edit.grid(row=2, column=1, padx=5, pady=5)
-        btn_deactivate = ttk.Button(frame_form, text="Desactivar", command=self.deactivate_course)
-        btn_deactivate.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
+        CourseManagementWindow(self.root, self.course_controller)
 
     def manage_users(self):
         UserManagementUI(self.db)
 
-    def load_courses_into_tree(self):
-        for item in self.courses_tree.get_children():
-            self.courses_tree.delete(item)
-        courses = self.course_controller.get_all_courses()
-        for course in courses:
-            full_name = f"{course['name']} - {course['seccion']}" if course.get("seccion") and course["seccion"].strip() else course["name"]
-            self.courses_tree.insert("", "end", values=(course["id"], full_name, "Sí" if course["active"] == 1 else "No"))
-        self.load_courses_into_combobox()
-
-    def add_course(self):
-        name = self.entry_course_name.get().strip()
-        section = self.entry_course_section.get().strip()
-        if not name:
-            messagebox.showwarning(MSG_FIELDS_INCOMPLETE, "Ingrese el nombre del curso.")
-            return
-        success, msg = self.course_controller.add_course(name, section)
-        if success:
-            messagebox.showinfo(MSG_SUCCESS, msg)
-            self.load_courses_into_tree()
-            self.entry_course_name.delete(0, tk.END)
-            self.entry_course_section.delete(0, tk.END)
-        else:
-            messagebox.showerror(MSG_ERROR, msg)
-
-    def edit_course(self):
-        selected = self.courses_tree.selection()
-        if not selected:
-            messagebox.showwarning(MSG_SELECTION_REQUIRED, "Seleccione un curso para editar.")
-            return
-        course_item = self.courses_tree.item(selected[0])
-        course_id = course_item["values"][0]
-        new_name = self.entry_course_name.get().strip()
-        new_section = self.entry_course_section.get().strip()
-        if not new_name:
-            messagebox.showwarning(MSG_FIELDS_INCOMPLETE, "Ingrese el nuevo nombre del curso.")
-            return
-        success, msg = self.course_controller.edit_course(course_id, new_name, new_section)
-        if success:
-            messagebox.showinfo(MSG_SUCCESS, msg)
-            self.load_courses_into_tree()
-            self.entry_course_name.delete(0, tk.END)
-            self.entry_course_section.delete(0, tk.END)
-        else:
-            messagebox.showerror(MSG_ERROR, msg)
-
-    def deactivate_course(self):
-        selected = self.courses_tree.selection()
-        if not selected:
-            messagebox.showwarning(MSG_SELECTION_REQUIRED, "Seleccione un curso para desactivar.")
-            return
-        course_item = self.courses_tree.item(selected[0])
-        course_id = course_item["values"][0]
-        confirm = messagebox.askyesno("Confirmar", "¿Está seguro de desactivar el curso?")
-        if confirm:
-            success, msg = self.course_controller.deactivate_course(course_id)
-            if success:
-                messagebox.showinfo(MSG_SUCCESS, msg)
-                self.load_courses_into_tree()
-            else:
-                messagebox.showerror(MSG_ERROR, msg)
-
-    def load_courses_into_combobox(self):
-        courses = self.course_controller.get_active_courses()
-        course_names = []
-        course_ids = []
-        for course in courses:
-            full_name = f"{course['name']} - {course['seccion']}" if course.get("seccion") and course["seccion"].strip() else course["name"]
-            course_names.append(full_name)
-            course_ids.append(course["id"])
-        self.combo_course["values"] = course_names
-        self.course_map = dict(zip(course_names, course_ids))
-
     def registrar_estudiante(self):
-        identificacion = self.entries["Número de Identificación"].get()
-        nombre = self.entries["Nombre"].get()
-        apellido = self.entries["Apellido"].get()
-        representante = self.entries["Representante"].get()
-        telefono = self.entries["Teléfono"].get()
-        course_name = self.combo_course.get()
+        identificacion = self.frame_form.entries["Número de Identificación"].get()
+        nombre = self.frame_form.entries["Nombre"].get()
+        apellido = self.frame_form.entries["Apellido"].get()
+        representante = self.frame_form.entries["Representante"].get()
+        telefono = self.frame_form.entries["Teléfono"].get()
+        course_name = self.frame_form.combo_course.get()
         if not (identificacion and nombre and apellido and representante and telefono and course_name):
             messagebox.showwarning(MSG_FIELDS_INCOMPLETE, "Por favor, llene todos los campos.")
             return
-        course_id = self.course_map.get(course_name)
+        course_id = self.frame_form.course_map.get(course_name)
         success, msg = self.student_controller.register_student(
             identificacion, nombre, apellido, course_id, representante, telefono)
         if success:
@@ -411,19 +129,19 @@ class AppUI:
             messagebox.showerror(MSG_ERROR, msg)
 
     def limpiar_formulario(self):
-        for entry in self.entries.values():
+        for entry in self.frame_form.entries.values():
             entry.delete(0, tk.END)
-        self.combo_course.set("")
+        self.frame_form.combo_course.set("")
 
     def refrescar_lista(self):
-        self.all_students = self.student_controller.get_all_students()
-        self.populate_student_list(self.all_students)
+        self.frame_lista.all_students = self.student_controller.get_all_students()
+        self.frame_lista.populate_student_list(self.frame_lista.all_students)
 
     def on_student_double_click(self, event):
         try:
-            selected = self.tree.selection()
+            selected = self.frame_lista.tree.selection()
             if selected:
-                item = self.tree.item(selected[0])
+                item = self.frame_lista.tree.item(selected[0])
                 student_identificacion = item["values"][1]
                 StudentDetailsWindow(self.db, student_identificacion)
         except Exception as e:
@@ -431,17 +149,15 @@ class AppUI:
             messagebox.showerror(MSG_ERROR, f"Error al abrir los detalles del estudiante: {str(e)}")
 
     def generar_pdf(self):
-        selected = self.tree.selection()
+        selected = self.frame_lista.tree.selection()
         if not selected:
             messagebox.showwarning(MSG_SELECTION_REQUIRED, "Seleccione un estudiante para generar el PDF")
             return
-
-        item = self.tree.item(selected[0])
+        item = self.frame_lista.tree.item(selected[0])
         estudiante_data = item["values"]
-
+        from fpdf import FPDF
         pdf = FPDF()
         pdf.add_page()
-
         if os.path.exists(self.abs_logo_path):
             try:
                 pdf.image(self.abs_logo_path, x=10, y=8, w=30)
@@ -452,7 +168,6 @@ class AppUI:
         pdf.ln(5)
         pdf.cell(200, 10, txt="Paz y Salvo", ln=True, align="C")
         pdf.ln(10)
-
         campos = ["ID", "Identificación", "Nombre", "Apellido", "Curso"]
         for idx, campo in enumerate(campos):
             pdf.set_font("Arial", "B", 12)
@@ -461,7 +176,6 @@ class AppUI:
             pdf.cell(50, 10, txt=str(estudiante_data[idx]))
             pdf.ln(8)
         pdf.ln(10)
-
         student_id = estudiante_data[0]
         pagos = self.payment_controller.get_payments_by_student(student_id)
         total_pagado = sum(float(payment["amount"]) for payment in pagos if payment["amount"] is not None)
@@ -471,9 +185,7 @@ class AppUI:
         formatted_total = f"{total_pagado:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
         pdf.cell(50, 10, txt=f"${formatted_total}")
         pdf.ln(10)
-
         pdf.cell(50, 10, txt="Fecha de emisión: " + datetime.date.today().strftime("%d/%m/%Y"))
-
         default_filename = f"paz_y_salvo_{estudiante_data[2]}.pdf"
         file_path = filedialog.asksaveasfilename(
             defaultextension=".pdf",
@@ -517,7 +229,6 @@ class AppUI:
         ChangePasswordWindow(self.root, self.user_controller, self.user.username)
 
     def manage_enrollments(self):
-        """Abre la ventana de gestión de inscripciones con los controladores necesarios."""
         EnrollmentManagementUI(self.root, self.student_controller, self.course_controller)
 
     def backup_database(self):
@@ -546,6 +257,3 @@ class AppUI:
     def run(self):
         self.refrescar_lista()
         self.root.mainloop()
-
-# Nota: Elimina la importación original de EnrollmentManagementUI ya que ahora está definida aquí
-# from src.views.enrollment_management_ui import EnrollmentManagementUI

@@ -22,6 +22,8 @@ class StudentDetailsWindow(tk.Toplevel):
         self.course_controller = CourseController(db)  # Para obtener datos del curso (incluyendo sección)
         self.title("Detalles del Estudiante")
         self.geometry("700x550")
+        self.transient()  # Hace que la ventana sea hija de la principal
+        self.grab_set()  # Evita que el usuario interactúe con la principal
         self.create_widgets()
         self.load_student_details()
 
