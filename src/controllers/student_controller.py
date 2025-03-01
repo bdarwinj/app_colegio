@@ -15,15 +15,12 @@ class StudentController:
         Método auxiliar para obtener un cursor válido.
         :return: Cursor de la conexión SQLite.
         """
-        try:
-            if hasattr(self.db, "cursor") and callable(self.db.cursor):
-                return self.db.cursor()
-            elif hasattr(self.db, "connection") and hasattr(self.db.connection, "cursor") and callable(self.db.connection.cursor):
-                return self.db.connection.cursor()
-            else:
-                raise AttributeError("El objeto de base de datos no tiene un método 'cursor'.")
-        except AttributeError as e:
-            raise
+        if hasattr(self.db, "connection"):
+            return self.db.connection.cursor()
+        else:
+            import sqlite3
+            conn = sqlite3.connect(self.db)
+            return conn.cursor()
 
     def _execute_and_commit(self, query, params=None):
         """
@@ -55,6 +52,24 @@ class StudentController:
             return self.cursor.fetchone()
         except sqlite3.Error as e:
             traceback.print_exc()
+            return None
+
+    def get_student_by_id(self, student_id):
+        """
+        Obtiene un estudiante por su ID.
+        :param student_id: ID del estudiante.
+        :return: Registro del estudiante como diccionario o None.
+        """
+        try:
+            query = "SELECT * FROM estudiantes WHERE id = ?"
+            self.cursor.execute(query, (student_id,))
+            row = self.cursor.fetchone()
+            if row:
+                return dict(row)
+            return None
+        except Exception as e:
+            detailed_error = traceback.format_exc()
+            print(f"Error al obtener el estudiante con ID {student_id}: {e}\nDetalle:\n{detailed_error}")
             return None
 
     def get_course_name(self, course_id):

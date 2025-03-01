@@ -79,13 +79,19 @@ class EnrollmentManagementUI(tk.Toplevel):
                     course_display = "N/A"
             else:
                 course_display = "N/A"
-            
+            estudiante_id= enrollment.get("student_id")
+            student_info = self.student_controller.get_student_by_id(estudiante_id)
+            if student_info:
+                estudiante_display = f"{student_info.get('nombre', '')} {student_info.get('apellido', '')}"
+            else:
+                estudiante_display = "N/A"
             self.tree.insert("", "end", values=(
                 enrollment["id"],
-                enrollment["student_id"],
+                estudiante_display,
                 course_display,
                 enrollment["academic_year"],
-                enrollment["status"]
+                enrollment["status"],
+                enrollment["student_id"]
             ))
 
     def on_row_double_click(self, event):
@@ -97,7 +103,7 @@ class EnrollmentManagementUI(tk.Toplevel):
         if not selected:
             return
         item = self.tree.item(selected[0])
-        student_id = item["values"][1]  # Suponemos que la segunda columna es el ID del estudiante
+        student_id = item["values"][5]  # Suponemos que la quinta columna es el ID del estudiante
         # Pasa además student_controller y course_controller a EnrollmentHistoryUI
         EnrollmentHistoryUI(self.root, self.db, self.student_controller, self.course_controller, student_id)
 

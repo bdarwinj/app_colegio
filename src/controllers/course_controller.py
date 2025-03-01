@@ -1,6 +1,10 @@
 from src.models.course import Course
 import sqlite3
 
+# Constantes para estados
+ACTIVE = 1
+INACTIVE = 0
+
 class CourseController:
     def __init__(self, db):
         """
@@ -9,6 +13,7 @@ class CourseController:
         :param db: Objeto de conexión a la base de datos.
         """
         self.db = db
+        self.cursor = self._get_cursor()  # Cursor persistente inicializado aquí
 
     def _get_cursor(self):
         """
@@ -37,18 +42,17 @@ class CourseController:
         """
         if not name or not isinstance(name, str):
             return False, "El nombre del curso debe ser una cadena no vacía."
-        # La sección es opcional; si no se proporciona, se usará una cadena vacía.
-        if seccion is None:
-            seccion = ""
+        if seccion is not None and not isinstance(seccion, str):
+            return False, "La sección debe ser una cadena."
         try:
-            query = "INSERT INTO courses (name, seccion, active) VALUES (?, ?, 1)"
-            cursor = self._get_cursor()
-            cursor.execute(query, (name, seccion))
+            # Insertar curso con estado activo por defecto
+            query = "INSERT INTO courses (name, seccion, active) VALUES (?, ?, ?)"
+            self.cursor.execute(query, (name, seccion or "", ACTIVE))
             self.db.connection.commit()
             return True, "Curso agregado correctamente."
         except sqlite3.IntegrityError:
             return False, "El curso con esa sección ya existe."
-        except Exception as e:
+        except sqlite3.Error as e:
             return False, f"Error al agregar curso: {e}"
 
     def edit_course(self, course_id, new_name, new_seccion=None):
@@ -60,17 +64,18 @@ class CourseController:
         :param new_seccion: Nueva sección para el curso. Opcional.
         :return: Tupla (éxito: bool, mensaje: str)
         """
+        if not isinstance(course_id, int):
+            return False, "El ID del curso debe ser un entero."
         if not new_name or not isinstance(new_name, str):
             return False, "El nuevo nombre del curso debe ser una cadena no vacía."
-        if new_seccion is None:
-            new_seccion = ""
+        if new_seccion is not None and not isinstance(new_seccion, str):
+            return False, "La nueva sección debe ser una cadena."
         try:
             query = "UPDATE courses SET name = ?, seccion = ? WHERE id = ?"
-            cursor = self._get_cursor()
-            cursor.execute(query, (new_name, new_seccion, course_id))
+            self.cursor.execute(query, (new_name, new_seccion or "", course_id))
             self.db.connection.commit()
             return True, "Curso editado correctamente."
-        except Exception as e:
+        except sqlite3.Error as e:
             return False, f"Error al editar curso: {e}"
 
     def deactivate_course(self, course_id):
@@ -80,13 +85,14 @@ class CourseController:
         :param course_id: ID del curso a desactivar.
         :return: Tupla (éxito: bool, mensaje: str)
         """
+        if not isinstance(course_id, int):
+            return False, "El ID del curso debe ser un entero."
         try:
-            query = "UPDATE courses SET active = 0 WHERE id = ?"
-            cursor = self._get_cursor()
-            cursor.execute(query, (course_id,))
+            query = "UPDATE courses SET active = ? WHERE id = ?"
+            self.cursor.execute(query, (INACTIVE, course_id))
             self.db.connection.commit()
             return True, "Curso desactivado correctamente."
-        except Exception as e:
+        except sqlite3.Error as e:
             return False, f"Error al desactivar curso: {e}"
 
     def get_active_courses(self):
@@ -96,12 +102,11 @@ class CourseController:
         :return: Lista de diccionarios con los datos de los cursos activos.
         """
         try:
-            query = "SELECT * FROM courses WHERE active = 1"
-            cursor = self._get_cursor()
-            cursor.execute(query)
-            rows = cursor.fetchall()
+            query = "SELECT * FROM courses WHERE active = ?"
+            self.cursor.execute(query, (ACTIVE,))
+            rows = self.cursor.fetchall()
             return [dict(row) for row in rows]
-        except Exception as e:
+        except sqlite3.Error as e:
             return []
 
     def get_all_courses(self):
@@ -112,11 +117,10 @@ class CourseController:
         """
         try:
             query = "SELECT * FROM courses"
-            cursor = self._get_cursor()
-            cursor.execute(query)
-            rows = cursor.fetchall()
+            self.cursor.execute(query)
+            rows = self.cursor.fetchall()
             return [dict(row) for row in rows]
-        except Exception as e:
+        except sqlite3.Error as e:
             return []
 
     def get_course_by_id(self, course_id):
@@ -130,15 +134,14 @@ class CourseController:
             return None
         try:
             query = "SELECT * FROM courses WHERE id = ?"
-            cursor = self._get_cursor()
-            cursor.execute(query, (course_id,))
-            course_data = cursor.fetchone()
+            self.cursor.execute(query, (course_id,))
+            course_data = self.cursor.fetchone()
             if course_data:
                 return dict(course_data)
             return None
-        except Exception as e:
-            print(f"Error al obtener el curso: {e}")
-            return None
+        except sqlite3.Error as e:
+            return None  # Devolver None en lugar de imprimir el error
+
     def get_courses_by_grade(self, grade):
         """
         Obtiene todos los cursos activos que coinciden con el nombre del grado especificado.
@@ -147,10 +150,9 @@ class CourseController:
         :return: Lista de cursos (diccionarios) que coinciden con el grado.
         """
         try:
-            query = "SELECT * FROM courses WHERE name = ? AND active = 1"
-            cursor = self._get_cursor()
-            cursor.execute(query, (grade,))
-            rows = cursor.fetchall()
+            query = "SELECT * FROM courses WHERE name = ? AND active = ?"
+            self.cursor.execute(query, (grade, ACTIVE))
+            rows = self.cursor.fetchall()
             return [dict(row) for row in rows]
-        except Exception as e:
+        except sqlite3.Error as e:
             return []
