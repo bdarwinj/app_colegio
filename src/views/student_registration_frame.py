@@ -33,11 +33,17 @@ class StudentRegistrationFrame(ttk.LabelFrame):
         
         vcmd = (self.register(validate_numeric), '%P')
         
+        # Función para convertir el texto a mayúsculas al perder el foco
+        def on_focusout_upper(event):
+            content = event.widget.get()
+            event.widget.delete(0, tk.END)
+            event.widget.insert(0, content.upper())
+        
         def on_focusout_numeric(event):
             if event.widget.get().strip() == "":
                 messagebox.showwarning("Campos incompletos", "Este campo es obligatorio y debe ser numérico.")
                 event.widget.focus_set()
-        
+
         for idx, text in enumerate(labels):
             ttk.Label(self, text=f"{text}:").grid(row=idx, column=0, sticky="w", padx=5, pady=5)
             if text in ["Número de Identificación", "Teléfono"]:
@@ -45,6 +51,9 @@ class StudentRegistrationFrame(ttk.LabelFrame):
                 entry.bind("<FocusOut>", on_focusout_numeric)
             else:
                 entry = ttk.Entry(self)
+                # Para los campos Nombre, Apellido y Representante se añade la conversión a mayúsculas
+                if text in ["Nombre", "Apellido", "Representante"]:
+                    entry.bind("<FocusOut>", on_focusout_upper)
             entry.grid(row=idx, column=1, padx=5, pady=5)
             self.entries[text] = entry
 

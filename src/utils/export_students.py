@@ -154,7 +154,7 @@ def export_students_to_pdf(students, output_filename, school_name, logo_path, co
     Se utiliza course_controller.get_course_by_id para obtener el nombre completo del curso
     (concatenando el nombre y la sección, por ejemplo, "Tercero - A").
     """
-    pdf = FPDF(orientation="L", unit="mm", format="A4")
+    pdf = FPDF(orientation="L", unit="mm", format=(216, 330))
     pdf.add_page()
     
     # Insertar logo de la escuela si existe
