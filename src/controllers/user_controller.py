@@ -1,11 +1,8 @@
 # src/controllers/user_controller.py
 import hashlib
-import traceback
 import sqlite3
-import logging
 from src.utils.db_utils import db_cursor
-
-logger = logging.getLogger(__name__)
+from src.logger import logger
 
 class UserController:
     def __init__(self, db):

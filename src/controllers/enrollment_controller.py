@@ -1,9 +1,9 @@
 # src/controllers/enrollment_controller.py
 import sqlite3
 import datetime
-import traceback
 from src.utils.db_utils import db_cursor
 from src.utils.progression import get_next_course
+from src.logger import logger
 
 class EnrollmentController:
     def __init__(self, db, student_controller, course_controller):
@@ -25,7 +25,7 @@ class EnrollmentController:
                 result = cursor.fetchone()
             return dict(result) if result else None
         except sqlite3.Error as e:
-            traceback.print_exc()
+            logger.exception("Error en get_enrollment_by_id")
             return None
 
     def update_enrollment_status(self, enrollment_id, status):
@@ -37,7 +37,7 @@ class EnrollmentController:
                 cursor.execute(query, (status, enrollment_id))
             return True, "Estado actualizado correctamente."
         except Exception as e:
-            traceback.print_exc()
+            logger.exception("Error al actualizar el estado de la inscripción")
             return False, f"Error al actualizar el estado: {e}"
 
     def create_enrollment(self, student_id, course_id, academic_year, status="inscrito"):
@@ -54,7 +54,7 @@ class EnrollmentController:
                 new_id = cursor.lastrowid
             return True, "Inscripción creada correctamente.", new_id
         except Exception as e:
-            traceback.print_exc()
+            logger.exception("Error al crear inscripción")
             return False, f"Error al crear inscripción: {e}", None
 
     def promote_student(self, enrollment_id):
@@ -91,7 +91,7 @@ class EnrollmentController:
                 return True, "Estudiante promovido y nueva inscripción creada."
             return False, enroll_msg
         except Exception as e:
-            traceback.print_exc()
+            logger.exception("Error al promover al estudiante")
             return False, f"Error al promover al estudiante: {e}"
 
     def get_all_enrollments(self):
@@ -102,7 +102,7 @@ class EnrollmentController:
                 rows = cursor.fetchall()
             return [dict(row) for row in rows] if rows else []
         except sqlite3.Error as e:
-            traceback.print_exc()
+            logger.exception("Error al obtener todas las inscripciones")
             return []
 
     def get_enrollment_history(self, student_id):
@@ -113,5 +113,5 @@ class EnrollmentController:
                 rows = cursor.fetchall()
             return [dict(row) for row in rows] if rows else []
         except sqlite3.Error as e:
-            traceback.print_exc()
+            logger.exception("Error al obtener el historial de inscripciones")
             return []

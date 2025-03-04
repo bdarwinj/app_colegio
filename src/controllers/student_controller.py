@@ -1,7 +1,7 @@
 # src/controllers/student_controller.py
 import sqlite3
-import traceback
 from src.utils.db_utils import db_cursor
+from src.logger import logger
 
 class StudentController:
     def __init__(self, db):
@@ -17,7 +17,7 @@ class StudentController:
                 cursor.execute(query, params or ())
             return True
         except sqlite3.Error as e:
-            traceback.print_exc()
+            logger.exception("Error al ejecutar y confirmar la consulta")
             return False
 
     def get_student_by_identification(self, identificacion):
@@ -27,7 +27,7 @@ class StudentController:
                 cursor.execute(query, (identificacion,))
                 return cursor.fetchone()
         except sqlite3.Error as e:
-            traceback.print_exc()
+            logger.exception("Error en get_student_by_identification")
             return None
 
     def get_student_by_id(self, student_id):
@@ -38,8 +38,7 @@ class StudentController:
                 row = cursor.fetchone()
             return dict(row) if row else None
         except Exception as e:
-            detailed_error = traceback.format_exc()
-            print(f"Error al obtener el estudiante con ID {student_id}: {e}\nDetalle:\n{detailed_error}")
+            logger.exception(f"Error al obtener el estudiante con ID {student_id}")
             return None
 
     def get_course_name(self, course_id):
@@ -56,7 +55,7 @@ class StudentController:
                 return f"{name} - {seccion}" if seccion.strip() else name
             return "N/A"
         except sqlite3.Error as e:
-            traceback.print_exc()
+            logger.exception("Error en get_course_name")
             return "N/A"
 
     def get_all_students(self):
@@ -76,7 +75,7 @@ class StudentController:
                 "active": row[7]
             } for row in rows] if rows else []
         except sqlite3.Error as e:
-            traceback.print_exc()
+            logger.exception("Error en get_all_students")
             return []
 
     def delete_student(self, identificacion):
@@ -88,6 +87,7 @@ class StudentController:
                 cursor.execute(query, (identificacion,))
             return True, "Estudiante eliminado correctamente."
         except Exception as e:
+            logger.exception("Error al eliminar el estudiante")
             return False, "Error al eliminar el estudiante."
 
     def deactivate_student(self, identificacion):
@@ -99,6 +99,7 @@ class StudentController:
                 cursor.execute(query, (identificacion,))
             return True, "Estudiante desactivado correctamente."
         except Exception as e:
+            logger.exception("Error al desactivar el estudiante")
             return False, "Error al desactivar el estudiante."
 
     def register_student(self, identificacion, nombre, apellido, course_id, representante, telefono):
@@ -117,6 +118,7 @@ class StudentController:
                 cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono))
             return True, "Estudiante registrado correctamente."
         except Exception as e:
+            logger.exception("Error al registrar el estudiante")
             return False, "Error al registrar el estudiante."
 
     def get_payments_by_student(self, student_identificacion):
@@ -127,15 +129,14 @@ class StudentController:
                 student_record = cursor.fetchone()
             if not student_record:
                 return []
-            
             student_id = student_record[0]
             query = "SELECT amount FROM payments WHERE student_id = ?"
             with db_cursor(self.db) as cursor:
                 cursor.execute(query, (student_id,))
                 rows = cursor.fetchall()
             return [{"amount": row[0]} for row in rows] if rows else []
-        except sqlite3.Error as e:
-            traceback.print_exc()
+        except Exception as e:
+            logger.exception("Error al obtener pagos por estudiante")
             return []
 
     def update_student_course(self, student_id, new_course_id):
@@ -145,5 +146,5 @@ class StudentController:
                 cursor.execute(query, (new_course_id, student_id))
             return True, "Curso actualizado correctamente."
         except Exception as e:
-            traceback.print_exc()
+            logger.exception("Error al actualizar el curso del estudiante")
             return False, f"Error al actualizar el curso: {e}"

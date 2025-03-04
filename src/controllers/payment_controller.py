@@ -1,8 +1,8 @@
 # src/controllers/payment_controller.py
 import sqlite3
-import traceback
 from datetime import datetime
 from src.utils.db_utils import db_cursor
+from src.logger import logger
 
 class PaymentController:
     def __init__(self, db):
@@ -30,9 +30,7 @@ class PaymentController:
             with db_cursor(self.db) as cursor:
                 cursor.execute(create_table_query)
         except Exception as e:
-            detailed_error = traceback.format_exc()
-            print("Error al inicializar la tabla 'payments':")
-            print(detailed_error)
+            logger.exception("Error al inicializar la tabla 'payments'")
 
     def register_payment(self, student_id, amount, description, enrollment_id=None):
         try:
@@ -48,9 +46,7 @@ class PaymentController:
                 cursor.execute(update_query, (receipt_number, receipt_number))
             return True, "Pago registrado exitosamente.", receipt_number, payment_date
         except Exception as e:
-            detailed_error = traceback.format_exc()
-            print("Error al registrar el pago:")
-            print(detailed_error)
+            logger.exception("Error al registrar el pago")
             return False, f"Error al registrar el pago: {e}", None, None
 
     def get_payments_by_student(self, student_id):
@@ -60,9 +56,7 @@ class PaymentController:
                 cursor.execute(query, (student_id,))
                 return cursor.fetchall()
         except Exception as e:
-            detailed_error = traceback.format_exc()
-            print(f"Error fetching payments for student {student_id}:")
-            print(detailed_error)
+            logger.exception(f"Error al obtener pagos para el estudiante {student_id}")
             return []
 
     def get_payment_by_id(self, payment_id):
@@ -72,7 +66,5 @@ class PaymentController:
                 cursor.execute(query, (payment_id,))
                 return cursor.fetchone()
         except Exception as e:
-            detailed_error = traceback.format_exc()
-            print(f"Error fetching payment with id {payment_id}:")
-            print(detailed_error)
+            logger.exception(f"Error al obtener el pago con id {payment_id}")
             return None
