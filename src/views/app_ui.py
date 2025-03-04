@@ -15,6 +15,7 @@ from src.views.login_ui import LoginUI
 from src.views.student_details_window import StudentDetailsWindow
 from src.views.header_frame import HeaderFrame
 from src.views.admin_panel import AdminPanel
+from src.utils.import_students import import_students_from_excel
 from src.views.dashboard_window import DashboardWindow
 from src.views.student_registration_frame import StudentRegistrationFrame
 from src.views.students_list_frame import StudentsListFrame
@@ -56,6 +57,21 @@ class AppUI:
         self.root.title(f"{self.school_name} - Sistema de Pagos (Usuario: {self.user.username})")
         self.root.state("zoomed")
         self.create_widgets()
+    def import_students_excel(self):
+        excel_path = filedialog.askopenfilename(
+            title="Seleccionar archivo Excel",
+            filetypes=[("Excel files", "*.xlsx *.xls")]
+        )
+        if not excel_path:
+            return
+        imported_count, errors = import_students_from_excel(self.db, excel_path, self.course_controller, self.student_controller)
+        message = f"Estudiantes importados: {imported_count}\n"
+        if errors:
+            message += "Errores:\n" + "\n".join(errors)
+        else:
+            message += "Importación completada sin errores."
+        messagebox.showinfo("Resultado de Importación", message)
+        self.refrescar_lista()
 
     def create_widgets(self):
         header_frame = HeaderFrame(self.root, self.school_name, self.abs_logo_path, self.open_change_password_window, self.logout)
@@ -68,7 +84,8 @@ class AppUI:
                 payment_command=self.registrar_pago,
                 courses_command=self.manage_courses,
                 users_command=self.manage_users,
-                dashboard_command=self.open_dashboard_window  # Nuevo callback
+                dashboard_command=self.open_dashboard_window,
+                import_command=self.import_students_excel  # Nuevo callback
             )
             self.frame_admin.pack(padx=10, pady=10, fill="x")
             self.frame_form = StudentRegistrationFrame(self.root, self.course_controller, self.registrar_estudiante)

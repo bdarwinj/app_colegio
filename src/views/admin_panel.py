@@ -3,13 +3,14 @@ import tkinter as tk
 from tkinter import ttk
 
 class AdminPanel(ttk.LabelFrame):
-    def __init__(self, parent, config_command, payment_command, courses_command, users_command, dashboard_command):
+    def __init__(self, parent, config_command, payment_command, courses_command, users_command, dashboard_command, import_command):
         super().__init__(parent, text="Panel de Administración")
         self.config_command = config_command
         self.payment_command = payment_command
         self.courses_command = courses_command
         self.users_command = users_command
-        self.dashboard_command = dashboard_command  # Nuevo callback para el botón de Dashboard
+        self.dashboard_command = dashboard_command
+        self.import_command = import_command  # Nuevo callback para importar estudiantes
         self.create_widgets()
 
     def create_widgets(self):
@@ -25,6 +26,9 @@ class AdminPanel(ttk.LabelFrame):
         self.btn_usuarios = ttk.Button(self, text="Administrar Usuarios", command=self.users_command)
         self.btn_usuarios.pack(side="left", padx=5, pady=5)
 
-        # Nuevo botón para abrir el Dashboard
         self.btn_dashboard = ttk.Button(self, text="Dashboard", command=self.dashboard_command)
         self.btn_dashboard.pack(side="left", padx=5, pady=5)
+        
+        # Botón para importar estudiantes
+        self.btn_import = ttk.Button(self, text="Importar Estudiantes", command=self.import_command)
+        self.btn_import.pack(side="left", padx=5, pady=5)
