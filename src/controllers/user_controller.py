@@ -1,5 +1,5 @@
 # src/controllers/user_controller.py
-import hashlib
+import bcrypt
 import sqlite3
 from src.utils.db_utils import db_cursor
 from src.logger import logger
@@ -16,29 +16,28 @@ class UserController:
     def login(self, username, password):
         """
         Intenta iniciar sesión comparando el username y la contraseña (hasheada)
-        con los registros de la tabla 'users'.
-        
+        con los registros de la tabla 'users'. 
         Si no se encuentra un registro y no existe un usuario admin en la base de datos,
         se permite el login con las credenciales por defecto ("admin", "admin").
         """
-        # Validar tipos de entrada
         if not isinstance(username, str) or not isinstance(password, str):
             logger.error("Username y password deben ser cadenas.")
             return None
 
-        hashed_password = hashlib.sha256(password.encode()).hexdigest()
-
         try:
-            query = "SELECT username, role FROM users WHERE username = ? AND password = ?"
+            query = "SELECT username, role, password FROM users WHERE username = ?"
             with db_cursor(self.db) as cursor:
-                cursor.execute(query, (username, hashed_password))
+                cursor.execute(query, (username,))
                 row = cursor.fetchone()
 
             if row:
-                user = type("User", (), {})()
-                user.username = row[0]
-                user.role = row[1]
-                return user
+                stored_hash = row[2]
+                # Verificar la contraseña usando bcrypt
+                if bcrypt.checkpw(password.encode('utf-8'), stored_hash.encode('utf-8')):
+                    user = type("User", (), {})()
+                    user.username = row[0]
+                    user.role = row[1]
+                    return user
         except sqlite3.Error as e:
             logger.error(f"Error de base de datos durante el login: {e}")
             return None
@@ -50,8 +49,9 @@ class UserController:
                 cursor.execute(query)
                 count = cursor.fetchone()[0]
             if count == 0:
-                expected_admin_hash = hashlib.sha256("admin".encode()).hexdigest()
-                if username == "admin" and hashed_password == expected_admin_hash:
+                # Solo se permite si no existe un admin configurado
+                # Verificar que la contraseña ingresada es "admin"
+                if username == "admin" and password == "admin":
                     user = type("User", (), {})()
                     user.username = "admin"
                     user.role = "admin"
@@ -62,14 +62,20 @@ class UserController:
         return None
 
     def create_user(self, username, password, role):
+        """
+        Crea un nuevo usuario en la tabla 'users' con el username, contraseña y rol dados.
+        La contraseña se almacena usando bcrypt para mayor seguridad.
+        """
         if not isinstance(username, str) or not username:
             return False, "El username debe ser una cadena no vacía."
         if not isinstance(password, str) or not password:
             return False, "La contraseña debe ser una cadena no vacía."
         if not isinstance(role, str) or not role:
             return False, "El rol debe ser una cadena no vacía."
-        hashed_password = hashlib.sha256(password.encode()).hexdigest()
+
         try:
+            # Hash de la contraseña usando bcrypt; se almacena como cadena
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
             query = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)"
             with db_cursor(self.db) as cursor:
                 cursor.execute(query, (username, hashed_password, role))
@@ -82,12 +88,17 @@ class UserController:
             return False, f"Error al crear el usuario: {e}"
 
     def change_password(self, username, old_password, new_password):
+        """
+        Cambia la contraseña para el usuario dado.
+        Verifica que la contraseña antigua sea correcta usando bcrypt y actualiza con la nueva contraseña hasheada.
+        """
         if not isinstance(username, str) or not username:
             return False, "El username debe ser una cadena no vacía."
         if not isinstance(old_password, str) or not old_password:
             return False, "La clave actual debe ser una cadena no vacía."
         if not isinstance(new_password, str) or not new_password:
             return False, "La nueva clave debe ser una cadena no vacía."
+
         try:
             query = "SELECT password FROM users WHERE username = ?"
             with db_cursor(self.db) as cursor:
@@ -95,11 +106,11 @@ class UserController:
                 row = cursor.fetchone()
             if not row:
                 return False, "Usuario no encontrado."
-            current_password = row[0]
-            hashed_old_password = hashlib.sha256(old_password.encode()).hexdigest()
-            if current_password != hashed_old_password:
+            stored_hash = row[0]
+            if not bcrypt.checkpw(old_password.encode('utf-8'), stored_hash.encode('utf-8')):
                 return False, "La clave actual ingresada es incorrecta."
-            hashed_new_password = hashlib.sha256(new_password.encode()).hexdigest()
+            # Hash de la nueva contraseña
+            hashed_new_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
             update_query = "UPDATE users SET password = ? WHERE username = ?"
             with db_cursor(self.db) as cursor:
                 cursor.execute(update_query, (hashed_new_password, username))
