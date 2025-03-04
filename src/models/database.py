@@ -48,7 +48,7 @@ class Database:
                 amount REAL,
                 description TEXT,
                 payment_date TEXT,
-                receipt_number INTEGER,
+                receipt_number TEXT,
                 FOREIGN KEY(enrollment_id) REFERENCES enrollments(id)
             )
         ''')

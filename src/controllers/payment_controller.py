@@ -1,5 +1,6 @@
 # src/controllers/payment_controller.py
 import sqlite3
+import traceback
 from datetime import datetime
 from src.utils.db_utils import db_cursor
 from src.logger import logger
@@ -23,7 +24,7 @@ class PaymentController:
                     amount REAL,
                     description TEXT,
                     payment_date TEXT,
-                    receipt_number INTEGER,
+                    receipt_number TEXT,
                     FOREIGN KEY(enrollment_id) REFERENCES enrollments(id)
                 )
             """
@@ -41,10 +42,14 @@ class PaymentController:
             """
             with db_cursor(self.db) as cursor:
                 cursor.execute(query, (student_id, enrollment_id, amount, description, payment_date))
-                receipt_number = cursor.lastrowid
+                raw_receipt = cursor.lastrowid
+                # Formatear el número de recibo combinando la fecha y el raw_receipt
+                dt = datetime.strptime(payment_date, "%Y-%m-%d %H:%M:%S")
+                date_part = dt.strftime("%Y%m%d")
+                formatted_receipt = f"{date_part}-{int(raw_receipt):04d}"
                 update_query = "UPDATE payments SET receipt_number = ? WHERE id = ?"
-                cursor.execute(update_query, (receipt_number, receipt_number))
-            return True, "Pago registrado exitosamente.", receipt_number, payment_date
+                cursor.execute(update_query, (formatted_receipt, raw_receipt))
+            return True, "Pago registrado exitosamente.", formatted_receipt, payment_date
         except Exception as e:
             logger.exception("Error al registrar el pago")
             return False, f"Error al registrar el pago: {e}", None, None

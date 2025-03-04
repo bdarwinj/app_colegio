@@ -113,3 +113,10 @@
 2025-03-03 20:03:34,528 - INFO - Payment registered: Receipt 20250303-0005, Student: Carvajal Castro Hellen Daily, Amount: 95000.0
 2025-03-03 20:35:36,613 - INFO - Payment registered: Receipt 6, Student: Carvajal Castro Hellen Daily, Amount: 88900.0
 2025-03-03 20:39:28,654 - INFO - Payment registered: Receipt 20250303-0007, Student: Elkin Valderrama, Amount: 12300.0
+2025-03-03 20:49:20,740 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
+2025-03-03 20:54:35,068 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
+2025-03-03 20:56:37,052 - INFO - Inscripción creada correctamente para el estudiante 1092025627 (ID: 1).
+2025-03-03 20:58:15,509 - INFO - Inscripción creada correctamente para el estudiante 1091380525 (ID: 2).
+2025-03-03 21:00:07,671 - INFO - Inscripción creada correctamente para el estudiante 1093609864 (ID: 3).
+2025-03-03 21:00:24,343 - ERROR - Error formatting receipt number: invalid literal for int() with base 10: '20250303-0001'
+2025-03-03 21:00:28,335 - INFO - Payment registered: Receipt 20250303-0001, Student: Juan Sebastian  Ardila Ibarra, Amount: 95000.0
