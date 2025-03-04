@@ -1,3 +1,4 @@
+# src/models/database.py
 import sqlite3
 
 class Database:
@@ -38,15 +39,17 @@ class Database:
             self.cursor.execute("ALTER TABLE estudiantes ADD COLUMN active INTEGER DEFAULT 1")
         self.connection.commit()
         
-        # Tabla de Pagos
+        # Tabla de Pagos (Unificación de nomenclatura: se usa "payments")
         self.cursor.execute('''
-            CREATE TABLE IF NOT EXISTS pagos (
+            CREATE TABLE IF NOT EXISTS payments (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                estudiante_id INTEGER,
-                fecha TEXT,
-                monto REAL,
-                responsable TEXT,
-                FOREIGN KEY(estudiante_id) REFERENCES estudiantes(id)
+                student_id INTEGER,
+                enrollment_id INTEGER,
+                amount REAL,
+                description TEXT,
+                payment_date TEXT,
+                receipt_number INTEGER,
+                FOREIGN KEY(enrollment_id) REFERENCES enrollments(id)
             )
         ''')
         
