@@ -135,3 +135,1420 @@ Traceback (most recent call last):
     ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
 2025-03-04 10:21:36,171 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
+2025-03-04 13:37:45,417 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
+2025-03-04 13:54:33,745 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,747 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,748 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,749 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,749 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,750 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,751 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,752 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,753 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,754 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,755 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,756 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,756 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,757 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,758 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,759 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,760 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,761 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,762 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,764 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,765 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,766 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,767 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,768 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,769 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,769 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,770 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,771 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,773 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,774 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,775 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,776 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,776 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,777 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,778 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,779 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,779 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,781 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,782 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,783 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,784 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,785 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,785 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,786 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,787 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,788 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,789 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,790 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,791 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,791 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,792 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,793 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,794 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,795 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,796 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,797 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,799 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,800 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,802 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,803 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,804 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,805 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,806 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,807 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,808 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,809 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,810 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,810 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,811 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,812 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,813 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,814 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,814 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,815 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,816 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,817 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,818 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,819 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,820 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,820 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,821 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,821 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,822 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,823 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,823 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,824 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,825 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,825 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,826 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,826 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,827 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,827 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,828 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,829 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,829 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,830 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,831 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,832 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,833 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,833 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,834 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,835 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,836 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,836 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,837 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,838 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,838 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,839 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,840 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,840 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,841 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,842 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,843 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,843 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,844 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,844 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,845 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,846 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,848 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,848 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,849 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,850 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,851 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,851 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,852 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,853 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,853 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,854 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,855 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,856 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,856 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,857 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,858 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,858 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,859 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,859 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,860 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,861 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,861 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,862 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,863 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,864 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,864 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,865 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,866 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,866 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,867 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,868 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,868 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,869 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,870 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,870 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,871 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,871 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,872 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,872 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,873 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,874 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,874 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,875 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,876 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,876 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,877 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,878 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,879 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,880 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,880 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,881 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,882 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,883 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,883 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,884 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,885 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,886 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,886 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,887 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,887 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,888 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,889 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,890 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,890 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,891 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,892 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,893 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,894 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,895 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,896 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,897 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,898 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,898 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,899 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,900 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,901 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,902 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,902 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,903 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,904 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,905 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,905 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,906 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,907 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,907 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,909 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,909 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,910 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,911 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,912 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,913 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,914 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,915 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,916 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,916 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,917 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,918 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,919 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,919 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,920 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,921 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,922 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,922 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,923 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,924 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,925 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,926 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,927 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,927 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,928 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,929 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,930 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,931 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,932 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,932 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,933 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,934 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,935 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 13:54:33,935 - ERROR - Error al registrar el estudiante
+Traceback (most recent call last):
+  File "D:\laragon\www\colegio_app\src\controllers\student_controller.py", line 119, in register_student
+    cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion

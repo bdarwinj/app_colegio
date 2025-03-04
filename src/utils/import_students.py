@@ -10,7 +10,6 @@ def normalize_string(s):
     """
     if not s:
         return ""
-    # Normaliza y elimina diacríticos
     normalized = unicodedata.normalize('NFKD', s).encode('ASCII', 'ignore').decode('utf-8')
     return normalized.lower().strip()
 
@@ -27,6 +26,9 @@ def import_students_from_excel(db, excel_path, course_controller, student_contro
       - "acudiente": nombre del representante.
     
     Las comparaciones de encabezados se realizan normalizando (sin mayúsculas, tildes, etc.).
+    
+    Además, al buscar el curso correspondiente, se intenta comparar la hoja (ej. "primero a" o "primero - a") 
+    con la combinación del campo "name" y "seccion" en la base de datos.
     
     Retorna una tupla (num_importados, errores), donde errores es una lista de mensajes.
     """
@@ -46,6 +48,7 @@ def import_students_from_excel(db, excel_path, course_controller, student_contro
         "correo electronico": ["correo electronico", "correo electrónico"],
         "acudiente": ["acudiente"]
     }
+    
     # Normalizar las alternativas para cada campo
     for key in required_columns:
         required_columns[key] = [normalize_string(alt) for alt in required_columns[key]]
@@ -77,14 +80,35 @@ def import_students_from_excel(db, excel_path, course_controller, student_contro
                     col_indices[key] = headers[alt]
                     break
         
-        # Buscar el curso en la base de datos usando el nombre de la hoja (normalizado)
+        # Buscar el curso en la base de datos usando el nombre de la hoja.
+        # Se normaliza el nombre de la hoja y se intenta separar en base y sección.
+        # excepto si la hoja es "pre-jardin", en cuyo caso se omite la división.
         course_data = None
         courses = course_controller.get_all_courses()
         sheet_name_norm = normalize_string(sheet_name)
+        if sheet_name_norm == "pre-jardin":
+            base_sheet = "pre-jardin"
+            section_sheet = ""
+        else:
+            if "-" in sheet_name_norm:
+                parts = [p.strip() for p in sheet_name_norm.split("-") if p.strip()]
+            else:
+                parts = sheet_name_norm.split()
+            base_sheet = parts[0] if parts else sheet_name_norm
+            section_sheet = parts[1] if len(parts) > 1 else ""
+        # Buscar en la lista de cursos
         for course in courses:
-            if normalize_string(course.get("name", "")) == sheet_name_norm:
-                course_data = course
-                break
+            course_name_norm = normalize_string(course.get("name", ""))
+            course_seccion_norm = normalize_string(course.get("seccion", ""))
+            # Comparar base y sección
+            if course_name_norm == base_sheet:
+                if section_sheet:
+                    if course_seccion_norm == section_sheet:
+                        course_data = course
+                        break
+                else:
+                    course_data = course
+                    break
         if not course_data:
             errors.append(f"Hoja '{sheet_name}': Curso no encontrado en la base de datos.")
             continue
