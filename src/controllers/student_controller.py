@@ -1,5 +1,6 @@
 # src/controllers/student_controller.py
 import sqlite3
+import traceback
 from src.utils.db_utils import db_cursor
 from src.logger import logger
 
@@ -148,3 +149,16 @@ class StudentController:
         except Exception as e:
             logger.exception("Error al actualizar el curso del estudiante")
             return False, f"Error al actualizar el curso: {e}"
+    
+    def update_student_info(self, student_id, new_course_id, new_representative, new_phone):
+        """
+        Actualiza el curso, el nombre del representante y el teléfono del representante para un estudiante.
+        """
+        try:
+            query = "UPDATE estudiantes SET course_id = ?, representante = ?, telefono = ? WHERE id = ?"
+            with db_cursor(self.db) as cursor:
+                cursor.execute(query, (new_course_id, new_representative, new_phone, student_id))
+            return True, "Datos del estudiante actualizados correctamente."
+        except Exception as e:
+            logger.exception("Error al actualizar la información del estudiante")
+            return False, f"Error al actualizar la información del estudiante: {e}"

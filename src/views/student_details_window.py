@@ -11,7 +11,8 @@ from src.controllers.payment_controller import PaymentController
 from src.controllers.config_controller import ConfigController
 from src.controllers.course_controller import CourseController
 from config import SCHOOL_NAME as DEFAULT_SCHOOL_NAME, LOGO_PATH as DEFAULT_LOGO_PATH
-from src.views.pdf_common import add_pdf_header  # Importamos la función común de PDF
+from src.views.pdf_common import add_pdf_header  # Función común para encabezados PDF
+# Se importará UpdateStudentWindow en el método open_update_window para evitar importaciones circulares
 
 class StudentDetailsWindow(tk.Toplevel):
     def __init__(self, db, student_identificacion):
@@ -25,7 +26,7 @@ class StudentDetailsWindow(tk.Toplevel):
         self.title("Detalles del Estudiante")
         self.geometry("700x550")
         self.transient()  # Hace que la ventana sea hija de la principal
-        self.grab_set()  # Evita que el usuario interactúe con la principal
+        self.grab_set()   # Evita que el usuario interactúe con la principal
         self.create_widgets()
         self.load_student_details()
 
@@ -52,6 +53,10 @@ class StudentDetailsWindow(tk.Toplevel):
 
         self.btn_export_pdf = ttk.Button(self.buttons_frame, text="Exportar a PDF", command=self.export_pdf)
         self.btn_export_pdf.grid(row=0, column=2, padx=5)
+        
+        # Botón para actualizar datos del estudiante
+        self.btn_update = ttk.Button(self.buttons_frame, text="Actualizar Datos", command=self.open_update_window)
+        self.btn_update.grid(row=0, column=3, padx=5)
         
         # Etiqueta para el historial de pagos
         self.label_history = ttk.Label(self.frame_details, text="Historial de Pagos", font=("Arial", 14, "bold"))
@@ -120,7 +125,6 @@ class StudentDetailsWindow(tk.Toplevel):
             messagebox.showerror("Error", f"Error al cargar los detalles del estudiante: {e}")
 
     def update_payment_history(self, student_id):
-        """Actualiza la tabla de historial de pagos con los pagos del estudiante."""
         for row in self.tree_payments.get_children():
             self.tree_payments.delete(row)
         
@@ -158,7 +162,6 @@ class StudentDetailsWindow(tk.Toplevel):
 
             pdf = FPDF()
             pdf.add_page()
-            # Usamos la función centralizada para agregar el encabezado al PDF
             add_pdf_header(pdf, logo_path, school_name, f"Recibo de Pago Nº {receipt_number}")
 
             pdf.set_font("Arial", "", 12)
@@ -226,7 +229,6 @@ class StudentDetailsWindow(tk.Toplevel):
             student['apellido'] = student.get('apellido', '').capitalize()
             student['representante'] = student.get('representante', '').capitalize()
         
-            # Obtener el nombre completo del curso (grado y sección)
             curso = student.get('course_name', '')
             if not curso:
                 course_id = student.get('course_id')
@@ -239,7 +241,6 @@ class StudentDetailsWindow(tk.Toplevel):
         
             pdf = FPDF()
             pdf.add_page()
-            # Usamos la función centralizada para agregar el encabezado al PDF
             add_pdf_header(pdf, logo_path, school_name)
         
             pdf.set_font("Arial", "B", 12)
@@ -321,3 +322,27 @@ class StudentDetailsWindow(tk.Toplevel):
                 messagebox.showinfo("Éxito", f"PDF exportado exitosamente: {file_path}")
         except Exception as e:
             messagebox.showerror("Error", f"Error al exportar a PDF: {e}")
+
+    def open_update_window(self):
+        """
+        Abre la ventana para actualizar ciertos datos del estudiante (Curso, Representante y Teléfono).
+        Se solicitará la contraseña de administrador para confirmar la actualización.
+        """
+        student_row = self.student_controller.get_student_by_identification(self.student_identificacion)
+        if not student_row:
+            messagebox.showerror("Error", "No se encontró el estudiante.")
+            return
+        student = dict(student_row)
+        from src.controllers.user_controller import UserController
+        user_controller = UserController(self.db)
+        from src.views.update_student_window import UpdateStudentWindow
+        UpdateStudentWindow(self, student, self.student_controller, self.course_controller, user_controller)
+
+if __name__ == "__main__":
+    import sqlite3
+    db = sqlite3.connect("colegio.db")
+    db.row_factory = sqlite3.Row
+    root = tk.Tk()
+    root.withdraw()  # Ocultar ventana principal
+    ui = StudentDetailsWindow(db, "12345")  # Ejemplo: asegúrate de usar una identificación válida
+    root.mainloop()
