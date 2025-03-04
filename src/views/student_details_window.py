@@ -12,7 +12,7 @@ from src.controllers.config_controller import ConfigController
 from src.controllers.course_controller import CourseController
 from config import SCHOOL_NAME as DEFAULT_SCHOOL_NAME, LOGO_PATH as DEFAULT_LOGO_PATH
 from src.views.pdf_common import add_pdf_header  # Función común para encabezados PDF
-# Se importará UpdateStudentWindow en el método open_update_window para evitar importaciones circulares
+from src.views.update_student_window import UpdateStudentWindow  # Ventana para actualizar datos
 
 class StudentDetailsWindow(tk.Toplevel):
     def __init__(self, db, student_identificacion):
@@ -91,6 +91,7 @@ class StudentDetailsWindow(tk.Toplevel):
             student['nombre'] = student.get('nombre', '').capitalize()
             student['apellido'] = student.get('apellido', '').capitalize()
             student['representante'] = student.get('representante', '').capitalize()
+            student['email'] = student.get('email', '').lower()
             
             # Obtener el nombre completo del curso: si student ya trae "course_name", se usa; si no, se consulta
             curso = student.get('course_name', '')
@@ -108,6 +109,7 @@ class StudentDetailsWindow(tk.Toplevel):
                 f"Identificación: {student.get('identificacion', '')}\n"
                 f"Nombre: {student['nombre']}\n"
                 f"Apellido: {student['apellido']}\n"
+                f"Correo: {student['email']}\n"  # Nuevo campo para email
                 f"Curso: {curso}\n"
                 f"Representante: {student['representante']}\n"
                 f"Teléfono: {student.get('telefono', '')}\n"
@@ -166,7 +168,7 @@ class StudentDetailsWindow(tk.Toplevel):
 
             pdf.set_font("Arial", "", 12)
             pdf.cell(0, 10, f"Monto: {formatted_amount}", ln=True)
-            pdf.cell(0, 10, f"Fecha de Pago: {payment_date}", ln=True)
+            pdf.cell(0, 10, f"Fecha y Hora: {payment_date}", ln=True)
             pdf.multi_cell(0, 10, f"Descripción: {description}")
             
             default_filename = f"recibo_{receipt_number}.pdf"
@@ -178,7 +180,7 @@ class StudentDetailsWindow(tk.Toplevel):
             )
             if file_path:
                 pdf.output(file_path)
-                messagebox.showinfo("Éxito", f"Recibo guardado exitosamente: {file_path}")
+                messagebox.showinfo("Éxito", f"PDF exportado exitosamente: {file_path}")
         except Exception as e:
             messagebox.showerror("Error", f"Error al generar el recibo de pago: {e}")
 
@@ -253,6 +255,7 @@ class StudentDetailsWindow(tk.Toplevel):
                 ("Identificación", student.get('identificacion', '')),
                 ("Nombre", student['nombre']),
                 ("Apellido", student['apellido']),
+                ("Correo", student.get('email', '')),
                 ("Curso", curso),
                 ("Representante", student['representante']),
                 ("Teléfono", student.get('telefono', '')),
@@ -267,43 +270,48 @@ class StudentDetailsWindow(tk.Toplevel):
             pdf.cell(0, 10, "Historial de Pagos", ln=True)
             pdf.ln(5)
         
-            pdf.set_font("Arial", "B", 12)
-            col_widths = [30, 30, 40, 70]
+            # --- Nuevo bloque: Tabla Historial de Pagos con anchos dinámicos y descripción sin concatenación ---
             headers = ["Nº Recibo", "Monto", "Fecha de Pago", "Descripción"]
+            pdf.set_font("Arial", "B", 12)
+            table_data = []
+            history_rows = self.payment_controller.get_payments_by_student(student.get("id"))
+            if history_rows:
+                for payment_row in history_rows:
+                    payment = dict(payment_row)
+                    # Utilizar solo la descripción
+                    row = [
+                        str(payment.get("receipt_number", "")),
+                        str(payment.get("amount", "")),
+                        str(payment.get("payment_date", "")),
+                        str(payment.get("description", ""))
+                    ]
+                    table_data.append(row)
+        
+            # Calcular el ancho máximo para cada columna
+            padding = 4  # margen extra
+            col_widths = []
+            for col in range(len(headers)):
+                max_width = pdf.get_string_width(headers[col])
+                for row in table_data:
+                    w = pdf.get_string_width(row[col])
+                    if w > max_width:
+                        max_width = w
+                col_widths.append(max_width + padding)
+        
+            # Escribir encabezados de la tabla
             for i, header in enumerate(headers):
                 pdf.cell(col_widths[i], 10, header, border=1, align="C")
             pdf.ln()
         
             pdf.set_font("Arial", "", 12)
-            history_rows = self.payment_controller.get_payments_by_student(student.get("id"))
-            if history_rows:
-                for payment_row in history_rows:
-                    payment = dict(payment_row)
-                    descripcion = payment.get("description", "")
-                    receipt_raw = str(payment.get("receipt_number", ""))
-                    payment_date = str(payment.get("payment_date", ""))
-                    try:
-                        date_obj = datetime.datetime.strptime(payment_date, "%Y-%m-%d")
-                        formatted_date = date_obj.strftime("%Y%m%d")
-                    except Exception:
-                        formatted_date = payment_date.replace("-", "")
-                    try:
-                        receipt_int = int(receipt_raw)
-                        receipt_str = f"{receipt_int:04d}"
-                    except Exception:
-                        receipt_str = receipt_raw
-                    descripcion_completa = f"{descripcion} - {formatted_date}-{receipt_str}"
-                    row_data = [
-                        str(payment.get("receipt_number", "")),
-                        str(payment.get("amount", "")),
-                        str(payment.get("payment_date", "")),
-                        descripcion_completa
-                    ]
-                    for i, data in enumerate(row_data):
-                        pdf.cell(col_widths[i], 10, data, border=1)
+            if table_data:
+                for row in table_data:
+                    for i, cell in enumerate(row):
+                        pdf.cell(col_widths[i], 10, cell, border=1, align="C")
                     pdf.ln()
             else:
                 pdf.cell(sum(col_widths), 10, "No se han encontrado pagos.", border=1, ln=True)
+            # --- Fin del bloque ---
         
             pdf.ln(10)
             pdf.set_font("Arial", "", 10)
@@ -325,7 +333,7 @@ class StudentDetailsWindow(tk.Toplevel):
 
     def open_update_window(self):
         """
-        Abre la ventana para actualizar ciertos datos del estudiante (Curso, Representante y Teléfono).
+        Abre la ventana para actualizar ciertos datos del estudiante (Curso, Representante, Teléfono y Correo).
         Se solicitará la contraseña de administrador para confirmar la actualización.
         """
         student_row = self.student_controller.get_student_by_identification(self.student_identificacion)

@@ -104,19 +104,27 @@ class AppUI:
     def manage_users(self):
         UserManagementUI(self.db)
 
+    # Fragmento de src/views/app_ui.py (método registrar_estudiante)
     def registrar_estudiante(self):
         identificacion = self.frame_form.entries["Número de Identificación"].get()
         nombre = self.frame_form.entries["Nombre"].get()
         apellido = self.frame_form.entries["Apellido"].get()
+        email = self.frame_form.entries["Correo Electrónico"].get()  # Nuevo campo
         representante = self.frame_form.entries["Representante"].get()
         telefono = self.frame_form.entries["Teléfono"].get()
         course_name = self.frame_form.combo_course.get()
-        if not (identificacion and nombre and apellido and representante and telefono and course_name):
+        
+        # Verificar que todos los campos estén completos
+        if not (identificacion and nombre and apellido and email and representante and telefono and course_name):
             messagebox.showwarning(MSG_FIELDS_INCOMPLETE, "Por favor, llene todos los campos.")
             return
+        
         course_id = self.frame_form.course_map.get(course_name)
+        
+        # Se pasa el email como argumento adicional
         success, msg = self.student_controller.register_student(
-            identificacion, nombre, apellido, course_id, representante, telefono)
+            identificacion, nombre, apellido, course_id, representante, telefono, email
+        )
         if success:
             messagebox.showinfo(MSG_SUCCESS, msg)
             student_record = self.student_controller.get_student_by_identification(identificacion)

@@ -103,7 +103,7 @@ class StudentController:
             logger.exception("Error al desactivar el estudiante")
             return False, "Error al desactivar el estudiante."
 
-    def register_student(self, identificacion, nombre, apellido, course_id, representante, telefono):
+    def register_student(self, identificacion, nombre, apellido, course_id, representante, telefono, email):
         if not identificacion or not identificacion.isdigit():
             return False, "El número de identificación debe ser numérico y no vacío."
         if not nombre or not isinstance(nombre, str):
@@ -111,12 +111,12 @@ class StudentController:
         if not apellido or not isinstance(apellido, str):
             return False, "El apellido debe ser una cadena no vacía."
         query = """
-            INSERT INTO estudiantes (identificacion, nombre, apellido, course_id, representante, telefono, active)
-            VALUES (?, ?, ?, ?, ?, ?, 1)
+            INSERT INTO estudiantes (identificacion, nombre, apellido, course_id, representante, telefono, email, active)
+            VALUES (?, ?, ?, ?, ?, ?, ?, 1)
         """
         try:
             with db_cursor(self.db) as cursor:
-                cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono))
+                cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
             return True, "Estudiante registrado correctamente."
         except Exception as e:
             logger.exception("Error al registrar el estudiante")

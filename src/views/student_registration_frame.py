@@ -1,5 +1,7 @@
+# src/views/student_registration_frame.py
 import tkinter as tk
 from tkinter import ttk, messagebox
+import re
 
 class StudentRegistrationFrame(ttk.LabelFrame):
     def __init__(self, parent, course_controller, register_command):
@@ -25,15 +27,14 @@ class StudentRegistrationFrame(ttk.LabelFrame):
         self._create_register_button()
 
     def _create_text_entries(self):
-        """Crea las entradas de texto para los datos del estudiante."""
-        labels = ["Número de Identificación", "Nombre", "Apellido", "Representante", "Teléfono"]
+        # Se añade "Correo Electrónico" a la lista de etiquetas
+        labels = ["Número de Identificación", "Nombre", "Apellido", "Correo Electrónico", "Representante", "Teléfono"]
         
         def validate_numeric(P):
             return P.isdigit() or P == ""
         
         vcmd = (self.register(validate_numeric), '%P')
         
-        # Función para convertir el texto a mayúsculas al perder el foco
         def on_focusout_upper(event):
             content = event.widget.get()
             event.widget.delete(0, tk.END)
@@ -43,31 +44,38 @@ class StudentRegistrationFrame(ttk.LabelFrame):
             if event.widget.get().strip() == "":
                 messagebox.showwarning("Campos incompletos", "Este campo es obligatorio y debe ser numérico.")
                 event.widget.focus_set()
-
+        
+        def on_focusout_email(event):
+            content = event.widget.get().strip()
+            # Validación simple de correo electrónico
+            if content and not re.match(r"[^@]+@[^@]+\.[^@]+", content):
+                messagebox.showwarning("Correo inválido", "Por favor, ingrese un correo electrónico válido.")
+                event.widget.focus_set()
+        
         for idx, text in enumerate(labels):
             ttk.Label(self, text=f"{text}:").grid(row=idx, column=0, sticky="w", padx=5, pady=5)
             if text in ["Número de Identificación", "Teléfono"]:
                 entry = ttk.Entry(self, validate="key", validatecommand=vcmd)
                 entry.bind("<FocusOut>", on_focusout_numeric)
+            elif text == "Correo Electrónico":
+                entry = ttk.Entry(self)
+                entry.bind("<FocusOut>", on_focusout_email)
             else:
                 entry = ttk.Entry(self)
-                # Para los campos Nombre, Apellido y Representante se añade la conversión a mayúsculas
                 if text in ["Nombre", "Apellido", "Representante"]:
                     entry.bind("<FocusOut>", on_focusout_upper)
             entry.grid(row=idx, column=1, padx=5, pady=5)
             self.entries[text] = entry
 
     def _create_course_combobox(self):
-        """Crea el combobox para seleccionar el curso."""
-        labels = ["Número de Identificación", "Nombre", "Apellido", "Representante", "Teléfono"]
+        labels = ["Número de Identificación", "Nombre", "Apellido", "Correo Electrónico", "Representante", "Teléfono"]
         ttk.Label(self, text="Curso:").grid(row=len(labels), column=0, sticky="w", padx=5, pady=5)
         self.combo_course = ttk.Combobox(self, state="readonly")
         self.combo_course.grid(row=len(labels), column=1, padx=5, pady=5)
-        # No cargamos los cursos aquí porque se hace desde AppUI
+        # No se cargan los cursos aquí porque se hace desde AppUI
 
     def _create_register_button(self):
-        """Crea el botón para registrar el estudiante."""
-        labels = ["Número de Identificación", "Nombre", "Apellido", "Representante", "Teléfono"]
+        labels = ["Número de Identificación", "Nombre", "Apellido", "Correo Electrónico", "Representante", "Teléfono"]
         self.btn_registrar = ttk.Button(self, text="Registrar Estudiante", command=self.register_command)
         self.btn_registrar.grid(row=len(labels) + 1, column=0, columnspan=2, pady=10)
 
@@ -80,7 +88,6 @@ class StudentRegistrationFrame(ttk.LabelFrame):
         course_names = []
         self.course_map = {}
         for course in courses:
-            # Se asume que cada curso es un diccionario con las claves "id", "name" y opcionalmente "seccion"
             if course.get("seccion") and course["seccion"].strip():
                 display_name = f"{course['name']} - {course['seccion']}"
             else:

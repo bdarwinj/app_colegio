@@ -125,3 +125,6 @@
 2025-03-03 21:52:17,609 - INFO - Inscripción creada correctamente para el estudiante 19383228 (ID: 9).
 2025-03-04 07:05:17,539 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
 2025-03-04 07:06:45,396 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
+2025-03-04 07:58:44,263 - INFO - Inscripción creada correctamente para el estudiante 1092030876 (ID: 1).
+2025-03-04 07:59:21,841 - ERROR - Error formatting receipt number: invalid literal for int() with base 10: '20250304-0001'
+2025-03-04 07:59:27,817 - INFO - Payment registered: Receipt 20250304-0001, Student: Eina Isabela Alba Arenas, Amount: 95000.0
