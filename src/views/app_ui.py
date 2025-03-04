@@ -90,7 +90,7 @@ class AppUI:
 
     # Métodos de funcionalidad básica (mantienen nombres y lógica original)
     def open_dashboard_window(self):
-        DashboardWindow(self.root, self.student_controller, self.course_controller, self.payment_controller)
+        DashboardWindow(self.root, self.db, self.student_controller, self.course_controller, self.payment_controller)
 
     def editar_configuracion(self):
         ConfigUI(self.db)
