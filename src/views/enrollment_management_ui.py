@@ -1,3 +1,4 @@
+# src/views/enrollment_management_ui.py
 import tkinter as tk
 from tkinter import ttk, messagebox
 import datetime
@@ -25,19 +26,21 @@ class EnrollmentManagementUI(tk.Toplevel):
         # Treeview para mostrar las inscripciones del año académico actual
         self.tree = ttk.Treeview(
             self, 
-            columns=("id", "student_id", "course", "academic_year", "status"), 
+            columns=("id", "student_display", "course", "academic_year", "status", "student_id"), 
             show="headings"
         )
         self.tree.heading("id", text="ID")
-        self.tree.heading("student_id", text="Estudiante")
+        self.tree.heading("student_display", text="Estudiante")
         self.tree.heading("course", text="Curso")
         self.tree.heading("academic_year", text="Año Académico")
         self.tree.heading("status", text="Estado")
+        self.tree.heading("student_id", text="ID Estudiante")  # Esta columna se usará internamente
         self.tree.column("id", width=50, anchor="center")
-        self.tree.column("student_id", width=100, anchor="center")
+        self.tree.column("student_display", width=150, anchor="center")
         self.tree.column("course", width=150, anchor="center")
         self.tree.column("academic_year", width=100, anchor="center")
         self.tree.column("status", width=100, anchor="center")
+        self.tree.column("student_id", width=0, stretch=False)  # Oculta esta columna visualmente
         self.tree.pack(fill="both", expand=True, padx=10, pady=10)
         
         # Vincular doble clic para abrir la ventana de historial de inscripciones
@@ -79,19 +82,20 @@ class EnrollmentManagementUI(tk.Toplevel):
                     course_display = "N/A"
             else:
                 course_display = "N/A"
-            estudiante_id= enrollment.get("student_id")
-            student_info = self.student_controller.get_student_by_id(estudiante_id)
+            student_info = self.student_controller.get_student_by_id(enrollment.get("student_id"))
             if student_info:
                 estudiante_display = f"{student_info.get('nombre', '')} {student_info.get('apellido', '')}"
+                student_id = student_info.get("id")
             else:
                 estudiante_display = "N/A"
+                student_id = ""
             self.tree.insert("", "end", values=(
                 enrollment["id"],
                 estudiante_display,
                 course_display,
                 enrollment["academic_year"],
                 enrollment["status"],
-                enrollment["student_id"]
+                student_id
             ))
 
     def on_row_double_click(self, event):
@@ -103,8 +107,7 @@ class EnrollmentManagementUI(tk.Toplevel):
         if not selected:
             return
         item = self.tree.item(selected[0])
-        student_id = item["values"][5]  # Suponemos que la quinta columna es el ID del estudiante
-        # Pasa además student_controller y course_controller a EnrollmentHistoryUI
+        student_id = item["values"][5]  # Ahora usamos la columna oculta con el ID real del estudiante
         EnrollmentHistoryUI(self.root, self.db, self.student_controller, self.course_controller, student_id)
 
     def process_enrollment(self):
@@ -123,7 +126,8 @@ class EnrollmentManagementUI(tk.Toplevel):
         
         enrollment_item = self.tree.item(selected[0])
         enrollment_id = enrollment_item["values"][0]
-        current_student_id = enrollment_item["values"][1]
+        # Se usa la columna 5 para obtener el ID real del estudiante
+        current_student_id = enrollment_item["values"][5]
         new_status = self.status_var.get()
         
         # Actualizar el estado de la inscripción actual
@@ -133,6 +137,11 @@ class EnrollmentManagementUI(tk.Toplevel):
             return
 
         if new_status.lower() == "promovido":
+            # Función interna para extraer el grado (ignorando sección)
+            def extract_grade(full_course_name):
+                # Si el curso viene en formato "Primero - A", retorna "primero"
+                return full_course_name.split("-")[0].strip().lower()
+
             # Buscar la inscripción actual en el historial
             all_enrollments = self.enrollment_controller.get_all_enrollments()
             current_enrollment = None
@@ -144,14 +153,14 @@ class EnrollmentManagementUI(tk.Toplevel):
                 current_course_id = current_enrollment.get("course_id")
                 course_data = self.course_controller.get_course_by_id(current_course_id)
                 if course_data:
-                    current_course_name = course_data.get("name", "")
-                    # Obtener el siguiente curso usando la función auxiliar
+                    current_course_name = course_data.get("name", "").strip().lower()
+                    # Obtener el siguiente curso usando get_next_course
                     next_course_name = get_next_course(current_course_name)
-                    # Buscar entre los cursos activos el curso cuyo nombre coincida (sin considerar sección)
                     active_courses = self.course_controller.get_active_courses()
                     next_course_id = None
+                    # Buscar entre los cursos activos aquel cuyo nombre (ignorando sección) coincida
                     for course in active_courses:
-                        if course.get("name", "").lower() == next_course_name.lower():
+                        if extract_grade(course.get("name", "")) == next_course_name.lower():
                             next_course_id = course.get("id")
                             break
                     if next_course_id:
@@ -186,5 +195,6 @@ if __name__ == "__main__":
     db.row_factory = sqlite3.Row
     root = tk.Tk()
     root.withdraw()  # Ocultar ventana principal
-    ui = EnrollmentManagementUI(db)
+    # Nota: Se debe pasar instancias reales de student_controller y course_controller
+    ui = EnrollmentManagementUI(root, None, None)
     root.mainloop()
