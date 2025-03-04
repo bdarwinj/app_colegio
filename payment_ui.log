@@ -122,3 +122,4 @@
 2025-03-03 21:00:28,335 - INFO - Payment registered: Receipt 20250303-0001, Student: Juan Sebastian  Ardila Ibarra, Amount: 95000.0
 2025-03-03 21:38:53,042 - ERROR - Error al abrir detalles del estudiante: 'StudentDetailsWindow' object has no attribute 'open_update_window'
 2025-03-03 21:39:43,872 - ERROR - Error al abrir detalles del estudiante: 'StudentDetailsWindow' object has no attribute 'open_update_window'
+2025-03-03 21:52:17,609 - INFO - Inscripción creada correctamente para el estudiante 19383228 (ID: 9).

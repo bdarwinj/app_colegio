@@ -15,6 +15,7 @@ from src.views.login_ui import LoginUI
 from src.views.student_details_window import StudentDetailsWindow
 from src.views.header_frame import HeaderFrame
 from src.views.admin_panel import AdminPanel
+from src.views.dashboard_window import DashboardWindow
 from src.views.student_registration_frame import StudentRegistrationFrame
 from src.views.students_list_frame import StudentsListFrame
 from src.views.action_buttons import ActionButtons
@@ -61,7 +62,14 @@ class AppUI:
         header_frame.pack(fill="x", padx=10, pady=10)
         
         if self.user.role == "admin":
-            self.frame_admin = AdminPanel(self.root, self.editar_configuracion, self.registrar_pago, self.manage_courses, self.manage_users)
+            self.frame_admin = AdminPanel(
+                self.root,
+                config_command=self.editar_configuracion,
+                payment_command=self.registrar_pago,
+                courses_command=self.manage_courses,
+                users_command=self.manage_users,
+                dashboard_command=self.open_dashboard_window  # Nuevo callback
+            )
             self.frame_admin.pack(padx=10, pady=10, fill="x")
             self.frame_form = StudentRegistrationFrame(self.root, self.course_controller, self.registrar_estudiante)
             self.frame_form.pack(fill="both", expand=True, padx=(5,5))
@@ -81,6 +89,9 @@ class AppUI:
             backup_restore_frame.pack(pady=5)
 
     # Métodos de funcionalidad básica (mantienen nombres y lógica original)
+    def open_dashboard_window(self):
+        DashboardWindow(self.root, self.student_controller, self.course_controller, self.payment_controller)
+
     def editar_configuracion(self):
         ConfigUI(self.db)
 

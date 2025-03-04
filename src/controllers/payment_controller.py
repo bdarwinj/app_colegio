@@ -1,6 +1,5 @@
 # src/controllers/payment_controller.py
 import sqlite3
-import traceback
 from datetime import datetime
 from src.utils.db_utils import db_cursor
 from src.logger import logger
@@ -43,7 +42,7 @@ class PaymentController:
             with db_cursor(self.db) as cursor:
                 cursor.execute(query, (student_id, enrollment_id, amount, description, payment_date))
                 raw_receipt = cursor.lastrowid
-                # Formatear el número de recibo combinando la fecha y el raw_receipt
+                # Formatear el número de recibo
                 dt = datetime.strptime(payment_date, "%Y-%m-%d %H:%M:%S")
                 date_part = dt.strftime("%Y%m%d")
                 formatted_receipt = f"{date_part}-{int(raw_receipt):04d}"
@@ -73,3 +72,38 @@ class PaymentController:
         except Exception as e:
             logger.exception(f"Error al obtener el pago con id {payment_id}")
             return None
+
+    # Nuevos métodos para obtener pagos por mes y por año
+    def get_payments_in_month(self, year_month_str):
+        """
+        Obtiene todos los pagos realizados en un mes específico, en formato 'YYYY-MM'.
+        Ejemplo: '2025-03'.
+        """
+        try:
+            query = """
+                SELECT * FROM payments
+                WHERE strftime('%Y-%m', payment_date) = ?
+            """
+            with db_cursor(self.db) as cursor:
+                cursor.execute(query, (year_month_str,))
+                return cursor.fetchall()
+        except Exception as e:
+            logger.exception("Error al obtener pagos del mes")
+            return []
+
+    def get_payments_in_year(self, year):
+        """
+        Obtiene todos los pagos realizados en un año específico.
+        Ejemplo: 2025
+        """
+        try:
+            query = """
+                SELECT * FROM payments
+                WHERE strftime('%Y', payment_date) = ?
+            """
+            with db_cursor(self.db) as cursor:
+                cursor.execute(query, (str(year),))
+                return cursor.fetchall()
+        except Exception as e:
+            logger.exception("Error al obtener pagos del año")
+            return []
