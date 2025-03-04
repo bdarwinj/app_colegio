@@ -1,3 +1,4 @@
+# src/views/student_details_window.py
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 from fpdf import FPDF
@@ -10,6 +11,7 @@ from src.controllers.payment_controller import PaymentController
 from src.controllers.config_controller import ConfigController
 from src.controllers.course_controller import CourseController
 from config import SCHOOL_NAME as DEFAULT_SCHOOL_NAME, LOGO_PATH as DEFAULT_LOGO_PATH
+from src.views.pdf_common import add_pdf_header  # Importamos la función común de PDF
 
 class StudentDetailsWindow(tk.Toplevel):
     def __init__(self, db, student_identificacion):
@@ -115,7 +117,6 @@ class StudentDetailsWindow(tk.Toplevel):
             # Cargar y mostrar el historial de pagos en la tabla
             self.update_payment_history(student.get("id"))
         except Exception as e:
-            traceback.print_exc()
             messagebox.showerror("Error", f"Error al cargar los detalles del estudiante: {e}")
 
     def update_payment_history(self, student_id):
@@ -157,6 +158,7 @@ class StudentDetailsWindow(tk.Toplevel):
 
             pdf = FPDF()
             pdf.add_page()
+            # Usamos la función centralizada para agregar el encabezado al PDF
             add_pdf_header(pdf, logo_path, school_name, f"Recibo de Pago Nº {receipt_number}")
 
             pdf.set_font("Arial", "", 12)
@@ -175,7 +177,6 @@ class StudentDetailsWindow(tk.Toplevel):
                 pdf.output(file_path)
                 messagebox.showinfo("Éxito", f"Recibo guardado exitosamente: {file_path}")
         except Exception as e:
-            traceback.print_exc()
             messagebox.showerror("Error", f"Error al generar el recibo de pago: {e}")
 
     def deactivate_student(self):
@@ -189,7 +190,6 @@ class StudentDetailsWindow(tk.Toplevel):
             else:
                 messagebox.showerror("Error", msg)
         except Exception as e:
-            traceback.print_exc()
             messagebox.showerror("Error", f"Error al desactivar el estudiante: {e}")
 
     def delete_student(self):
@@ -203,7 +203,6 @@ class StudentDetailsWindow(tk.Toplevel):
             else:
                 messagebox.showerror("Error", msg)
         except Exception as e:
-            traceback.print_exc()
             messagebox.showerror("Error", f"Error al eliminar el estudiante: {e}")
 
     def export_pdf(self):
@@ -240,6 +239,7 @@ class StudentDetailsWindow(tk.Toplevel):
         
             pdf = FPDF()
             pdf.add_page()
+            # Usamos la función centralizada para agregar el encabezado al PDF
             add_pdf_header(pdf, logo_path, school_name)
         
             pdf.set_font("Arial", "B", 12)
@@ -320,26 +320,4 @@ class StudentDetailsWindow(tk.Toplevel):
                 pdf.output(file_path)
                 messagebox.showinfo("Éxito", f"PDF exportado exitosamente: {file_path}")
         except Exception as e:
-            traceback.print_exc()
             messagebox.showerror("Error", f"Error al exportar a PDF: {e}")
-
-def add_pdf_header(pdf, logo_path=DEFAULT_LOGO_PATH, school_name=DEFAULT_SCHOOL_NAME, header_title="Detalles del Estudiante"):
-    """
-    Agrega el encabezado al PDF con el logo, el nombre del colegio y un título.
-    """
-    if logo_path and os.path.exists(logo_path):
-        try:
-            pdf.image(logo_path, x=10, y=8, w=30)
-            pdf.ln(5)
-        except Exception as e:
-            print("Error al cargar el logo en el PDF:", e)
-    else:
-        print("Logo no encontrado o ruta vacía:", logo_path)
-    
-    pdf.set_font("Arial", "B", 16)
-    pdf.cell(0, 10, school_name, ln=True, align="C")
-    pdf.ln(10)
-    
-    pdf.set_font("Arial", "B", 14)
-    pdf.cell(0, 10, header_title, ln=True)
-    pdf.ln(5)

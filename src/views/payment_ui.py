@@ -1,3 +1,4 @@
+# src/views/payment_ui.py
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 from fpdf import FPDF
@@ -8,6 +9,7 @@ from config import SCHOOL_NAME as DEFAULT_SCHOOL_NAME, LOGO_PATH as DEFAULT_LOGO
 import datetime
 import traceback
 import logging
+from src.views.pdf_common import add_pdf_header  # Función común para encabezados PDF
 
 # Configure logging
 logging.basicConfig(filename='payment_ui.log', level=logging.INFO, 
@@ -124,6 +126,20 @@ class PaymentUI:
             logging.error(f"Error selecting student: {e}")
             messagebox.showerror(MSG_ERROR, f"Error al seleccionar alumno: {e}")
 
+    def format_receipt_number(self, receipt_number, payment_date):
+        """
+        Formatea el número de recibo para incluir la fecha en formato YYYYMMDD y el número con 4 dígitos.
+        Ejemplo: Si payment_date es "2025-03-03 14:25:00" y receipt_number es 5, retorna "20250303-0005".
+        """
+        try:
+            dt = datetime.datetime.strptime(payment_date, "%Y-%m-%d %H:%M:%S")
+            date_part = dt.strftime("%Y%m%d")
+            formatted_number = f"{date_part}-{int(receipt_number):04d}"
+            return formatted_number
+        except Exception as e:
+            logging.error(f"Error formatting receipt number: {e}")
+            return str(receipt_number)
+
     def register_payment(self):
         if not self.selected_student:
             messagebox.showwarning(MSG_SELECTION_REQUIRED, "Seleccione un alumno.")
@@ -156,82 +172,39 @@ class PaymentUI:
             )
             if success:
                 formatted_student_name = f"{self.selected_student['nombre']} {self.selected_student['apellido']}".title()
-                self.generate_pdf(receipt_number, formatted_student_name, amount, description, payment_date)
                 formatted_receipt = self.format_receipt_number(receipt_number, payment_date)
-                messagebox.showinfo(MSG_SUCCESS, f"Pago registrado exitosamente.\nRecibo Nº: {formatted_receipt}")
-                logging.info(f"Payment registered: Receipt {formatted_receipt}, Student: {formatted_student_name}, Amount: {amount}")
-                self.window.destroy()
+                pdf = FPDF()
+                pdf.add_page()
+                configs = self.config_controller.get_all_configs()
+                school_name = configs.get("SCHOOL_NAME", DEFAULT_SCHOOL_NAME)
+                logo_path = configs.get("LOGO_PATH", DEFAULT_LOGO_PATH)
+                # Usamos la función centralizada para agregar el encabezado al PDF
+                add_pdf_header(pdf, logo_path, school_name, f"Recibo de Pago Nº {formatted_receipt}")
+                
+                pdf.set_font("Arial", "", 12)
+                pdf.cell(0, 10, f"Recibo Nº: {formatted_receipt}", ln=True)
+                pdf.cell(0, 10, f"Fecha y Hora: {payment_date}", ln=True)
+                pdf.cell(0, 10, f"Alumno: {formatted_student_name}", ln=True)
+                
+                formatted_amount = "{:,.2f}".format(amount).replace(",", "X").replace(".", ",").replace("X", ".")
+                pdf.cell(0, 10, f"Monto: {formatted_amount}", ln=True)
+                pdf.cell(0, 10, f"Descripción: {description}", ln=True)
+                
+                default_filename = f"recibo_{formatted_receipt}_{formatted_student_name.replace(' ', '_')}.pdf"
+                file_path = filedialog.asksaveasfilename(
+                    defaultextension=".pdf",
+                    initialfile=default_filename,
+                    title="Guardar Recibo de Pago",
+                    filetypes=[("PDF files", "*.pdf")]
+                )
+                if file_path:
+                    pdf.output(file_path)
+                    messagebox.showinfo(MSG_SUCCESS, f"Pago registrado exitosamente.\nRecibo Nº: {formatted_receipt}\nPDF generado: {file_path}")
+                    logging.info(f"Payment registered: Receipt {formatted_receipt}, Student: {formatted_student_name}, Amount: {amount}")
+                    self.window.destroy()
             else:
                 messagebox.showerror(MSG_ERROR, msg)
                 logging.warning(f"Failed payment attempt: {msg}")
         except Exception as e:
             logging.error(f"Error registering payment: {e}")
             messagebox.showerror(MSG_ERROR, f"Error al registrar pago: {e}")
-
-    def format_receipt_number(self, receipt_number, payment_date):
-        """
-        Format the receipt number to incorporate the payment date.
-        For example, if payment_date is "2025-02-11 11:51:50" and receipt_number is 12,
-        the formatted number would be "20250211-0012".
-        """
-        try:
-            dt = datetime.datetime.strptime(payment_date, "%Y-%m-%d %H:%M:%S")
-            date_part = dt.strftime("%Y%m%d")
-            formatted_number = f"{date_part}-{int(receipt_number):04d}"
-            return formatted_number
-        except Exception as e:
-            logging.error(f"Error formatting receipt number: {e}")
-            return f"{receipt_number}"
-
-    def format_amount(self, amount):
-        """
-        Format the amount to separate thousands with dots and decimals with comma.
-        E.g., 1234567.89 becomes "1.234.567,89"
-        """
-        formatted = "{:,.2f}".format(amount)
-        # Swap comma and period
-        formatted = formatted.replace(",", "X").replace(".", ",").replace("X", ".")
-        return formatted
-
-    def generate_pdf(self, receipt_number, student_name, amount, description, payment_date):
-        # Retrieve configuration from the database
-        configs = self.config_controller.get_all_configs()
-        school_name = configs.get("SCHOOL_NAME", DEFAULT_SCHOOL_NAME)
-        logo_path = configs.get("LOGO_PATH", DEFAULT_LOGO_PATH)
-
-        pdf = FPDF()
-        pdf.add_page()
-
-        # Insert the logo if available
-        if logo_path:
-            try:
-                pdf.image(logo_path, x=10, y=8, w=30)
-            except Exception as e:
-                logging.error(f"Error loading logo in PDF: {e}")
-
-        pdf.set_font("Arial", "B", 16)
-        pdf.cell(0, 10, school_name, ln=True, align="C")
-        pdf.ln(10)
-
-        pdf.set_font("Arial", size=12)
-        pdf.cell(0, 10, "Recibo de Pago", ln=True, align="C")
-        pdf.ln(10)
-
-        formatted_receipt = self.format_receipt_number(receipt_number, payment_date)
-        pdf.cell(0, 10, f"Recibo Nº: {formatted_receipt}", ln=True)
-        pdf.cell(0, 10, f"Fecha y Hora: {payment_date}", ln=True)
-        pdf.cell(0, 10, f"Alumno: {student_name}", ln=True)
-
-        formatted_amount = self.format_amount(amount)
-        pdf.cell(0, 10, f"Monto: {formatted_amount}", ln=True)
-        pdf.cell(0, 10, f"Descripción: {description}", ln=True)
-
-        default_filename = f"recibo_{formatted_receipt}_{student_name.replace(' ', '_')}.pdf"
-        file_path = filedialog.asksaveasfilename(
-            defaultextension=".pdf",
-            initialfile=default_filename,
-            title="Guardar Recibo de Pago",
-            filetypes=[("PDF files", "*.pdf")]
-        )
-        if file_path:
-            pdf.output(file_path)
