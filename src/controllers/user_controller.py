@@ -14,15 +14,26 @@ class UserController:
         self.db = db
 
     def login(self, username, password):
+        """
+        Intenta iniciar sesión comparando el username y la contraseña (hasheada)
+        con los registros de la tabla 'users'.
+        
+        Si no se encuentra un registro y no existe un usuario admin en la base de datos,
+        se permite el login con las credenciales por defecto ("admin", "admin").
+        """
+        # Validar tipos de entrada
         if not isinstance(username, str) or not isinstance(password, str):
             logger.error("Username y password deben ser cadenas.")
             return None
+
         hashed_password = hashlib.sha256(password.encode()).hexdigest()
+
         try:
             query = "SELECT username, role FROM users WHERE username = ? AND password = ?"
             with db_cursor(self.db) as cursor:
                 cursor.execute(query, (username, hashed_password))
                 row = cursor.fetchone()
+
             if row:
                 user = type("User", (), {})()
                 user.username = row[0]
@@ -31,12 +42,23 @@ class UserController:
         except sqlite3.Error as e:
             logger.error(f"Error de base de datos durante el login: {e}")
             return None
-        expected_admin_hash = hashlib.sha256("admin".encode()).hexdigest()
-        if username == "admin" and hashed_password == expected_admin_hash:
-            user = type("User", (), {})()
-            user.username = "admin"
-            user.role = "admin"
-            return user
+
+        # Fallback: Solo se aplica si no existe ningún usuario admin en la base de datos
+        try:
+            query = "SELECT COUNT(*) FROM users WHERE username = 'admin'"
+            with db_cursor(self.db) as cursor:
+                cursor.execute(query)
+                count = cursor.fetchone()[0]
+            if count == 0:
+                expected_admin_hash = hashlib.sha256("admin".encode()).hexdigest()
+                if username == "admin" and hashed_password == expected_admin_hash:
+                    user = type("User", (), {})()
+                    user.username = "admin"
+                    user.role = "admin"
+                    return user
+        except sqlite3.Error as e:
+            logger.error(f"Error en fallback de login: {e}")
+
         return None
 
     def create_user(self, username, password, role):

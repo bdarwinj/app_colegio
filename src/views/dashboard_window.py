@@ -155,23 +155,37 @@ class DashboardWindow(tk.Toplevel):
         pdf.set_font("Arial", "B", 14)
         pdf.cell(0, 10, "Lista de Alumnos sin Pago en el Mes Actual", ln=True, align="C")
         pdf.ln(5)
-        
-        # Encabezados de la tabla
         headers = ["Identificacion", "Nombre", "Apellido", "Curso"]
-        pdf.set_font("Arial", "B", 11)
-        col_widths = [40, 40, 40, 50]  # Ajustar según necesidad
-        for i, header in enumerate(headers):
-            pdf.cell(col_widths[i], 10, header, border=1, align="C")
-        pdf.ln()
-        
-        pdf.set_font("Arial", "", 12)
+        pdf.set_font("Arial", "B", 12)
+        # Recopilar datos de la tabla en una lista
+        table_data = []
         for stu in self.students_without_payment_this_month:
             ident = stu.get("identificacion", "")
             nombre = stu.get("nombre", "")
             apellido = stu.get("apellido", "")
             curso = stu.get("course_name", "N/A")
-            row_data = [ident, nombre, apellido, curso]
-            for i, data in enumerate(row_data):
+            table_data.append([ident, nombre, apellido, curso])
+        
+        # Calcular dinámicamente el ancho de cada columna usando pdf.get_string_width
+        col_widths = []
+        padding = 4  # Margen extra en mm
+        for col in range(len(headers)):
+            max_width = pdf.get_string_width(headers[col])
+            for row in table_data:
+                cell_text = str(row[col])
+                w = pdf.get_string_width(cell_text)
+                if w > max_width:
+                    max_width = w
+            col_widths.append(max_width + padding)
+        
+        # Escribir encabezados de la tabla
+        for i, header in enumerate(headers):
+            pdf.cell(col_widths[i], 10, header, border=1, align="C")
+        pdf.ln()
+        
+        pdf.set_font("Arial", "", 12)
+        for row in table_data:
+            for i, data in enumerate(row):
                 pdf.cell(col_widths[i], 10, str(data), border=1, align="C")
             pdf.ln()
         
