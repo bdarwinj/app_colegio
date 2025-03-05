@@ -1552,3 +1552,7 @@ Traceback (most recent call last):
     cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
     ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
+2025-03-04 18:43:49,254 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
+2025-03-04 18:50:14,731 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
+2025-03-04 19:05:30,449 - WARNING - No se encontró la imagen en: D:\laragon\www\colegio_app\logo.png
+2025-03-04 19:05:41,823 - INFO - Base de datos restaurada desde: D:/laragon/www/colegio - copia.db

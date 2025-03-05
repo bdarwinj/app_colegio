@@ -2,7 +2,9 @@
 import openpyxl
 import re
 import unicodedata
+import datetime
 from src.logger import logger
+from src.controllers.enrollment_controller import EnrollmentController
 
 def normalize_string(s):
     """
@@ -15,7 +17,7 @@ def normalize_string(s):
 
 def import_students_from_excel(db, excel_path, course_controller, student_controller):
     """
-    Importa estudiantes desde un archivo Excel.
+    Importa estudiantes desde un archivo Excel y, para cada estudiante registrado, crea automáticamente una inscripción.
     
     Cada hoja representa un curso y su nombre se usa para identificar el curso.
     Se esperan las siguientes columnas en cada hoja (la primera fila contiene los encabezados):
@@ -26,9 +28,9 @@ def import_students_from_excel(db, excel_path, course_controller, student_contro
       - "acudiente": nombre del representante.
     
     Las comparaciones de encabezados se realizan normalizando (sin mayúsculas, tildes, etc.).
+    Además, al buscar el curso correspondiente, se compara el nombre y la sección (permitiendo "PRIMERO A" o "PRIMERO - A").
     
-    Además, al buscar el curso correspondiente, se intenta comparar la hoja (ej. "primero a" o "primero - a") 
-    con la combinación del campo "name" y "seccion" en la base de datos.
+    Además, para cada estudiante registrado se crea una inscripción automática en el año actual con estado "inscrito".
     
     Retorna una tupla (num_importados, errores), donde errores es una lista de mensajes.
     """
@@ -81,7 +83,7 @@ def import_students_from_excel(db, excel_path, course_controller, student_contro
                     break
         
         # Buscar el curso en la base de datos usando el nombre de la hoja.
-        # Se normaliza el nombre de la hoja y se intenta separar en base y sección.
+        # Se normaliza el nombre de la hoja y se intenta separar en dos partes (base y sección),
         # excepto si la hoja es "pre-jardin", en cuyo caso se omite la división.
         course_data = None
         courses = course_controller.get_all_courses()
@@ -100,7 +102,6 @@ def import_students_from_excel(db, excel_path, course_controller, student_contro
         for course in courses:
             course_name_norm = normalize_string(course.get("name", ""))
             course_seccion_norm = normalize_string(course.get("seccion", ""))
-            # Comparar base y sección
             if course_name_norm == base_sheet:
                 if section_sheet:
                     if course_seccion_norm == section_sheet:
@@ -113,6 +114,11 @@ def import_students_from_excel(db, excel_path, course_controller, student_contro
             errors.append(f"Hoja '{sheet_name}': Curso no encontrado en la base de datos.")
             continue
         course_id = course_data.get("id")
+        
+        # Crear instancia de EnrollmentController para registrar inscripciones
+        from src.controllers.enrollment_controller import EnrollmentController
+        enrollment_controller = EnrollmentController(db, student_controller, course_controller)
+        current_year = datetime.datetime.now().year
         
         # Procesar filas (desde la segunda fila)
         for row in ws.iter_rows(min_row=2, values_only=True):
@@ -142,6 +148,17 @@ def import_students_from_excel(db, excel_path, course_controller, student_contro
                     identificacion, nombre, apellido, course_id, acudiente, telefono, email
                 )
                 if success:
+                    # Obtener el estudiante recién registrado para crear su inscripción
+                    student_record = student_controller.get_student_by_identification(identificacion)
+                    if student_record:
+                        student_id = student_record["id"]
+                        enroll_success, enroll_msg, enrollment_id = enrollment_controller.create_enrollment(
+                            student_id, course_id, current_year, status="inscrito"
+                        )
+                        if not enroll_success:
+                            errors.append(f"Hoja '{sheet_name}', ID {identificacion}: Error en inscripción: {enroll_msg}")
+                    else:
+                        errors.append(f"Hoja '{sheet_name}', ID {identificacion}: No se pudo recuperar el estudiante recién creado.")
                     imported_count += 1
                 else:
                     errors.append(f"Hoja '{sheet_name}', ID {identificacion}: {msg}")

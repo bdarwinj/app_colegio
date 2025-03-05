@@ -25,6 +25,7 @@ from src.views.change_password_window import ChangePasswordWindow
 from src.views.course_management_window import CourseManagementWindow
 from src.utils.export_students import export_students_to_excel, export_students_to_pdf
 from src.utils.backup_restore import backup_database, restore_database
+from src.utils.import_students import import_students_from_excel
 import os
 from tkinter import ttk
 
@@ -72,7 +73,7 @@ class AppUI:
             message += "Importación completada sin errores."
         messagebox.showinfo("Resultado de Importación", message)
         self.refrescar_lista()
-
+        
     def create_widgets(self):
         header_frame = HeaderFrame(self.root, self.school_name, self.abs_logo_path, self.open_change_password_window, self.logout)
         header_frame.pack(fill="x", padx=10, pady=10)
@@ -84,8 +85,8 @@ class AppUI:
                 payment_command=self.registrar_pago,
                 courses_command=self.manage_courses,
                 users_command=self.manage_users,
-                dashboard_command=self.open_dashboard_window,
-                import_command=self.import_students_excel  # Nuevo callback
+                dashboard_command=self.open_dashboard_window,  # Nuevo callback
+                import_command=self.import_students_excel  # Se añade el argumento faltante
             )
             self.frame_admin.pack(padx=10, pady=10, fill="x")
             self.frame_form = StudentRegistrationFrame(self.root, self.course_controller, self.registrar_estudiante)
