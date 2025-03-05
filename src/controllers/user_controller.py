@@ -121,3 +121,21 @@ class UserController:
         except sqlite3.Error as e:
             logger.error(f"Error de base de datos al cambiar clave: {e}")
             return False, f"Error al cambiar clave: {e}"
+   
+    def update_user_password(self, username, new_password):
+            """
+            Permite al administrador cambiar la contraseña de un usuario sin necesidad de la contraseña antigua.
+            """
+            if not isinstance(username, str) or not username:
+                return False, "El username debe ser una cadena no vacía."
+            if not isinstance(new_password, str) or not new_password:
+                return False, "La nueva contraseña debe ser una cadena no vacía."
+            try:
+                hashed_new_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+                query = "UPDATE users SET password = ? WHERE username = ?"
+                with db_cursor(self.db) as cursor:
+                    cursor.execute(query, (hashed_new_password, username))
+                return True, "Contraseña actualizada correctamente."
+            except sqlite3.Error as e:
+                logger.error(f"Error al actualizar la contraseña para {username}: {e}")
+                return False, f"Error al actualizar la contraseña: {e}"

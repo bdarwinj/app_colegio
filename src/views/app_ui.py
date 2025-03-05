@@ -4,7 +4,8 @@ import datetime
 import logging
 import os
 import openpyxl
-
+from fpdf import FPDF  # Biblioteca para generar PDFs
+from src.controllers.enrollment_controller import EnrollmentController  # Controlador de inscripciones
 from src.controllers.student_controller import StudentController
 from src.controllers.course_controller import CourseController
 from src.controllers.config_controller import ConfigController
@@ -29,9 +30,11 @@ from src.views.course_management_window import CourseManagementWindow
 from src.utils.export_students import export_students_to_excel, export_students_to_pdf
 from src.utils.backup_restore import backup_database, restore_database
 
+# Configuración del logging
 logging.basicConfig(filename='app_ui.log', level=logging.INFO, 
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
+# Constantes para mensajes
 MSG_ERROR = "Error"
 MSG_SUCCESS = "Éxito"
 MSG_FIELDS_INCOMPLETE = "Campos incompletos"
@@ -60,23 +63,32 @@ class AppUI:
         self.create_widgets()
 
     def import_students_excel(self):
+        # Abre un cuadro de diálogo para seleccionar un archivo Excel
         excel_path = filedialog.askopenfilename(
             title="Seleccionar archivo Excel",
             filetypes=[("Excel files", "*.xlsx *.xls")]
         )
         if not excel_path:
             return
-        imported_count, errors = import_students_from_excel(self.db, excel_path, self.course_controller, self.student_controller)
-        message = f"Estudiantes importados: {imported_count}\n"
-        if errors:
-            message += "Errores:\n" + "\n".join(errors)
-        else:
-            message += "Importación completada sin errores."
-        messagebox.showinfo("Resultado de Importación", message)
-        self.refrescar_lista()
+        try:
+            imported_count, errors = import_students_from_excel(self.db, excel_path, 
+                                                                self.course_controller, 
+                                                                self.student_controller)
+            message = f"Estudiantes importados: {imported_count}\n"
+            if errors:
+                message += "Errores:\n" + "\n".join(errors)
+            else:
+                message += "Importación completada sin errores."
+            messagebox.showinfo("Resultado de Importación", message)
+            self.refrescar_lista()
+        except Exception as e:
+            logging.error(f"Error al importar estudiantes desde Excel: {e}")
+            messagebox.showerror(MSG_ERROR, f"Error al importar estudiantes: {str(e)}")
 
     def create_widgets(self):
-        header_frame = HeaderFrame(self.root, self.school_name, self.abs_logo_path, self.open_change_password_window, self.logout)
+        # Crea la barra de encabezado
+        header_frame = HeaderFrame(self.root, self.school_name, self.abs_logo_path, 
+                                   self.open_change_password_window, self.logout)
         header_frame.pack(fill="x", padx=10, pady=10)
 
         if self.user.role == "admin":
@@ -90,39 +102,51 @@ class AppUI:
                 import_command=self.import_students_excel
             )
             self.frame_admin.pack(padx=10, pady=10, fill="x")
-            self.frame_form = StudentRegistrationFrame(self.root, self.course_controller, self.registrar_estudiante)
+            self.frame_form = StudentRegistrationFrame(self.root, self.course_controller, 
+                                                       self.registrar_estudiante)
             self.frame_form.pack(fill="both", expand=True, padx=5, pady=5)
             self.frame_form.populate_courses()
         elif self.user.role == "user":
-            self.btn_registrar_pago = ttk.Button(self.root, text="Registrar Pago", command=self.registrar_pago)
+            self.btn_registrar_pago = ttk.Button(self.root, text="Registrar Pago", 
+                                                 command=self.registrar_pago)
             self.btn_registrar_pago.pack(pady=5)
 
-        self.frame_lista = StudentsListFrame(self.root, self.student_controller, self.on_student_double_click)
+        self.frame_lista = StudentsListFrame(self.root, self.student_controller, 
+                                             self.on_student_double_click)
         self.frame_lista.pack(padx=10, pady=10, fill="both", expand=True)
 
-        actions_frame = ActionButtons(self.root, self.refrescar_lista, self.generar_pdf, self.export_students_excel, self.export_students_pdf)
+        actions_frame = ActionButtons(self.root, self.refrescar_lista, self.generar_pdf, 
+                                      self.export_students_excel, self.export_students_pdf)
         actions_frame.pack(pady=5)
 
         if self.user.role == "admin":
-            backup_restore_frame = BackupRestoreFrame(self.root, self.backup_database, self.restore_database, self.manage_enrollments)
+            backup_restore_frame = BackupRestoreFrame(self.root, self.backup_database, 
+                                                      self.restore_database, self.manage_enrollments)
             backup_restore_frame.pack(pady=5)
 
     def open_dashboard_window(self):
-        DashboardWindow(self.root, self.db, self.student_controller, self.course_controller, self.payment_controller)
+        # Abre la ventana del tablero
+        DashboardWindow(self.root, self.db, self.student_controller, 
+                        self.course_controller, self.payment_controller)
 
     def editar_configuracion(self):
+        # Abre la interfaz de configuración
         ConfigUI(self.db)
 
     def registrar_pago(self):
+        # Abre la interfaz de registro de pagos
         PaymentUI(self.db)
 
     def manage_courses(self):
+        # Abre la ventana de gestión de cursos
         CourseManagementWindow(self.root, self.course_controller)
 
     def manage_users(self):
+        # Abre la interfaz de gestión de usuarios
         UserManagementUI(self.db)
 
     def registrar_estudiante(self):
+        # Obtiene los datos del formulario
         identificacion = self.frame_form.entries["Número de Identificación"].get()
         nombre = self.frame_form.entries["Nombre"].get()
         apellido = self.frame_form.entries["Apellido"].get()
@@ -145,8 +169,8 @@ class AppUI:
             if student_record:
                 student_id = student_record["id"]
                 current_year = datetime.datetime.now().year
-                from src.controllers.enrollment_controller import EnrollmentController
-                enrollment_controller = EnrollmentController(self.db, self.student_controller, self.course_controller)
+                enrollment_controller = EnrollmentController(self.db, self.student_controller, 
+                                                             self.course_controller)
                 enroll_success, enroll_msg, enrollment_id = enrollment_controller.create_enrollment(
                     student_id, course_id, current_year, status="inscrito"
                 )
@@ -162,15 +186,18 @@ class AppUI:
             messagebox.showerror(MSG_ERROR, msg)
 
     def limpiar_formulario(self):
+        # Limpia todos los campos del formulario
         for entry in self.frame_form.entries.values():
             entry.delete(0, tk.END)
         self.frame_form.combo_course.set("")
 
     def refrescar_lista(self):
+        # Actualiza la lista de estudiantes
         self.frame_lista.all_students = self.student_controller.get_all_students()
         self.frame_lista.populate_student_list(self.frame_lista.all_students)
 
     def on_student_double_click(self, event):
+        # Maneja el doble clic en un estudiante de la lista
         try:
             selected = self.frame_lista.tree.selection()
             if selected:
@@ -182,13 +209,13 @@ class AppUI:
             messagebox.showerror(MSG_ERROR, f"Error al abrir los detalles del estudiante: {str(e)}")
 
     def generar_pdf(self):
+        # Genera un PDF de paz y salvo para el estudiante seleccionado
         selected = self.frame_lista.tree.selection()
         if not selected:
             messagebox.showwarning(MSG_SELECTION_REQUIRED, "Seleccione un estudiante para generar el PDF")
             return
         item = self.frame_lista.tree.item(selected[0])
         estudiante_data = item["values"]
-        from fpdf import FPDF
         pdf = FPDF()
         pdf.add_page()
         if os.path.exists(self.abs_logo_path):
@@ -231,6 +258,7 @@ class AppUI:
             messagebox.showinfo("PDF generado", f"El PDF '{file_path}' ha sido generado correctamente.")
 
     def _export_students(self, export_func, file_extension, file_type):
+        # Exporta estudiantes a un archivo (Excel o PDF)
         try:
             estudiantes = self.student_controller.get_all_students()
             timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
@@ -247,24 +275,30 @@ class AppUI:
             messagebox.showerror(MSG_ERROR, f"Error al exportar a {file_type}: {str(e)}")
 
     def export_students_excel(self):
+        # Exporta estudiantes a Excel
         self._export_students(export_students_to_excel, ".xlsx", "Excel")
 
     def export_students_pdf(self):
+        # Exporta estudiantes a PDF
         self._export_students(export_students_to_pdf, ".pdf", "PDF")
 
     def logout(self):
+        # Cierra la sesión del usuario
         confirm = messagebox.askyesno("Cerrar Sesión", MSG_CONFIRMATION)
         if confirm:
             self.root.destroy()
             LoginUI(self.db).run()
 
     def open_change_password_window(self):
+        # Abre la ventana para cambiar contraseña
         ChangePasswordWindow(self.root, self.user_controller, self.user.username)
 
     def manage_enrollments(self):
+        # Abre la interfaz de gestión de inscripciones
         EnrollmentManagementUI(self.root, self.student_controller, self.course_controller)
 
     def backup_database(self):
+        # Realiza un respaldo de la base de datos
         try:
             backup_file = backup_database()
             messagebox.showinfo(MSG_SUCCESS, f"Backup realizado correctamente:\n{backup_file}")
@@ -274,6 +308,7 @@ class AppUI:
             logging.error(f"Error en backup: {e}")
 
     def restore_database(self):
+        # Restaura la base de datos desde un archivo
         backup_file = filedialog.askopenfilename(
             title="Seleccionar archivo de backup",
             filetypes=[("Database files", "*.db"), ("All Files", "*.*")]
@@ -288,5 +323,6 @@ class AppUI:
                 logging.error(f"Error al restaurar DB: {e}")
 
     def run(self):
+        # Inicia la aplicación y refresca la lista inicial
         self.refrescar_lista()
         self.root.mainloop()

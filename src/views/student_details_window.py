@@ -33,6 +33,9 @@ class StudentDetailsWindow(tk.Toplevel):
         self.load_student_details()
 
     def create_widgets(self):
+        """
+        Crea los widgets de la ventana, incluyendo etiquetas, campos de texto y botones.
+        """
         self.frame_details = ttk.Frame(self, padding=10)
         self.frame_details.pack(fill="both", expand=True)
         
@@ -96,6 +99,9 @@ class StudentDetailsWindow(tk.Toplevel):
         return curso
 
     def load_student_details(self):
+        """
+        Carga los detalles del estudiante y su historial de pagos.
+        """
         try:
             student_row = self.student_controller.get_student_by_identification(self.student_identificacion)
             if not student_row:
@@ -134,6 +140,9 @@ class StudentDetailsWindow(tk.Toplevel):
             messagebox.showerror("Error", f"Error al cargar los detalles del estudiante: {e}")
 
     def update_payment_history(self, student_id):
+        """
+        Actualiza la tabla de historial de pagos del estudiante.
+        """
         # Limpiar la tabla
         for row in self.tree_payments.get_children():
             self.tree_payments.delete(row)
@@ -151,6 +160,9 @@ class StudentDetailsWindow(tk.Toplevel):
             self.tree_payments.insert("", tk.END, values=("No hay registros", "", "", ""))
 
     def on_payment_double_click(self, event):
+        """
+        Genera un PDF del recibo de pago al hacer doble clic en una fila del historial.
+        """
         try:
             selected_item = self.tree_payments.selection()
             if not selected_item:
@@ -191,6 +203,9 @@ class StudentDetailsWindow(tk.Toplevel):
             messagebox.showerror("Error", f"Error al generar el recibo de pago: {e}")
 
     def deactivate_student(self):
+        """
+        Desactiva el estudiante después de confirmar la acción.
+        """
         try:
             if not messagebox.askyesno("Confirmar", "¿Está seguro de desactivar este estudiante?"):
                 return
@@ -204,6 +219,9 @@ class StudentDetailsWindow(tk.Toplevel):
             messagebox.showerror("Error", f"Error al desactivar el estudiante: {e}")
 
     def delete_student(self):
+        """
+        Elimina el estudiante después de confirmar la acción.
+        """
         try:
             if not messagebox.askyesno("Confirmar", "¿Está seguro de eliminar este estudiante?"):
                 return
@@ -217,6 +235,9 @@ class StudentDetailsWindow(tk.Toplevel):
             messagebox.showerror("Error", f"Error al eliminar el estudiante: {e}")
 
     def export_pdf(self):
+        """
+        Exporta la información del estudiante y su historial de pagos a un PDF.
+        """
         try:
             try:
                 locale.setlocale(locale.LC_TIME, "es_ES.utf8")
@@ -340,9 +361,7 @@ class StudentDetailsWindow(tk.Toplevel):
         student = dict(student_row)
         from src.controllers.user_controller import UserController
         user_controller = UserController(self.db)
-        from src.views.update_student_window import UpdateStudentWindow
         UpdateStudentWindow(self, student, self.student_controller, self.course_controller, user_controller)
-
 
 if __name__ == "__main__":
     import sqlite3

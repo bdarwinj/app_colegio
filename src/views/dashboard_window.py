@@ -31,6 +31,9 @@ class DashboardWindow(tk.Toplevel):
         self.load_stats()
 
     def create_widgets(self):
+        """
+        Crea los widgets de la ventana del dashboard.
+        """
         self.main_frame = ttk.Frame(self, padding=10)
         self.main_frame.pack(expand=True, fill="both")
 
@@ -92,26 +95,27 @@ class DashboardWindow(tk.Toplevel):
         students_without_payment = [stu for stu in all_students if stu["id"] not in student_ids_paid_this_month]
         self.students_without_payment_this_month = students_without_payment
 
-        # Construir la cadena de información
-        info = [
-            f"Número total de cursos: {total_courses}",
-            f"Número de cursos con alumnos: {courses_with_students}",
-            f"Número total de alumnos: {total_students}",
-            "\nAlumnos por curso:"
-        ]
+        # Construir la cadena de información usando una f-string para mayor claridad
+        info = (
+            f"Número total de cursos: {total_courses}\n"
+            f"Número de cursos con alumnos: {courses_with_students}\n"
+            f"Número total de alumnos: {total_students}\n\n"
+            "Alumnos por curso:\n"
+        )
         for c_name, count in course_count_map.items():
-            info.append(f"  - {c_name}: {count}")
-        info.append(f"\nDinero recogido en el mes (fecha {current_month_str}): {total_month}")
-        info.append(f"Dinero recogido en el año {current_year}: {total_year}")
-        info.append(f"\nAlumnos sin pago en el mes actual: {len(students_without_payment)}")
+            info += f"  - {c_name}: {count}\n"
+        info += (
+            f"\nDinero recogido en el mes (fecha {current_month_str}): {total_month}\n"
+            f"Dinero recogido en el año {current_year}: {total_year}\n\n"
+            f"Alumnos sin pago en el mes actual: {len(students_without_payment)}\n"
+        )
         if students_without_payment:
-            info.append("Lista de alumnos sin pago este mes:")
+            info += "Lista de alumnos sin pago este mes:\n"
             for stu in students_without_payment:
                 full_name = f"{stu['nombre']} {stu['apellido']}".strip()
-                info.append(f"  - {stu['identificacion']} | {full_name}")
+                info += f"  - {stu['identificacion']} | {full_name}\n"
 
-        final_text = "\n".join(info)
-        self.stats_text.insert(tk.END, final_text)
+        self.stats_text.insert(tk.END, info)
         self.stats_text.configure(state="disabled")
 
     def export_dashboard_pdf(self):
@@ -172,17 +176,11 @@ class DashboardWindow(tk.Toplevel):
                 stu.get("course_name", "N/A")
             ])
         
-        # Calcular dinámicamente el ancho de las columnas
-        col_widths = []
-        padding = 4  # Margen extra en mm
-        for col in range(len(headers)):
-            max_width = pdf.get_string_width(headers[col])
-            for row in table_data:
-                cell_text = str(row[col])
-                w = pdf.get_string_width(cell_text)
-                if w > max_width:
-                    max_width = w
-            col_widths.append(max_width + padding)
+        # Calcular dinámicamente el ancho de las columnas de forma eficiente
+        col_widths = [
+            max([pdf.get_string_width(str(row[i])) for row in table_data] + [pdf.get_string_width(headers[i])]) + 4
+            for i in range(len(headers))
+        ]
         
         # Escribir encabezados
         for i, header in enumerate(headers):
