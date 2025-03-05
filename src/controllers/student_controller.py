@@ -21,51 +21,49 @@ class StudentController:
             logger.exception("Error al ejecutar y confirmar la consulta")
             return False
 
-    def get_student_by_identification(self, identificacion):
+    def _execute_fetchone(self, query, params=(), error_context="Error al ejecutar consulta"):
         try:
-            query = "SELECT * FROM estudiantes WHERE identificacion = ?"
             with db_cursor(self.db) as cursor:
-                cursor.execute(query, (identificacion,))
+                cursor.execute(query, params)
                 return cursor.fetchone()
-        except sqlite3.Error as e:
-            logger.exception("Error en get_student_by_identification")
+        except Exception as e:
+            logger.exception(error_context)
             return None
 
-    def get_student_by_id(self, student_id):
+    def _execute_fetchall(self, query, params=(), error_context="Error al ejecutar consulta"):
         try:
-            query = "SELECT * FROM estudiantes WHERE id = ?"
             with db_cursor(self.db) as cursor:
-                cursor.execute(query, (student_id,))
-                row = cursor.fetchone()
-            return dict(row) if row else None
+                cursor.execute(query, params)
+                return cursor.fetchall()
         except Exception as e:
-            logger.exception(f"Error al obtener el estudiante con ID {student_id}")
-            return None
+            logger.exception(error_context)
+            return []
+
+    def get_student_by_identification(self, identificacion):
+        query = "SELECT * FROM estudiantes WHERE identificacion = ?"
+        return self._execute_fetchone(query, (identificacion,), "Error en get_student_by_identification")
+
+    def get_student_by_id(self, student_id):
+        query = "SELECT * FROM estudiantes WHERE id = ?"
+        row = self._execute_fetchone(query, (student_id,), f"Error al obtener el estudiante con ID {student_id}")
+        return dict(row) if row else None
 
     def get_course_name(self, course_id):
         if course_id is None:
             return "N/A"
-        try:
-            query = "SELECT name, seccion FROM courses WHERE id = ?"
-            with db_cursor(self.db) as cursor:
-                cursor.execute(query, (course_id,))
-                result = cursor.fetchone()
-            if result:
-                name = result[0]
-                seccion = result[1] if len(result) > 1 and result[1] else ""
-                return f"{name} - {seccion}" if seccion.strip() else name
-            return "N/A"
-        except sqlite3.Error as e:
-            logger.exception("Error en get_course_name")
-            return "N/A"
+        query = "SELECT name, seccion FROM courses WHERE id = ?"
+        result = self._execute_fetchone(query, (course_id,), "Error en get_course_name")
+        if result:
+            name = result[0]
+            seccion = result[1] if len(result) > 1 and result[1] else ""
+            return f"{name} - {seccion}" if seccion.strip() else name
+        return "N/A"
 
     def get_all_students(self):
-        try:
-            query = "SELECT id, identificacion, nombre, apellido, course_id, representante, telefono, active FROM estudiantes"
-            with db_cursor(self.db) as cursor:
-                cursor.execute(query)
-                rows = cursor.fetchall()
-            return [{
+        query = ("SELECT id, identificacion, nombre, apellido, course_id, "
+                 "representante, telefono, active FROM estudiantes")
+        rows = self._execute_fetchall(query, (), "Error en get_all_students")
+        return [{
                 "id": row[0],
                 "identificacion": row[1],
                 "nombre": row[2],
@@ -75,33 +73,22 @@ class StudentController:
                 "telefono": row[6],
                 "active": row[7]
             } for row in rows] if rows else []
-        except sqlite3.Error as e:
-            logger.exception("Error en get_all_students")
-            return []
 
     def delete_student(self, identificacion):
         if not self.get_student_by_identification(identificacion):
             return False, "Estudiante no encontrado."
-        try:
-            query = "DELETE FROM estudiantes WHERE identificacion = ?"
-            with db_cursor(self.db) as cursor:
-                cursor.execute(query, (identificacion,))
+        query = "DELETE FROM estudiantes WHERE identificacion = ?"
+        if self._execute_and_commit(query, (identificacion,)):
             return True, "Estudiante eliminado correctamente."
-        except Exception as e:
-            logger.exception("Error al eliminar el estudiante")
-            return False, "Error al eliminar el estudiante."
+        return False, "Error al eliminar el estudiante."
 
     def deactivate_student(self, identificacion):
         if not self.get_student_by_identification(identificacion):
             return False, "Estudiante no encontrado."
-        try:
-            query = "UPDATE estudiantes SET active = 0 WHERE identificacion = ?"
-            with db_cursor(self.db) as cursor:
-                cursor.execute(query, (identificacion,))
+        query = "UPDATE estudiantes SET active = 0 WHERE identificacion = ?"
+        if self._execute_and_commit(query, (identificacion,)):
             return True, "Estudiante desactivado correctamente."
-        except Exception as e:
-            logger.exception("Error al desactivar el estudiante")
-            return False, "Error al desactivar el estudiante."
+        return False, "Error al desactivar el estudiante."
 
     def register_student(self, identificacion, nombre, apellido, course_id, representante, telefono, email):
         if not identificacion or not identificacion.isdigit():
@@ -114,51 +101,32 @@ class StudentController:
             INSERT INTO estudiantes (identificacion, nombre, apellido, course_id, representante, telefono, email, active)
             VALUES (?, ?, ?, ?, ?, ?, ?, 1)
         """
-        try:
-            with db_cursor(self.db) as cursor:
-                cursor.execute(query, (identificacion, nombre, apellido, course_id, representante, telefono, email))
+        if self._execute_and_commit(query, (identificacion, nombre, apellido, course_id, representante, telefono, email)):
             return True, "Estudiante registrado correctamente."
-        except Exception as e:
-            logger.exception("Error al registrar el estudiante")
-            return False, "Error al registrar el estudiante."
+        return False, "Error al registrar el estudiante."
 
     def get_payments_by_student(self, student_identificacion):
-        try:
-            query = "SELECT id FROM estudiantes WHERE identificacion = ?"
-            with db_cursor(self.db) as cursor:
-                cursor.execute(query, (student_identificacion,))
-                student_record = cursor.fetchone()
-            if not student_record:
-                return []
-            student_id = student_record[0]
-            query = "SELECT amount FROM payments WHERE student_id = ?"
-            with db_cursor(self.db) as cursor:
-                cursor.execute(query, (student_id,))
-                rows = cursor.fetchall()
-            return [{"amount": row[0]} for row in rows] if rows else []
-        except Exception as e:
-            logger.exception("Error al obtener pagos por estudiante")
+        query = "SELECT id FROM estudiantes WHERE identificacion = ?"
+        student_record = self._execute_fetchone(query, (student_identificacion,),
+                                                  "Error al obtener estudiante por identificación")
+        if not student_record:
             return []
+        student_id = student_record[0]
+        query = "SELECT amount FROM payments WHERE student_id = ?"
+        rows = self._execute_fetchall(query, (student_id,), "Error al obtener pagos por estudiante")
+        return [{"amount": row[0]} for row in rows] if rows else []
 
     def update_student_course(self, student_id, new_course_id):
-        try:
-            query = "UPDATE estudiantes SET course_id = ? WHERE id = ?"
-            with db_cursor(self.db) as cursor:
-                cursor.execute(query, (new_course_id, student_id))
+        query = "UPDATE estudiantes SET course_id = ? WHERE id = ?"
+        if self._execute_and_commit(query, (new_course_id, student_id)):
             return True, "Curso actualizado correctamente."
-        except Exception as e:
-            logger.exception("Error al actualizar el curso del estudiante")
-            return False, f"Error al actualizar el curso: {e}"
+        return False, "Error al actualizar el curso del estudiante."
     
     def update_student_info(self, student_id, new_course_id, new_representative, new_phone):
         """
         Actualiza el curso, el nombre del representante y el teléfono del representante para un estudiante.
         """
-        try:
-            query = "UPDATE estudiantes SET course_id = ?, representante = ?, telefono = ? WHERE id = ?"
-            with db_cursor(self.db) as cursor:
-                cursor.execute(query, (new_course_id, new_representative, new_phone, student_id))
+        query = "UPDATE estudiantes SET course_id = ?, representante = ?, telefono = ? WHERE id = ?"
+        if self._execute_and_commit(query, (new_course_id, new_representative, new_phone, student_id)):
             return True, "Datos del estudiante actualizados correctamente."
-        except Exception as e:
-            logger.exception("Error al actualizar la información del estudiante")
-            return False, f"Error al actualizar la información del estudiante: {e}"
+        return False, "Error al actualizar la información del estudiante."

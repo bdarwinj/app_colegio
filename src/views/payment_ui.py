@@ -1,4 +1,3 @@
-# src/views/payment_ui.py
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 from fpdf import FPDF
@@ -41,52 +40,59 @@ class PaymentUI:
         self.create_widgets()
 
     def create_widgets(self):
-        # Frame for student search functionality
+        """Crea y organiza los widgets de la interfaz de registro de pago."""
+        # Frame para la búsqueda de alumnos
         search_frame = ttk.LabelFrame(self.window, text="Buscar Alumno")
         search_frame.pack(padx=10, pady=10, fill="x")
         
-        ttk.Label(search_frame, text="Ingrese identificación, nombre o apellido:").pack(anchor="w", padx=5, pady=5)
+        ttk.Label(search_frame, text="Ingrese identificación, nombre o apellido:")\
+            .pack(anchor="w", padx=5, pady=5)
         self.search_var = tk.StringVar()
         self.search_entry = ttk.Entry(search_frame, textvariable=self.search_var, width=50)
         self.search_entry.pack(fill="x", padx=5, pady=5)
         self.search_entry.bind("<KeyRelease>", self.on_search)
         
-        # Listbox to display search results
+        # Listbox para mostrar resultados de búsqueda
         self.results_listbox = tk.Listbox(search_frame, height=8)
         self.results_listbox.pack(fill="both", padx=5, pady=5)
         self.results_listbox.bind("<<ListboxSelect>>", self.on_student_select)
         
-        # Frame for displaying selected student and payment details
+        # Frame para mostrar detalles del pago
         details_frame = ttk.LabelFrame(self.window, text="Detalles del Pago")
         details_frame.pack(padx=10, pady=10, fill="x")
         
-        # Selected student field (read-only)
-        ttk.Label(details_frame, text="Alumno Seleccionado:").grid(row=0, column=0, sticky="w", pady=5)
+        # Campo para alumno seleccionado (read-only)
+        ttk.Label(details_frame, text="Alumno Seleccionado:")\
+            .grid(row=0, column=0, sticky="w", pady=5)
         self.selected_student_var = tk.StringVar()
-        self.selected_student_entry = ttk.Entry(details_frame, textvariable=self.selected_student_var, state="readonly", width=45)
+        self.selected_student_entry = ttk.Entry(details_frame, textvariable=self.selected_student_var,
+                                                state="readonly", width=45)
         self.selected_student_entry.grid(row=0, column=1, pady=5, padx=5)
         
-        # Payment amount field
-        ttk.Label(details_frame, text="Monto:").grid(row=1, column=0, sticky="w", pady=5)
+        # Campo para monto del pago
+        ttk.Label(details_frame, text="Monto:")\
+            .grid(row=1, column=0, sticky="w", pady=5)
         self.entry_amount = ttk.Entry(details_frame, width=45)
         self.entry_amount.grid(row=1, column=1, pady=5, padx=5)
         
-        # Payment description field
-        ttk.Label(details_frame, text="Descripción:").grid(row=2, column=0, sticky="w", pady=5)
+        # Campo para descripción del pago
+        ttk.Label(details_frame, text="Descripción:")\
+            .grid(row=2, column=0, sticky="w", pady=5)
         self.entry_description = ttk.Entry(details_frame, width=45)
         self.entry_description.grid(row=2, column=1, pady=5, padx=5)
         
-        # Register payment button
+        # Botón para registrar el pago
         btn_register = ttk.Button(self.window, text="Registrar Pago", command=self.register_payment)
         btn_register.pack(pady=10)
         
-        # Bind Enter key to register payment
+        # Bind de la tecla Enter para registrar pago
         self.window.bind('<Return>', lambda event: self.register_payment())
         
-        # Initially populate the listbox with all students
+        # Inicialmente se pobla el listbox con todos los estudiantes
         self.populate_students_listbox(self.all_students)
 
     def on_search(self, event):
+        """Filtra la lista de alumnos según la consulta ingresada."""
         query = self.search_var.get().lower().strip()
         try:
             if query:
@@ -104,14 +110,16 @@ class PaymentUI:
             messagebox.showerror(MSG_ERROR, f"Error al buscar alumnos: {e}")
 
     def populate_students_listbox(self, students):
+        """Actualiza el listbox con los estudiantes filtrados."""
         self.results_listbox.delete(0, tk.END)
-        self.students_data = []  # Mapping between listbox indices and student data
+        self.students_data = []  # Mapeo entre índices y datos del alumno
         for student in students:
             full_name = f"{student['identificacion']} - {student['nombre']} {student['apellido']}"
             self.results_listbox.insert(tk.END, full_name.title())
             self.students_data.append(student)
 
     def on_student_select(self, event):
+        """Actualiza el campo de alumno seleccionado según la elección en el listbox."""
         try:
             selection = self.results_listbox.curselection()
             if selection:
@@ -129,7 +137,7 @@ class PaymentUI:
     def format_receipt_number(self, receipt_number, payment_date):
         """
         Formatea el número de recibo para incluir la fecha en formato YYYYMMDD y el número con 4 dígitos.
-        Ejemplo: Si payment_date es "2025-03-03 14:25:00" y receipt_number es 5, retorna "20250303-0005".
+        Ejemplo: "20250303-0005"
         """
         try:
             dt = datetime.datetime.strptime(payment_date, "%Y-%m-%d %H:%M:%S")
@@ -141,6 +149,9 @@ class PaymentUI:
             return str(receipt_number)
 
     def register_payment(self):
+        """
+        Registra el pago del alumno seleccionado, genera un PDF con el recibo y muestra el resultado.
+        """
         if not self.selected_student:
             messagebox.showwarning(MSG_SELECTION_REQUIRED, "Seleccione un alumno.")
             return
@@ -162,7 +173,7 @@ class PaymentUI:
             messagebox.showwarning(MSG_FIELDS_INCOMPLETE, "Ingrese una descripción.")
             return
         
-        # Payment confirmation
+        # Confirmación de pago
         if not messagebox.askyesno("Confirmar", MSG_CONFIRMATION):
             return
         
@@ -178,7 +189,7 @@ class PaymentUI:
                 configs = self.config_controller.get_all_configs()
                 school_name = configs.get("SCHOOL_NAME", DEFAULT_SCHOOL_NAME)
                 logo_path = configs.get("LOGO_PATH", DEFAULT_LOGO_PATH)
-                # Usamos la función centralizada para agregar el encabezado al PDF
+                # Agregar encabezado común al PDF
                 add_pdf_header(pdf, logo_path, school_name, f"Recibo de Pago Nº {formatted_receipt}")
                 
                 pdf.set_font("Arial", "", 12)

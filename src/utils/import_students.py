@@ -36,12 +36,13 @@ def import_students_from_excel(db, excel_path, course_controller, student_contro
     """
     errors = []
     imported_count = 0
+
     try:
         wb = openpyxl.load_workbook(excel_path)
     except Exception as e:
         logger.exception("Error al cargar el archivo Excel")
         return 0, [f"Error al cargar el archivo Excel: {e}"]
-    
+
     # Definir los nombres requeridos (normalizados) y sus alternativas
     required_columns = {
         "nombre": ["nombre del estudiante", "nombre"],
@@ -50,55 +51,43 @@ def import_students_from_excel(db, excel_path, course_controller, student_contro
         "correo electronico": ["correo electronico", "correo electrónico"],
         "acudiente": ["acudiente"]
     }
-    
     # Normalizar las alternativas para cada campo
     for key in required_columns:
         required_columns[key] = [normalize_string(alt) for alt in required_columns[key]]
-    
-    # Procesar cada hoja
+
+    # Procesar cada hoja del libro
     for sheet_name in wb.sheetnames:
         ws = wb[sheet_name]
-        # Leer encabezados de la primera fila y normalizarlos
-        headers = {}
+
+        # Leer y normalizar los encabezados de la primera fila
         header_row = next(ws.iter_rows(min_row=1, max_row=1, values_only=True))
-        for idx, cell in enumerate(header_row):
-            if cell:
-                headers[normalize_string(cell)] = idx
-        
-        # Verificar que existan todas las columnas requeridas
-        missing_cols = []
-        for key, alternatives in required_columns.items():
-            if not any(alt in headers for alt in alternatives):
-                missing_cols.append(key)
+        headers = {normalize_string(cell): idx for idx, cell in enumerate(header_row) if cell}
+
+        # Verificar columnas requeridas
+        missing_cols = [key for key, alts in required_columns.items() if not any(alt in headers for alt in alts)]
         if missing_cols:
             errors.append(f"Hoja '{sheet_name}': Faltan columnas para: {', '.join(missing_cols)}")
             continue
-        
+
         # Obtener índices de las columnas usando la primera alternativa encontrada para cada campo
         col_indices = {}
-        for key, alternatives in required_columns.items():
-            for alt in alternatives:
+        for key, alts in required_columns.items():
+            for alt in alts:
                 if alt in headers:
                     col_indices[key] = headers[alt]
                     break
-        
-        # Buscar el curso en la base de datos usando el nombre de la hoja.
-        # Se normaliza el nombre de la hoja y se intenta separar en dos partes (base y sección),
-        # excepto si la hoja es "pre-jardin", en cuyo caso se omite la división.
-        course_data = None
+
+        # Determinar el curso a partir del nombre de la hoja
         courses = course_controller.get_all_courses()
         sheet_name_norm = normalize_string(sheet_name)
         if sheet_name_norm == "pre-jardin":
             base_sheet = "pre-jardin"
             section_sheet = ""
         else:
-            if "-" in sheet_name_norm:
-                parts = [p.strip() for p in sheet_name_norm.split("-") if p.strip()]
-            else:
-                parts = sheet_name_norm.split()
+            parts = [p.strip() for p in (sheet_name_norm.split("-") if "-" in sheet_name_norm else sheet_name_norm.split()) if p.strip()]
             base_sheet = parts[0] if parts else sheet_name_norm
             section_sheet = parts[1] if len(parts) > 1 else ""
-        # Buscar en la lista de cursos
+        course_data = None
         for course in courses:
             course_name_norm = normalize_string(course.get("name", ""))
             course_seccion_norm = normalize_string(course.get("seccion", ""))
@@ -114,15 +103,15 @@ def import_students_from_excel(db, excel_path, course_controller, student_contro
             errors.append(f"Hoja '{sheet_name}': Curso no encontrado en la base de datos.")
             continue
         course_id = course_data.get("id")
-        
-        # Crear instancia de EnrollmentController para registrar inscripciones
-        from src.controllers.enrollment_controller import EnrollmentController
+
+        # Crear instancia de EnrollmentController (se usa la importación ya realizada al inicio)
         enrollment_controller = EnrollmentController(db, student_controller, course_controller)
         current_year = datetime.datetime.now().year
-        
-        # Procesar filas (desde la segunda fila)
+
+        # Procesar las filas (a partir de la segunda fila)
         for row in ws.iter_rows(min_row=2, values_only=True):
             try:
+                # Asignar valores de cada campo
                 nombre_full = row[col_indices["nombre"]]
                 if not nombre_full:
                     errors.append(f"Hoja '{sheet_name}': Fila con 'nombre' vacío, omitiendo.")
@@ -131,24 +120,34 @@ def import_students_from_excel(db, excel_path, course_controller, student_contro
                 if len(words) < 4:
                     errors.append(f"Hoja '{sheet_name}': Valor en 'nombre' incorrecto: {nombre_full}")
                     continue
-                # Las dos primeras palabras son el nombre; las dos siguientes, el apellido
+                # Según la lógica actual, las dos primeras palabras se usan para el apellido y las dos siguientes para el nombre
                 nombre = " ".join(words[2:4])
                 apellido = " ".join(words[:2])
-                identificacion = str(row[col_indices["identificación"]]).strip() if row[col_indices["identificación"]] else "123456789"
-                telefono = str(row[col_indices["telefono"]]).strip() if row[col_indices["telefono"]] else ""
-                email = str(row[col_indices["correo electronico"]]).strip() if row[col_indices["correo electronico"]] else "email@email.com"
-                acudiente = str(row[col_indices["acudiente"]]).strip() if row[col_indices["acudiente"]] else ""
-                
+
+                # Obtener y limpiar otros campos
+                id_val = row[col_indices["identificación"]]
+                identificacion = str(id_val).strip() if id_val else "123456789"
+
+                tel_val = row[col_indices["telefono"]]
+                telefono = str(tel_val).strip() if tel_val else ""
+
+                email_val = row[col_indices["correo electronico"]]
+                email = str(email_val).strip() if email_val else "email@email.com"
+
+                acudiente_val = row[col_indices["acudiente"]]
+                acudiente = str(acudiente_val).strip() if acudiente_val else ""
+
                 # Validar formato de email
                 if email and not re.match(r"[^@]+@[^@]+\.[^@]+", email):
                     errors.append(f"Hoja '{sheet_name}': Email inválido: {email}")
                     continue
 
+                # Registrar estudiante
                 success, msg = student_controller.register_student(
                     identificacion, nombre, apellido, course_id, acudiente, telefono, email
                 )
                 if success:
-                    # Obtener el estudiante recién registrado para crear su inscripción
+                    # Obtener el estudiante recién registrado y crear su inscripción
                     student_record = student_controller.get_student_by_identification(identificacion)
                     if student_record:
                         student_id = student_record["id"]

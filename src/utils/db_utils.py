@@ -1,4 +1,3 @@
-# src/utils/db_utils.py
 import sqlite3
 from contextlib import contextmanager
 
@@ -9,14 +8,13 @@ def db_cursor(db):
     Realiza commit si la operación se completa sin errores; en caso de excepción, ejecuta rollback.
     Al finalizar, cierra el cursor.
     """
-    # Si el objeto db tiene el atributo 'connection', lo usamos; de lo contrario, asumimos que db es una conexión.
     connection = db.connection if hasattr(db, "connection") else db
     cursor = connection.cursor()
     try:
         yield cursor
         connection.commit()
-    except Exception as e:
+    except Exception:
         connection.rollback()
-        raise e
+        raise
     finally:
         cursor.close()

@@ -1,9 +1,7 @@
-# src/views/student_details_window.py
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 from fpdf import FPDF
 import datetime
-import traceback
 import os
 import locale
 from src.controllers.student_controller import StudentController
@@ -15,6 +13,10 @@ from src.views.pdf_common import add_pdf_header  # Función común para encabeza
 from src.views.update_student_window import UpdateStudentWindow  # Ventana para actualizar datos
 
 class StudentDetailsWindow(tk.Toplevel):
+    """
+    Ventana para mostrar detalles de un estudiante, incluyendo información personal y
+    su historial de pagos. También permite desactivar, eliminar, exportar a PDF y actualizar datos.
+    """
     def __init__(self, db, student_identificacion):
         super().__init__()
         self.db = db
@@ -22,11 +24,11 @@ class StudentDetailsWindow(tk.Toplevel):
         self.student_controller = StudentController(db)
         self.payment_controller = PaymentController(db)
         self.config_controller = ConfigController(db)
-        self.course_controller = CourseController(db)  # Para obtener datos del curso (incluyendo sección)
+        self.course_controller = CourseController(db)
         self.title("Detalles del Estudiante")
         self.geometry("700x550")
-        self.transient()  # Hace que la ventana sea hija de la principal
-        self.grab_set()   # Evita que el usuario interactúe con la principal
+        self.transient()  # Ventana hija de la principal
+        self.grab_set()   # Evita interacción con la principal
         self.create_widgets()
         self.load_student_details()
 
@@ -34,50 +36,65 @@ class StudentDetailsWindow(tk.Toplevel):
         self.frame_details = ttk.Frame(self, padding=10)
         self.frame_details.pack(fill="both", expand=True)
         
-        # Título de la ventana
-        self.label_info = ttk.Label(self.frame_details, text="Información del Estudiante", font=("Arial", 16, "bold"))
+        # Título
+        self.label_info = ttk.Label(self.frame_details, text="Información del Estudiante",
+                                    font=("Arial", 16, "bold"))
         self.label_info.pack(pady=5)
-
-        self.details_text = tk.Text(self.frame_details, height=7, width=80, state="disabled", font=("Arial", 12))
+        
+        # Área de detalles (read-only)
+        self.details_text = tk.Text(self.frame_details, height=7, width=80,
+                                    state="disabled", font=("Arial", 12))
         self.details_text.pack(pady=5)
         
-        # Botones para acciones
+        # Botones de acciones
         self.buttons_frame = ttk.Frame(self.frame_details)
         self.buttons_frame.pack(pady=10)
-
-        self.btn_deactivate = ttk.Button(self.buttons_frame, text="Desactivar Estudiante", command=self.deactivate_student)
+        self.btn_deactivate = ttk.Button(self.buttons_frame, text="Desactivar Estudiante",
+                                         command=self.deactivate_student)
         self.btn_deactivate.grid(row=0, column=0, padx=5)
-
-        self.btn_delete = ttk.Button(self.buttons_frame, text="Eliminar Estudiante", command=self.delete_student)
+        self.btn_delete = ttk.Button(self.buttons_frame, text="Eliminar Estudiante",
+                                     command=self.delete_student)
         self.btn_delete.grid(row=0, column=1, padx=5)
-
-        self.btn_export_pdf = ttk.Button(self.buttons_frame, text="Exportar a PDF", command=self.export_pdf)
+        self.btn_export_pdf = ttk.Button(self.buttons_frame, text="Exportar a PDF",
+                                         command=self.export_pdf)
         self.btn_export_pdf.grid(row=0, column=2, padx=5)
-        
-        # Botón para actualizar datos del estudiante
-        self.btn_update = ttk.Button(self.buttons_frame, text="Actualizar Datos", command=self.open_update_window)
+        self.btn_update = ttk.Button(self.buttons_frame, text="Actualizar Datos",
+                                     command=self.open_update_window)
         self.btn_update.grid(row=0, column=3, padx=5)
         
-        # Etiqueta para el historial de pagos
-        self.label_history = ttk.Label(self.frame_details, text="Historial de Pagos", font=("Arial", 14, "bold"))
+        # Historial de pagos
+        self.label_history = ttk.Label(self.frame_details, text="Historial de Pagos",
+                                       font=("Arial", 14, "bold"))
         self.label_history.pack(pady=5)
-        
-        # Creando la tabla para mostrar los pagos
         columns = ("receipt", "amount", "date", "description")
         self.tree_payments = ttk.Treeview(self.frame_details, columns=columns, show="headings", height=8)
         self.tree_payments.heading("receipt", text="Nº Recibo")
         self.tree_payments.heading("amount", text="Monto")
         self.tree_payments.heading("date", text="Fecha de Pago")
         self.tree_payments.heading("description", text="Descripción")
-        
         self.tree_payments.column("receipt", width=80, anchor="center")
         self.tree_payments.column("amount", width=100, anchor="e")
         self.tree_payments.column("date", width=150, anchor="center")
         self.tree_payments.column("description", width=300, anchor="w")
-        
         self.tree_payments.pack(pady=5, fill="x")
         self.tree_payments.bind("<Double-1>", self.on_payment_double_click)
-        
+
+    def get_course_display(self, student):
+        """
+        Obtiene el nombre completo del curso a partir de la información del estudiante.
+        Si student ya tiene 'course_name', se usa; de lo contrario, se consulta.
+        """
+        curso = student.get("course_name", "")
+        if not curso:
+            course_id = student.get("course_id")
+            if course_id:
+                course_data = self.course_controller.get_course_by_id(course_id)
+                if course_data:
+                    name = course_data.get("name", "")
+                    seccion = course_data.get("seccion", "")
+                    curso = f"{name} - {seccion}" if seccion and seccion.strip() else name
+        return curso
+
     def load_student_details(self):
         try:
             student_row = self.student_controller.get_student_by_identification(self.student_identificacion)
@@ -87,29 +104,19 @@ class StudentDetailsWindow(tk.Toplevel):
                 return
 
             student = dict(student_row)
-            # Capitalizar nombre, apellido y representante
+            # Capitalización y formateo
             student['nombre'] = student.get('nombre', '').capitalize()
             student['apellido'] = student.get('apellido', '').capitalize()
             student['representante'] = student.get('representante', '').capitalize()
             student['email'] = student.get('email', '').lower()
+            curso = self.get_course_display(student)
             
-            # Obtener el nombre completo del curso: si student ya trae "course_name", se usa; si no, se consulta
-            curso = student.get('course_name', '')
-            if not curso:
-                course_id = student.get('course_id')
-                if course_id:
-                    course_data = self.course_controller.get_course_by_id(course_id)
-                    if course_data:
-                        name = course_data.get('name', '')
-                        seccion = course_data.get('seccion', '')
-                        curso = f"{name} - {seccion}" if seccion and seccion.strip() else name
-
             info = (
                 f"ID: {student.get('id', '')}\n"
                 f"Identificación: {student.get('identificacion', '')}\n"
                 f"Nombre: {student['nombre']}\n"
                 f"Apellido: {student['apellido']}\n"
-                f"Correo: {student['email']}\n"  # Nuevo campo para email
+                f"Correo: {student['email']}\n"
                 f"Curso: {curso}\n"
                 f"Representante: {student['representante']}\n"
                 f"Teléfono: {student.get('telefono', '')}\n"
@@ -121,15 +128,15 @@ class StudentDetailsWindow(tk.Toplevel):
             self.details_text.insert(tk.END, info)
             self.details_text.configure(state="disabled")
             
-            # Cargar y mostrar el historial de pagos en la tabla
+            # Actualizar historial de pagos
             self.update_payment_history(student.get("id"))
         except Exception as e:
             messagebox.showerror("Error", f"Error al cargar los detalles del estudiante: {e}")
 
     def update_payment_history(self, student_id):
+        # Limpiar la tabla
         for row in self.tree_payments.get_children():
             self.tree_payments.delete(row)
-        
         history_rows = self.payment_controller.get_payments_by_student(student_id)
         if history_rows:
             for payment_row in history_rows:
@@ -156,7 +163,6 @@ class StudentDetailsWindow(tk.Toplevel):
             configs = self.config_controller.get_all_configs()
             school_name = configs.get("SCHOOL_NAME", DEFAULT_SCHOOL_NAME).title()
             logo_path = configs.get("LOGO_PATH", DEFAULT_LOGO_PATH)
-            
             try:
                 formatted_amount = f"{float(amount):,.2f}"
             except Exception:
@@ -230,16 +236,9 @@ class StudentDetailsWindow(tk.Toplevel):
             student['nombre'] = student.get('nombre', '').capitalize()
             student['apellido'] = student.get('apellido', '').capitalize()
             student['representante'] = student.get('representante', '').capitalize()
+            student['email'] = student.get('email', '').lower()
         
-            curso = student.get('course_name', '')
-            if not curso:
-                course_id = student.get('course_id')
-                if course_id:
-                    course_data = self.course_controller.get_course_by_id(course_id)
-                    if course_data:
-                        name = course_data.get('name', '')
-                        seccion = course_data.get('seccion', '')
-                        curso = f"{name} - {seccion}" if seccion and seccion.strip() else name
+            curso = self.get_course_display(student)
         
             pdf = FPDF()
             pdf.add_page()
@@ -270,7 +269,7 @@ class StudentDetailsWindow(tk.Toplevel):
             pdf.cell(0, 10, "Historial de Pagos", ln=True)
             pdf.ln(5)
         
-            # --- Nuevo bloque: Tabla Historial de Pagos con anchos dinámicos y descripción sin concatenación ---
+            # Tabla Historial de Pagos
             headers = ["Nº Recibo", "Monto", "Fecha de Pago", "Descripción"]
             pdf.set_font("Arial", "B", 12)
             table_data = []
@@ -278,7 +277,6 @@ class StudentDetailsWindow(tk.Toplevel):
             if history_rows:
                 for payment_row in history_rows:
                     payment = dict(payment_row)
-                    # Utilizar solo la descripción
                     row = [
                         str(payment.get("receipt_number", "")),
                         str(payment.get("amount", "")),
@@ -287,8 +285,8 @@ class StudentDetailsWindow(tk.Toplevel):
                     ]
                     table_data.append(row)
         
-            # Calcular el ancho máximo para cada columna
-            padding = 4  # margen extra
+            # Calcular anchos dinámicos para cada columna
+            padding = 4
             col_widths = []
             for col in range(len(headers)):
                 max_width = pdf.get_string_width(headers[col])
@@ -311,7 +309,6 @@ class StudentDetailsWindow(tk.Toplevel):
                     pdf.ln()
             else:
                 pdf.cell(sum(col_widths), 10, "No se han encontrado pagos.", border=1, ln=True)
-            # --- Fin del bloque ---
         
             pdf.ln(10)
             pdf.set_font("Arial", "", 10)
@@ -346,11 +343,12 @@ class StudentDetailsWindow(tk.Toplevel):
         from src.views.update_student_window import UpdateStudentWindow
         UpdateStudentWindow(self, student, self.student_controller, self.course_controller, user_controller)
 
+
 if __name__ == "__main__":
     import sqlite3
     db = sqlite3.connect("colegio.db")
     db.row_factory = sqlite3.Row
     root = tk.Tk()
     root.withdraw()  # Ocultar ventana principal
-    ui = StudentDetailsWindow(db, "12345")  # Ejemplo: asegúrate de usar una identificación válida
+    ui = StudentDetailsWindow(db, "12345")  # Ejemplo: usar identificación válida
     root.mainloop()

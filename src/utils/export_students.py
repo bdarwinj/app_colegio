@@ -11,76 +11,15 @@ from itertools import groupby
 # Constante para los encabezados de la tabla de estudiantes
 HEADERS = ["Identificacion", "Nombre", "Apellido", "Grado", "Representante", "Numero de Telefono"]
 
-def _preparar_students(students):
+def _assign_course_name(students, course_controller):
     """
-    Convierte cada registro de estudiante a diccionario y los ordena por curso,
-    siguiendo la secuencia definida (de pre-jardin a once).
-    Si existen cursos con el mismo nombre base, se ordenan alfabéticamente por el nombre completo.
-    
-    Retorna la lista final de estudiantes con la clave "course_name" asignada
-    para que sea más fácil exportar.
+    Asigna a cada estudiante la clave 'course_name' si no existe, utilizando course_controller.
+    Retorna una nueva lista de estudiantes con course_name actualizado.
     """
-    prepared_students = []
-    keys = ["id", "identificacion", "nombre", "apellido", "course_id", "representante", "telefono", "active"]
-    
-    for student in students:
-        if isinstance(student, dict):
-            prepared_students.append(student.copy())  # Copia para no alterar el original
-        else:
-            try:
-                student_dict = dict(zip(keys, student))
-                prepared_students.append(student_dict)
-            except Exception as e:
-                print(f"Error al convertir estudiante a diccionario: {e}")
-                continue
-
-    # Definir la secuencia de cursos (en minúsculas) en orden ascendente
-    course_order = [
-        "pre-jardin", "jardin", "transicion", "primero", "segundo", "tercero",
-        "cuarto", "quinto", "sexto", "septimo", "octavo", "noveno", "decimo", "once"
-    ]
-    
-    def get_course_base(full_course_name):
-        """
-        Extrae la parte base del curso (ignorando la sección),
-        por ejemplo "Primero" de "Primero - B", y lo retorna en minúsculas.
-        """
-        return full_course_name.split("-")[0].strip().lower() if full_course_name else ""
-
-    def course_sort_key(st):
-        """
-        Determina la clave de ordenación en base al nombre del curso.
-        1) rank según la secuencia course_order,
-        2) nombre completo en minúsculas (para desempatarlos alfabéticamente).
-        """
-        course_name = st.get("course_name", "")
-        base = get_course_base(course_name)
-        try:
-            rank = course_order.index(base)
-        except ValueError:
-            rank = len(course_order)  # Si no se encuentra, se va al final
-        return (rank, course_name.lower())
-
-    return sorted(prepared_students, key=course_sort_key)
-
-def export_students_to_excel(students, output_filename, school_name, logo_path, course_controller):
-    """
-    Exporta una lista de registros de estudiantes a un archivo Excel.
-    Genera varias hojas:
-      - Una por cada grado (course_name) con los estudiantes correspondientes.
-      - Una final con todos los estudiantes ("Todos").
-    
-    Cada registro debe tener las claves:
-      identificacion, nombre, apellido, course_name (o se asigna dentro), representante, telefono.
-    """
-    wb = openpyxl.Workbook()
-
-    # Antes de ordenar, asignamos course_name a cada estudiante
-    students_with_course_name = []
+    assigned = []
     for st in students:
         st_copy = st.copy()
         if "course_name" not in st_copy or not st_copy["course_name"]:
-            # Obtener el nombre completo del curso desde course_id
             course_id = st_copy.get("course_id", "")
             if course_id:
                 try:
@@ -94,16 +33,82 @@ def export_students_to_excel(students, output_filename, school_name, logo_path, 
                 except Exception as e:
                     print(f"Error al obtener nombre del curso para course_id {course_id}: {e}")
                     st_copy["course_name"] = ""
-        students_with_course_name.append(st_copy)
+        assigned.append(st_copy)
+    return assigned
 
+def _preparar_students(students):
+    """
+    Convierte cada registro de estudiante a diccionario y los ordena por curso,
+    siguiendo la secuencia definida (de pre-jardin a once).
+    Si existen cursos con el mismo nombre base, se ordenan alfabéticamente por el nombre completo.
+    
+    Retorna la lista final de estudiantes con la clave "course_name" asignada
+    para que sea más fácil exportar.
+    """
+    prepared_students = []
+    keys = ["id", "identificacion", "nombre", "apellido", "course_id", "representante", "telefono", "active"]
+    
+    for student in students:
+        try:
+            if isinstance(student, dict):
+                prepared_students.append(student.copy())
+            else:
+                prepared_students.append(dict(zip(keys, student)))
+        except Exception as e:
+            print(f"Error al convertir estudiante a diccionario: {e}")
+            continue
+
+    # Definir la secuencia de cursos (en minúsculas) en orden ascendente
+    course_order = [
+        "pre-jardin", "jardin", "transicion", "primero", "segundo", "tercero",
+        "cuarto", "quinto", "sexto", "septimo", "octavo", "noveno", "decimo", "once"
+    ]
+    
+    def get_course_base(full_course_name):
+        """
+        Extrae la parte base del curso (ignorando la sección),
+        por ejemplo "Primero" de "Primero - B", y lo retorna en minúsculas.
+        """
+        return full_course_name.split("-")[0].strip().lower() if full_course_name else ""
+    
+    def course_sort_key(st):
+        """
+        Determina la clave de ordenación en base al nombre del curso.
+        1) rank según la secuencia course_order,
+        2) nombre completo en minúsculas (para desempatarlos alfabéticamente).
+        """
+        course_name = st.get("course_name", "")
+        base = get_course_base(course_name)
+        try:
+            rank = course_order.index(base)
+        except ValueError:
+            rank = len(course_order)  # Si no se encuentra, se va al final
+        return (rank, course_name.lower())
+    
+    return sorted(prepared_students, key=course_sort_key)
+
+def export_students_to_excel(students, output_filename, school_name, logo_path, course_controller):
+    """
+    Exporta una lista de registros de estudiantes a un archivo Excel.
+    Genera varias hojas:
+      - Una por cada grado (course_name) con los estudiantes correspondientes.
+      - Una final con todos los estudiantes ("Todos").
+    
+    Cada registro debe tener las claves:
+      identificacion, nombre, apellido, course_name (o se asigna dentro), representante, telefono.
+    """
+    wb = openpyxl.Workbook()
+    
+    # Asignar course_name a cada estudiante si no existe
+    students_with_course_name = _assign_course_name(students, course_controller)
+    
     # Ordenar estudiantes con la función _preparar_students
     students_sorted = _preparar_students(students_with_course_name)
-
+    
     # Agrupar por course_name exacto (para hojas separadas)
     def group_key(st):
         return st.get("course_name", "")
-    # groupby asume que la lista ya está ordenada según la clave
-    # Por eso, ordenamos de nuevo por course_name
+    # groupby asume que la lista ya está ordenada según la clave, por eso se ordena de nuevo
     students_sorted_by_name = sorted(students_sorted, key=group_key)
     grouped = groupby(students_sorted_by_name, key=group_key)
     
@@ -165,7 +170,7 @@ def export_students_to_excel(students, output_filename, school_name, logo_path, 
                     max_length = max(max_length, cell_length)
             ws.column_dimensions[col_letter].width = max_length + 2
 
-    # Crear una hoja por cada curso_name
+    # Crear una hoja por cada course_name
     for course_name, group in grouped:
         group_list = list(group)
         sheet_name = f"{course_name}" if course_name else "Grado_Desconocido"
@@ -175,7 +180,7 @@ def export_students_to_excel(students, output_filename, school_name, logo_path, 
     default_sheet = wb.active
     wb.remove(default_sheet)
     _crear_hoja(wb, "Todos", students_sorted)
-
+    
     wb.save(output_filename)
     return output_filename
 
@@ -184,7 +189,7 @@ def export_students_to_pdf(students, output_filename, school_name, logo_path, co
     Exporta una lista de registros de estudiantes a un archivo PDF, ordenados según la secuencia
     (pre-jardin hasta once). Si hay cursos con la misma base, se ordena alfabéticamente.
     """
-    pdf = FPDF(orientation="L", unit="mm", format=(216, 330))
+    pdf = FPDF(orientation="L", unit="mm", format=(216, 385))
     pdf.add_page()
     
     if os.path.exists(logo_path):
@@ -202,30 +207,13 @@ def export_students_to_pdf(students, output_filename, school_name, logo_path, co
     pdf.set_text_color(255, 255, 255)
     pdf.set_font("Arial", "B", 12)
     col_widths = [len(header) * 3 for header in HEADERS]
-
-    # Primero, asignar course_name si no existe
-    students_with_course_name = []
-    for st in students:
-        st_copy = st.copy()
-        if "course_name" not in st_copy or not st_copy["course_name"]:
-            course_id = st_copy.get("course_id", "")
-            if course_id:
-                try:
-                    course_data = course_controller.get_course_by_id(course_id)
-                    if course_data:
-                        name = course_data.get("name", "")
-                        seccion = course_data.get("seccion", "")
-                        st_copy["course_name"] = f"{name} - {seccion}" if seccion else name
-                    else:
-                        st_copy["course_name"] = ""
-                except Exception as e:
-                    print(f"Error al obtener nombre del curso para course_id {course_id}: {e}")
-                    st_copy["course_name"] = ""
-        students_with_course_name.append(st_copy)
-
+    
+    # Asignar course_name a cada estudiante si no existe
+    students_with_course_name = _assign_course_name(students, course_controller)
+    
     # Ordenar usando _preparar_students
     students_sorted = _preparar_students(students_with_course_name)
-
+    
     # Ajustar el ancho de columnas
     for st in students_sorted:
         row_data = [
@@ -240,17 +228,17 @@ def export_students_to_pdf(students, output_filename, school_name, logo_path, co
             content_width = len(data) * 3
             if content_width > col_widths[i]:
                 col_widths[i] = content_width
-
+    
     # Encabezados
     for i, header in enumerate(HEADERS):
         pdf.cell(col_widths[i], 10, header, border=1, align="C", fill=True)
     pdf.ln()
-
+    
     pdf.set_text_color(0, 0, 0)
     pdf.set_font("Arial", "", 12)
     fill = False
     pdf.set_fill_color(240, 240, 240)
-
+    
     for st in students_sorted:
         row_data = [
             str(st.get("identificacion", "")),

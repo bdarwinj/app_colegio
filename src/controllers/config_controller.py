@@ -6,11 +6,10 @@ class ConfigController:
         """
         Inserta los valores predeterminados en la tabla config si no existen aún.
         """
-        for key, value in defaults.items():
-            self.db.cursor.execute("SELECT COUNT(*) FROM config WHERE key = ?", (key,))
-            count = self.db.cursor.fetchone()[0]
-            if count == 0:
-                self.db.cursor.execute("INSERT INTO config (key, value) VALUES (?, ?)", (key, value))
+        self.db.cursor.executemany(
+            "INSERT OR IGNORE INTO config (key, value) VALUES (?, ?)",
+            list(defaults.items())
+        )
         self.db.connection.commit()
 
     def get_config(self, key):
@@ -22,7 +21,7 @@ class ConfigController:
     def get_all_configs(self):
         query = "SELECT key, value FROM config"
         self.db.cursor.execute(query)
-        return dict((row["key"], row["value"]) for row in self.db.cursor.fetchall())
+        return {row["key"]: row["value"] for row in self.db.cursor.fetchall()}
 
     def update_config(self, key, value):
         try:

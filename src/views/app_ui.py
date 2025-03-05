@@ -1,7 +1,10 @@
 import tkinter as tk
-from tkinter import messagebox, filedialog
+from tkinter import messagebox, filedialog, ttk
 import datetime
 import logging
+import os
+import openpyxl
+
 from src.controllers.student_controller import StudentController
 from src.controllers.course_controller import CourseController
 from src.controllers.config_controller import ConfigController
@@ -25,9 +28,6 @@ from src.views.change_password_window import ChangePasswordWindow
 from src.views.course_management_window import CourseManagementWindow
 from src.utils.export_students import export_students_to_excel, export_students_to_pdf
 from src.utils.backup_restore import backup_database, restore_database
-from src.utils.import_students import import_students_from_excel
-import os
-from tkinter import ttk
 
 logging.basicConfig(filename='app_ui.log', level=logging.INFO, 
                     format='%(asctime)s - %(levelname)s - %(message)s')
@@ -49,15 +49,16 @@ class AppUI:
         self.user_controller = UserController(self.db)
         self.payment_controller = PaymentController(self.db)
         self.root = tk.Tk()
-        
+
         configs = self.config_controller.get_all_configs()
         self.school_name = configs.get("SCHOOL_NAME") or "School Name"
         self.logo_path = configs.get("LOGO_PATH") or ""
         self.abs_logo_path = os.path.abspath(self.logo_path)
-        
+
         self.root.title(f"{self.school_name} - Sistema de Pagos (Usuario: {self.user.username})")
         self.root.state("zoomed")
         self.create_widgets()
+
     def import_students_excel(self):
         excel_path = filedialog.askopenfilename(
             title="Seleccionar archivo Excel",
@@ -73,11 +74,11 @@ class AppUI:
             message += "Importación completada sin errores."
         messagebox.showinfo("Resultado de Importación", message)
         self.refrescar_lista()
-        
+
     def create_widgets(self):
         header_frame = HeaderFrame(self.root, self.school_name, self.abs_logo_path, self.open_change_password_window, self.logout)
         header_frame.pack(fill="x", padx=10, pady=10)
-        
+
         if self.user.role == "admin":
             self.frame_admin = AdminPanel(
                 self.root,
@@ -85,12 +86,12 @@ class AppUI:
                 payment_command=self.registrar_pago,
                 courses_command=self.manage_courses,
                 users_command=self.manage_users,
-                dashboard_command=self.open_dashboard_window,  # Nuevo callback
-                import_command=self.import_students_excel  # Se añade el argumento faltante
+                dashboard_command=self.open_dashboard_window,
+                import_command=self.import_students_excel
             )
             self.frame_admin.pack(padx=10, pady=10, fill="x")
             self.frame_form = StudentRegistrationFrame(self.root, self.course_controller, self.registrar_estudiante)
-            self.frame_form.pack(fill="both", expand=True, padx=(5,5))
+            self.frame_form.pack(fill="both", expand=True, padx=5, pady=5)
             self.frame_form.populate_courses()
         elif self.user.role == "user":
             self.btn_registrar_pago = ttk.Button(self.root, text="Registrar Pago", command=self.registrar_pago)
@@ -101,12 +102,11 @@ class AppUI:
 
         actions_frame = ActionButtons(self.root, self.refrescar_lista, self.generar_pdf, self.export_students_excel, self.export_students_pdf)
         actions_frame.pack(pady=5)
-        
+
         if self.user.role == "admin":
             backup_restore_frame = BackupRestoreFrame(self.root, self.backup_database, self.restore_database, self.manage_enrollments)
             backup_restore_frame.pack(pady=5)
 
-    # Métodos de funcionalidad básica (mantienen nombres y lógica original)
     def open_dashboard_window(self):
         DashboardWindow(self.root, self.db, self.student_controller, self.course_controller, self.payment_controller)
 
@@ -122,24 +122,20 @@ class AppUI:
     def manage_users(self):
         UserManagementUI(self.db)
 
-    # Fragmento de src/views/app_ui.py (método registrar_estudiante)
     def registrar_estudiante(self):
         identificacion = self.frame_form.entries["Número de Identificación"].get()
         nombre = self.frame_form.entries["Nombre"].get()
         apellido = self.frame_form.entries["Apellido"].get()
-        email = self.frame_form.entries["Correo Electrónico"].get()  # Nuevo campo
+        email = self.frame_form.entries["Correo Electrónico"].get()
         representante = self.frame_form.entries["Representante"].get()
         telefono = self.frame_form.entries["Teléfono"].get()
         course_name = self.frame_form.combo_course.get()
-        
-        # Verificar que todos los campos estén completos
+
         if not (identificacion and nombre and apellido and email and representante and telefono and course_name):
             messagebox.showwarning(MSG_FIELDS_INCOMPLETE, "Por favor, llene todos los campos.")
             return
-        
+
         course_id = self.frame_form.course_map.get(course_name)
-        
-        # Se pasa el email como argumento adicional
         success, msg = self.student_controller.register_student(
             identificacion, nombre, apellido, course_id, representante, telefono, email
         )
@@ -240,8 +236,8 @@ class AppUI:
             timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
             default_filename = f"{self.school_name}_Listado_Estudiantes_{timestamp}{file_extension}"
             file_path = filedialog.asksaveasfilename(defaultextension=file_extension,
-                                          filetypes=[(file_type, f"*{file_extension}")],
-                                          initialfile=default_filename)
+                                                     filetypes=[(file_type, f"*{file_extension}")],
+                                                     initialfile=default_filename)
             if not file_path:
                 return
             export_func(estudiantes, file_path, self.school_name, self.logo_path, self.course_controller)

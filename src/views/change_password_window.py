@@ -14,29 +14,33 @@ class ChangePasswordWindow(tk.Toplevel):
     def create_widgets(self):
         frame = ttk.Frame(self, padding="20")
         frame.pack(expand=True, fill="both")
-        
+
+        # Clave Actual
         ttk.Label(frame, text="Clave Actual:").grid(row=0, column=0, sticky="w", pady=5)
         self.old_password_entry = ttk.Entry(frame, show="*")
         self.old_password_entry.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
-        
+
+        # Nueva Clave
         ttk.Label(frame, text="Nueva Clave:").grid(row=1, column=0, sticky="w", pady=5)
         self.new_password_entry = ttk.Entry(frame, show="*")
         self.new_password_entry.grid(row=1, column=1, padx=5, pady=5, sticky="ew")
-        
+
+        # Confirmar Nueva Clave
         ttk.Label(frame, text="Confirmar Nueva Clave:").grid(row=2, column=0, sticky="w", pady=5)
         self.confirm_password_entry = ttk.Entry(frame, show="*")
         self.confirm_password_entry.grid(row=2, column=1, padx=5, pady=5, sticky="ew")
-        
+
+        # Botón para cambiar clave
         self.change_password_button = ttk.Button(frame, text="Cambiar Clave", command=self.change_password)
         self.change_password_button.grid(row=3, column=0, columnspan=2, pady=20)
-        
+
         frame.columnconfigure(1, weight=1)
 
     def validate_inputs(self):
         old_password = self.old_password_entry.get().strip()
         new_password = self.new_password_entry.get().strip()
         confirm_password = self.confirm_password_entry.get().strip()
-        
+
         if not old_password or not new_password or not confirm_password:
             messagebox.showerror("Error", "Todos los campos son obligatorios.")
             return False
@@ -48,12 +52,13 @@ class ChangePasswordWindow(tk.Toplevel):
     def change_password(self):
         if not self.validate_inputs():
             return
-        
+
         old_password = self.old_password_entry.get().strip()
         new_password = self.new_password_entry.get().strip()
-        
+        # Se obtiene el username de forma flexible (ya sea un objeto con atributo o un string)
+        username = self.current_user.username if hasattr(self.current_user, "username") else self.current_user
+
         try:
-            username = self.current_user.username if hasattr(self.current_user, "username") else self.current_user
             success, message = self.user_controller.change_password(username, old_password, new_password)
             if success:
                 messagebox.showinfo("Éxito", message)

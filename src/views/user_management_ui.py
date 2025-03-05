@@ -4,21 +4,26 @@ from src.controllers.user_controller import UserController
 
 class UserManagementUI:
     def __init__(self, db):
+        """
+        Inicializa la interfaz para administrar usuarios.
+        
+        :param db: Conexión a la base de datos.
+        """
         self.db = db
         self.user_controller = UserController(self.db)
         
         self.window = tk.Toplevel()
         self.window.title("Administrar Usuarios")
         self.window.geometry("400x300")
-        self.window.transient()  # Hace que la ventana sea hija de la principal
-        self.window.grab_set()  # Evita que el usuario interactúe con la principal
+        self.window.transient()  # Ventana hija de la principal
+        self.window.grab_set()   # Evita interacción con la ventana principal
         
         self.center_window(400, 300)  # Centrar ventana
         
         self.create_widgets()
 
     def center_window(self, width, height):
-        """ Centra la ventana en la pantalla """
+        """Centra la ventana en la pantalla."""
         self.window.update_idletasks()
         screen_width = self.window.winfo_screenwidth()
         screen_height = self.window.winfo_screenheight()
@@ -27,26 +32,32 @@ class UserManagementUI:
         self.window.geometry(f"{width}x{height}+{x}+{y}")
 
     def create_widgets(self):
+        """Crea y organiza los widgets del formulario de administración de usuarios."""
         frame = ttk.Frame(self.window, padding=10)
         frame.pack(expand=True, fill="both")
         
+        # Campo de nombre de usuario
         ttk.Label(frame, text="Nombre de Usuario:").grid(row=0, column=0, sticky="w", pady=5)
         self.entry_username = ttk.Entry(frame, width=30)
         self.entry_username.grid(row=0, column=1, pady=5)
         
+        # Campo de contraseña
         ttk.Label(frame, text="Contraseña:").grid(row=1, column=0, sticky="w", pady=5)
         self.entry_password = ttk.Entry(frame, show="*", width=30)
         self.entry_password.grid(row=1, column=1, pady=5)
         
+        # Selección de rol
         ttk.Label(frame, text="Rol:").grid(row=2, column=0, sticky="w", pady=5)
         self.combo_role = ttk.Combobox(frame, state="readonly", values=["admin", "user"], width=28)
         self.combo_role.grid(row=2, column=1, pady=5)
-        self.combo_role.current(1)  # Default "user"
+        self.combo_role.current(1)  # Por defecto "user"
         
+        # Botón para crear usuario
         btn_create = ttk.Button(frame, text="Crear Usuario", command=self.create_user)
         btn_create.grid(row=3, column=0, columnspan=2, pady=15)
 
     def create_user(self):
+        """Valida la entrada y crea un nuevo usuario utilizando el UserController."""
         username = self.entry_username.get().strip()
         password = self.entry_password.get().strip()
         role = self.combo_role.get().strip()

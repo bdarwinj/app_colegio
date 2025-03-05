@@ -10,6 +10,7 @@ class CourseManagementWindow(tk.Toplevel):
         self.create_widgets()
 
     def create_widgets(self):
+        # Sección de lista de cursos
         frame_list = ttk.LabelFrame(self, text="Cursos Existentes")
         frame_list.pack(padx=10, pady=10, fill="both", expand=True)
         self.courses_tree = ttk.Treeview(frame_list, columns=("id", "name", "active"), show="headings")
@@ -19,6 +20,7 @@ class CourseManagementWindow(tk.Toplevel):
         self.courses_tree.pack(fill="both", expand=True)
         self.load_courses_into_tree()
 
+        # Sección para agregar/editar curso
         frame_form = ttk.LabelFrame(self, text="Agregar / Editar Curso")
         frame_form.pack(padx=10, pady=10, fill="x")
         ttk.Label(frame_form, text="Nombre:").grid(row=0, column=0, padx=5, pady=5, sticky="w")
@@ -27,6 +29,7 @@ class CourseManagementWindow(tk.Toplevel):
         ttk.Label(frame_form, text="Sección (opcional):").grid(row=1, column=0, padx=5, pady=5, sticky="w")
         self.entry_course_section = ttk.Entry(frame_form)
         self.entry_course_section.grid(row=1, column=1, padx=5, pady=5)
+
         btn_add = ttk.Button(frame_form, text="Agregar", command=self.add_course)
         btn_add.grid(row=2, column=0, padx=5, pady=5)
         btn_edit = ttk.Button(frame_form, text="Editar", command=self.edit_course)
@@ -35,12 +38,16 @@ class CourseManagementWindow(tk.Toplevel):
         btn_deactivate.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
 
     def load_courses_into_tree(self):
+        # Eliminar ítems existentes y recargar la lista
         for item in self.courses_tree.get_children():
             self.courses_tree.delete(item)
         courses = self.course_controller.get_all_courses()
         for course in courses:
-            full_name = f"{course['name']} - {course['seccion']}" if course.get("seccion") and course["seccion"].strip() else course["name"]
-            self.courses_tree.insert("", "end", values=(course["id"], full_name, "Sí" if course["active"] == 1 else "No"))
+            full_name = (f"{course['name']} - {course['seccion']}"
+                         if course.get("seccion") and course["seccion"].strip() 
+                         else course["name"])
+            active_text = "Sí" if course["active"] == 1 else "No"
+            self.courses_tree.insert("", "end", values=(course["id"], full_name, active_text))
 
     def add_course(self):
         name = self.entry_course_name.get().strip()

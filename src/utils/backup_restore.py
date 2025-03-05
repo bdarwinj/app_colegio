@@ -10,8 +10,7 @@ def backup_database(backup_dir="backups"):
     La copia se almacena en el directorio 'backup_dir' (se crea si no existe) y se nombra con la fecha y hora actuales.
     Retorna la ruta del archivo de backup creado.
     """
-    if not os.path.exists(backup_dir):
-        os.makedirs(backup_dir)
+    os.makedirs(backup_dir, exist_ok=True)
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     backup_file = os.path.join(backup_dir, f"backup_{timestamp}.db")
     shutil.copy(DB_NAME, backup_file)

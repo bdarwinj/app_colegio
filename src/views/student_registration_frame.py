@@ -1,4 +1,3 @@
-# src/views/student_registration_frame.py
 import tkinter as tk
 from tkinter import ttk, messagebox
 import re
@@ -18,6 +17,7 @@ class StudentRegistrationFrame(ttk.LabelFrame):
         self.entries = {}
         self.combo_course = None
         self.course_map = {}
+        self.field_labels = ["Número de Identificación", "Nombre", "Apellido", "Correo Electrónico", "Representante", "Teléfono"]
         self.create_widgets()
 
     def create_widgets(self):
@@ -27,12 +27,10 @@ class StudentRegistrationFrame(ttk.LabelFrame):
         self._create_register_button()
 
     def _create_text_entries(self):
-        # Se añade "Correo Electrónico" a la lista de etiquetas
-        labels = ["Número de Identificación", "Nombre", "Apellido", "Correo Electrónico", "Representante", "Teléfono"]
+        labels = self.field_labels
         
         def validate_numeric(P):
             return P.isdigit() or P == ""
-        
         vcmd = (self.register(validate_numeric), '%P')
         
         def on_focusout_upper(event):
@@ -47,7 +45,6 @@ class StudentRegistrationFrame(ttk.LabelFrame):
         
         def on_focusout_email(event):
             content = event.widget.get().strip()
-            # Validación simple de correo electrónico
             if content and not re.match(r"[^@]+@[^@]+\.[^@]+", content):
                 messagebox.showwarning("Correo inválido", "Por favor, ingrese un correo electrónico válido.")
                 event.widget.focus_set()
@@ -68,23 +65,23 @@ class StudentRegistrationFrame(ttk.LabelFrame):
             self.entries[text] = entry
 
     def _create_course_combobox(self):
-        labels = ["Número de Identificación", "Nombre", "Apellido", "Correo Electrónico", "Representante", "Teléfono"]
-        ttk.Label(self, text="Curso:").grid(row=len(labels), column=0, sticky="w", padx=5, pady=5)
+        row_index = len(self.field_labels)
+        ttk.Label(self, text="Curso:").grid(row=row_index, column=0, sticky="w", padx=5, pady=5)
         self.combo_course = ttk.Combobox(self, state="readonly")
-        self.combo_course.grid(row=len(labels), column=1, padx=5, pady=5)
-        # No se cargan los cursos aquí porque se hace desde AppUI
+        self.combo_course.grid(row=row_index, column=1, padx=5, pady=5)
+        # Los cursos se cargan desde AppUI
 
     def _create_register_button(self):
-        labels = ["Número de Identificación", "Nombre", "Apellido", "Correo Electrónico", "Representante", "Teléfono"]
+        row_index = len(self.field_labels) + 1
         self.btn_registrar = ttk.Button(self, text="Registrar Estudiante", command=self.register_command)
-        self.btn_registrar.grid(row=len(labels) + 1, column=0, columnspan=2, pady=10)
+        self.btn_registrar.grid(row=row_index, column=0, columnspan=2, pady=10)
 
     def populate_courses(self):
         """
         Obtiene la lista de cursos usando el course_controller y configura
         el combobox y el course_map para mapear el nombre del curso (con sección, si existe) a su ID.
         """
-        courses = self.course_controller.get_all_courses()  # Asegúrate de que este método exista y retorne la info necesaria
+        courses = self.course_controller.get_all_courses()  # Asegúrate de que este método retorne la info necesaria
         course_names = []
         self.course_map = {}
         for course in courses:

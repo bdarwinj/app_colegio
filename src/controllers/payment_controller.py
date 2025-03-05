@@ -32,6 +32,14 @@ class PaymentController:
         except Exception as e:
             logger.exception("Error al inicializar la tabla 'payments'")
 
+    def _format_receipt(self, payment_date, raw_receipt):
+        """
+        Formatea el número de recibo utilizando la fecha del pago y el id generado.
+        """
+        dt = datetime.strptime(payment_date, "%Y-%m-%d %H:%M:%S")
+        date_part = dt.strftime("%Y%m%d")
+        return f"{date_part}-{int(raw_receipt):04d}"
+
     def register_payment(self, student_id, amount, description, enrollment_id=None):
         try:
             payment_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -42,10 +50,7 @@ class PaymentController:
             with db_cursor(self.db) as cursor:
                 cursor.execute(query, (student_id, enrollment_id, amount, description, payment_date))
                 raw_receipt = cursor.lastrowid
-                # Formatear el número de recibo
-                dt = datetime.strptime(payment_date, "%Y-%m-%d %H:%M:%S")
-                date_part = dt.strftime("%Y%m%d")
-                formatted_receipt = f"{date_part}-{int(raw_receipt):04d}"
+                formatted_receipt = self._format_receipt(payment_date, raw_receipt)
                 update_query = "UPDATE payments SET receipt_number = ? WHERE id = ?"
                 cursor.execute(update_query, (formatted_receipt, raw_receipt))
             return True, "Pago registrado exitosamente.", formatted_receipt, payment_date
@@ -53,57 +58,56 @@ class PaymentController:
             logger.exception("Error al registrar el pago")
             return False, f"Error al registrar el pago: {e}", None, None
 
-    def get_payments_by_student(self, student_id):
+    def _execute_fetchall(self, query, params=(), error_message="Error al ejecutar consulta"):
+        """
+        Ejecuta una consulta que retorna múltiples filas.
+        """
         try:
-            query = "SELECT * FROM payments WHERE student_id = ? ORDER BY payment_date DESC"
             with db_cursor(self.db) as cursor:
-                cursor.execute(query, (student_id,))
+                cursor.execute(query, params)
                 return cursor.fetchall()
         except Exception as e:
-            logger.exception(f"Error al obtener pagos para el estudiante {student_id}")
+            logger.exception(error_message)
             return []
 
-    def get_payment_by_id(self, payment_id):
+    def _execute_fetchone(self, query, params=(), error_message="Error al ejecutar consulta"):
+        """
+        Ejecuta una consulta que retorna una única fila.
+        """
         try:
-            query = "SELECT * FROM payments WHERE id = ?"
             with db_cursor(self.db) as cursor:
-                cursor.execute(query, (payment_id,))
+                cursor.execute(query, params)
                 return cursor.fetchone()
         except Exception as e:
-            logger.exception(f"Error al obtener el pago con id {payment_id}")
+            logger.exception(error_message)
             return None
 
-    # Nuevos métodos para obtener pagos por mes y por año
+    def get_payments_by_student(self, student_id):
+        query = "SELECT * FROM payments WHERE student_id = ? ORDER BY payment_date DESC"
+        return self._execute_fetchall(query, (student_id,), f"Error al obtener pagos para el estudiante {student_id}")
+
+    def get_payment_by_id(self, payment_id):
+        query = "SELECT * FROM payments WHERE id = ?"
+        return self._execute_fetchone(query, (payment_id,), f"Error al obtener el pago con id {payment_id}")
+
     def get_payments_in_month(self, year_month_str):
         """
         Obtiene todos los pagos realizados en un mes específico, en formato 'YYYY-MM'.
         Ejemplo: '2025-03'.
         """
-        try:
-            query = """
+        query = """
                 SELECT * FROM payments
                 WHERE strftime('%Y-%m', payment_date) = ?
             """
-            with db_cursor(self.db) as cursor:
-                cursor.execute(query, (year_month_str,))
-                return cursor.fetchall()
-        except Exception as e:
-            logger.exception("Error al obtener pagos del mes")
-            return []
+        return self._execute_fetchall(query, (year_month_str,), "Error al obtener pagos del mes")
 
     def get_payments_in_year(self, year):
         """
         Obtiene todos los pagos realizados en un año específico.
-        Ejemplo: 2025
+        Ejemplo: 2025.
         """
-        try:
-            query = """
+        query = """
                 SELECT * FROM payments
                 WHERE strftime('%Y', payment_date) = ?
             """
-            with db_cursor(self.db) as cursor:
-                cursor.execute(query, (str(year),))
-                return cursor.fetchall()
-        except Exception as e:
-            logger.exception("Error al obtener pagos del año")
-            return []
+        return self._execute_fetchall(query, (str(year),), "Error al obtener pagos del año")

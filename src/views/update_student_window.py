@@ -1,4 +1,3 @@
-# src/views/update_student_window.py
 import tkinter as tk
 from tkinter import ttk, messagebox
 from src.controllers.student_controller import StudentController
@@ -30,29 +29,11 @@ class UpdateStudentWindow(tk.Toplevel):
         frame = ttk.Frame(self, padding="20")
         frame.pack(expand=True, fill="both")
         
-        # Campo para seleccionar Curso
+        # Configurar combobox de cursos
         ttk.Label(frame, text="Curso:").grid(row=0, column=0, sticky="w", pady=5)
         self.combo_course = ttk.Combobox(frame, state="readonly", width=30)
         self.combo_course.grid(row=0, column=1, pady=5)
-        
-        # Obtener cursos y configurar combobox
-        courses = self.course_controller.get_all_courses()
-        self.course_map = {}
-        course_names = []
-        for course in courses:
-            if course.get("seccion") and course["seccion"].strip():
-                display_name = f"{course['name']} - {course['seccion']}"
-            else:
-                display_name = course["name"]
-            course_names.append(display_name)
-            self.course_map[display_name] = course["id"]
-        self.combo_course["values"] = course_names
-        # Seleccionar el curso actual del estudiante
-        current_course = self.student.get("course_name", "")
-        if current_course in self.course_map:
-            self.combo_course.set(current_course)
-        else:
-            self.combo_course.set(course_names[0] if course_names else "")
+        self._populate_course_combobox()
         
         # Campo para actualizar Representante
         ttk.Label(frame, text="Representante:").grid(row=1, column=0, sticky="w", pady=5)
@@ -75,6 +56,29 @@ class UpdateStudentWindow(tk.Toplevel):
         btn_save = ttk.Button(frame, text="Guardar", command=self.save_updates)
         btn_save.grid(row=4, column=0, columnspan=2, pady=15)
 
+    def _populate_course_combobox(self):
+        """
+        Obtiene la lista de cursos mediante el course_controller y configura el combobox,
+        creando un mapeo entre el nombre (con sección, si existe) y su ID.
+        """
+        courses = self.course_controller.get_all_courses()
+        # Usar list comprehension para generar la lista de nombres y el mapping
+        course_names = [
+            f"{course.get('name', '')} - {course.get('seccion', '').strip()}" if course.get("seccion", "").strip() 
+            else course.get("name", "")
+            for course in courses
+        ]
+        self.course_map = {name: course["id"] for name, course in zip(course_names, courses)}
+        self.combo_course["values"] = course_names
+        # Seleccionar el curso actual del estudiante si existe, sino seleccionar el primero
+        current_course = self.student.get("course_name", "")
+        if current_course in self.course_map:
+            self.combo_course.set(current_course)
+        elif course_names:
+            self.combo_course.set(course_names[0])
+        else:
+            self.combo_course.set("")
+
     def save_updates(self):
         selected_course = self.combo_course.get()
         new_course_id = self.course_map.get(selected_course)
@@ -93,7 +97,9 @@ class UpdateStudentWindow(tk.Toplevel):
             return
         
         # Actualizar la información del estudiante
-        success, msg = self.student_controller.update_student_info(self.student["id"], new_course_id, new_representative, new_phone)
+        success, msg = self.student_controller.update_student_info(
+            self.student.get("id"), new_course_id, new_representative, new_phone
+        )
         if success:
             messagebox.showinfo("Éxito", msg)
             self.destroy()

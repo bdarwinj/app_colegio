@@ -13,6 +13,27 @@ class UserController:
         """
         self.db = db
 
+    def _execute_fetchone(self, query, params, error_context):
+        """
+        Ejecuta una consulta que retorna una única fila.
+        """
+        try:
+            with db_cursor(self.db) as cursor:
+                cursor.execute(query, params)
+                return cursor.fetchone()
+        except sqlite3.Error as e:
+            logger.error(f"{error_context}: {e}")
+            return None
+
+    def _create_user_object(self, username, role):
+        """
+        Crea y retorna un objeto de usuario dinámico con los atributos username y role.
+        """
+        user = type("User", (), {})()
+        user.username = username
+        user.role = role
+        return user
+
     def login(self, username, password):
         """
         Intenta iniciar sesión comparando el username y la contraseña (hasheada)
@@ -24,41 +45,25 @@ class UserController:
             logger.error("Username y password deben ser cadenas.")
             return None
 
-        try:
-            query = "SELECT username, role, password FROM users WHERE username = ?"
-            with db_cursor(self.db) as cursor:
-                cursor.execute(query, (username,))
-                row = cursor.fetchone()
+        # Intentar obtener el usuario por username
+        query = "SELECT username, role, password FROM users WHERE username = ?"
+        row = self._execute_fetchone(query, (username,), "Error de base de datos durante el login")
+        if row:
+            stored_hash = row[2]
+            # Verificar la contraseña usando bcrypt
+            if bcrypt.checkpw(password.encode('utf-8'), stored_hash.encode('utf-8')):
+                return self._create_user_object(row[0], row[1])
+        else:
+            # Si ocurre error en el query o no se encontró el usuario, se continúa con el fallback.
+            pass
 
-            if row:
-                stored_hash = row[2]
-                # Verificar la contraseña usando bcrypt
-                if bcrypt.checkpw(password.encode('utf-8'), stored_hash.encode('utf-8')):
-                    user = type("User", (), {})()
-                    user.username = row[0]
-                    user.role = row[1]
-                    return user
-        except sqlite3.Error as e:
-            logger.error(f"Error de base de datos durante el login: {e}")
-            return None
-
-        # Fallback: Solo se aplica si no existe ningún usuario admin en la base de datos
-        try:
-            query = "SELECT COUNT(*) FROM users WHERE username = 'admin'"
-            with db_cursor(self.db) as cursor:
-                cursor.execute(query)
-                count = cursor.fetchone()[0]
-            if count == 0:
-                # Solo se permite si no existe un admin configurado
-                # Verificar que la contraseña ingresada es "admin"
-                if username == "admin" and password == "admin":
-                    user = type("User", (), {})()
-                    user.username = "admin"
-                    user.role = "admin"
-                    return user
-        except sqlite3.Error as e:
-            logger.error(f"Error en fallback de login: {e}")
-
+        # Fallback: solo se aplica si no existe ningún usuario admin en la base de datos
+        query = "SELECT COUNT(*) FROM users WHERE username = 'admin'"
+        count_row = self._execute_fetchone(query, (), "Error en fallback de login")
+        if count_row and count_row[0] == 0:
+            # Solo se permite si no existe un admin configurado
+            if username == "admin" and password == "admin":
+                return self._create_user_object("admin", "admin")
         return None
 
     def create_user(self, username, password, role):
@@ -99,16 +104,14 @@ class UserController:
         if not isinstance(new_password, str) or not new_password:
             return False, "La nueva clave debe ser una cadena no vacía."
 
+        query = "SELECT password FROM users WHERE username = ?"
+        row = self._execute_fetchone(query, (username,), "Error de base de datos al cambiar clave")
+        if not row:
+            return False, "Usuario no encontrado."
+        stored_hash = row[0]
+        if not bcrypt.checkpw(old_password.encode('utf-8'), stored_hash.encode('utf-8')):
+            return False, "La clave actual ingresada es incorrecta."
         try:
-            query = "SELECT password FROM users WHERE username = ?"
-            with db_cursor(self.db) as cursor:
-                cursor.execute(query, (username,))
-                row = cursor.fetchone()
-            if not row:
-                return False, "Usuario no encontrado."
-            stored_hash = row[0]
-            if not bcrypt.checkpw(old_password.encode('utf-8'), stored_hash.encode('utf-8')):
-                return False, "La clave actual ingresada es incorrecta."
             # Hash de la nueva contraseña
             hashed_new_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
             update_query = "UPDATE users SET password = ? WHERE username = ?"

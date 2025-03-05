@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from PIL import Image, ImageTk
 import os
-from pathlib import Path  # Importar pathlib
+from pathlib import Path
 from src.controllers.user_controller import UserController
 from src.controllers.config_controller import ConfigController
 
@@ -19,7 +19,7 @@ class LoginUI:
         """
         self.db = db
         self.user_controller = UserController(self.db)
-        self.config_controller = ConfigController(db)
+        self.config_controller = ConfigController(self.db)
         self.root = tk.Tk()
         self.root.title("Login - Sistema Colegio")
         self.root.geometry("400x350")
@@ -33,7 +33,7 @@ class LoginUI:
         configs = self.config_controller.get_all_configs()
         self.school_name = configs.get("SCHOOL_NAME", "Colegio Ejemplo")
         self.logo_path = configs.get("LOGO_PATH", "logo.png")
-        self.abs_logo_path = Path(self.logo_path).resolve()  # Usar pathlib
+        self.abs_logo_path = Path(self.logo_path).resolve()
 
     def center_window(self, width, height):
         """
@@ -50,45 +50,41 @@ class LoginUI:
         self.root.geometry(f"{width}x{height}+{x}+{y}")
 
     def create_widgets(self):
-        """
-        Crea los widgets de la interfaz de inicio de sesión.
-        """
+        """Crea los widgets de la interfaz de inicio de sesión."""
         header_frame = ttk.Frame(self.root)
         header_frame.pack(pady=10)
 
-        if os.path.exists(self.abs_logo_path):
+        # Mostrar el logo si existe, o un logo de reemplazo
+        if os.path.exists(str(self.abs_logo_path)):
             try:
                 image = Image.open(self.abs_logo_path)
                 image = image.resize((80, 80), Image.LANCZOS)
                 self.logo = ImageTk.PhotoImage(image)
-                logo_label = ttk.Label(header_frame, image=self.logo)
-                logo_label.pack()
+                ttk.Label(header_frame, image=self.logo).pack()
             except Exception as e:
                 print(f"Error al cargar el logo: {e}")
-                self.show_placeholder_logo(header_frame)  # Mostrar logo de reemplazo
+                self.show_placeholder_logo(header_frame)
         else:
             print(f"No se encontró la imagen en: {self.abs_logo_path}")
-            self.show_placeholder_logo(header_frame)  # Mostrar logo de reemplazo
+            self.show_placeholder_logo(header_frame)
 
-        name_label = ttk.Label(header_frame, text=self.school_name, font=("Arial", 16, "bold"))
-        name_label.pack(pady=5)
+        ttk.Label(header_frame, text=self.school_name, font=("Arial", 16, "bold")).pack(pady=5)
 
-        frame = ttk.Frame(self.root, padding=20)
-        frame.pack(expand=True)
-        ttk.Label(frame, text="Usuario:").grid(row=0, column=0, pady=5, sticky="w")
-        self.entry_username = ttk.Entry(frame)
+        form_frame = ttk.Frame(self.root, padding=20)
+        form_frame.pack(expand=True)
+        ttk.Label(form_frame, text="Usuario:").grid(row=0, column=0, pady=5, sticky="w")
+        self.entry_username = ttk.Entry(form_frame)
         self.entry_username.grid(row=0, column=1, pady=5)
-        ttk.Label(frame, text="Contraseña:").grid(row=1, column=0, pady=5, sticky="w")
-        self.entry_password = ttk.Entry(frame, show="*")
+        ttk.Label(form_frame, text="Contraseña:").grid(row=1, column=0, pady=5, sticky="w")
+        self.entry_password = ttk.Entry(form_frame, show="*")
         self.entry_password.grid(row=1, column=1, pady=5)
         self.entry_password.bind("<Return>", lambda event: self.attempt_login())
-        self.btn_login = ttk.Button(frame, text="Iniciar Sesión", command=self.attempt_login)
-        self.btn_login.grid(row=2, column=0, columnspan=2, pady=10)
+        ttk.Button(form_frame, text="Iniciar Sesión", command=self.attempt_login)\
+            .grid(row=2, column=0, columnspan=2, pady=10)
 
     def show_placeholder_logo(self, frame):
         """Muestra un logo de reemplazo o un mensaje en caso de error."""
-        placeholder_label = ttk.Label(frame, text="Logo no disponible", font=("Arial", 12))
-        placeholder_label.pack()
+        ttk.Label(frame, text="Logo no disponible", font=("Arial", 12)).pack()
 
     def attempt_login(self):
         """
@@ -107,7 +103,5 @@ class LoginUI:
             messagebox.showerror("Error", "Usuario o contraseña incorrectos.")
 
     def run(self):
-        """
-        Inicia el bucle principal de la interfaz de usuario.
-        """
+        """Inicia el bucle principal de la interfaz de usuario."""
         self.root.mainloop()
