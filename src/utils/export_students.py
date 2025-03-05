@@ -135,7 +135,7 @@ def export_students_to_excel(students, output_filename, school_name, logo_path, 
     grouped_by_course = groupby(students_sorted, key=lambda s: get_course_name(s))
     for course_name, group in grouped_by_course:
         group_list = list(group)
-        sheet_name = f"Grado_{course_name}" if course_name else "Grado_Desconocido"
+        sheet_name = f" {course_name}" if course_name else "Grado_Desconocido"
         _crear_hoja(wb, sheet_name, group_list)
     
     default_sheet = wb.active

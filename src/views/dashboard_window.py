@@ -84,11 +84,11 @@ class DashboardWindow(tk.Toplevel):
 
         # Dinero recogido en el mes actual
         payments_month = self.payment_controller.get_payments_in_month(current_month_str)
-        total_month = sum(pay["amount"] for pay in payments_month if pay.get("amount"))
+        total_month = sum(pay["amount"] for pay in payments_month if pay["amount"])
 
         # Dinero recogido en el año actual
         payments_year = self.payment_controller.get_payments_in_year(current_year)
-        total_year = sum(pay["amount"] for pay in payments_year if pay.get("amount"))
+        total_year = sum(pay["amount"] for pay in payments_year if pay["amount"])
 
         # Alumnos sin pago en el mes actual
         student_ids_paid_this_month = {pay["student_id"] for pay in payments_month}
