@@ -55,10 +55,12 @@ def _preparar_students(students):
 
 def export_students_to_excel(students, output_filename, school_name, logo_path, course_controller):
     """
-    Exporta estudiantes a un archivo Excel con hojas separadas por curso y una hoja 'Todos'.
+    Exporta estudiantes a un archivo Excel con hojas separadas por curso y una hoja 'Todos',
+    con un diseño visualmente atractivo.
     """
     wb = openpyxl.Workbook()
     students_sorted = _preparar_students(students)
+    generation_date = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     
     def get_course_name(student):
         """
@@ -83,38 +85,46 @@ def export_students_to_excel(students, output_filename, school_name, logo_path, 
     def _crear_hoja(wb, sheet_name, data):
         ws = wb.create_sheet(title=sheet_name)
         row_offset = 1
-        # Título en la cabecera
-        ws.merge_cells(start_row=row_offset, start_column=1, end_row=row_offset, end_column=6)
-        header_cell = ws.cell(row=row_offset, column=1, value=school_name)
-        header_cell.font = Font(bold=True, size=14)
-        header_cell.alignment = Alignment(horizontal="center", vertical="center")
-        row_offset += 1
-        
-        # Agregar logo si existe
+
+        # Encabezado con logo y título
         if os.path.exists(logo_path):
             try:
                 img = XLImage(logo_path)
-                img.height = 60
-                img.width = 60
-                ws.add_image(img, "G1")
+                img.height = 80
+                img.width = 80
+                ws.add_image(img, "A1")
             except Exception as e:
                 print(f"Error al insertar logo en Excel: {e}")
-        row_offset += 1
         
+        ws.merge_cells(start_row=row_offset, start_column=2, end_row=row_offset, end_column=6)
+        header_cell = ws.cell(row=row_offset, column=2, value=school_name)
+        header_cell.font = Font(bold=True, size=16, color="003366")  # Azul oscuro
+        header_cell.alignment = Alignment(horizontal="center", vertical="center")
+        header_cell.fill = PatternFill(start_color="E6F0FA", end_color="E6F0FA", fill_type="solid")  # Azul claro
+        row_offset += 1
+
+        # Subtítulo y fecha
+        ws.merge_cells(start_row=row_offset, start_column=1, end_row=row_offset, end_column=6)
+        subtitle_cell = ws.cell(row=row_offset, column=1, value=f"Reporte de Estudiantes - Generado el {generation_date}")
+        subtitle_cell.font = Font(size=10, italic=True, color="646464")  # Gris
+        subtitle_cell.alignment = Alignment(horizontal="center", vertical="center")
+        row_offset += 2
+
         # Encabezados de la tabla
         ws.append(HEADERS)
         header_row = ws.max_row
-        header_fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
+        header_fill = PatternFill(start_color="003366", end_color="003366", fill_type="solid")  # Azul oscuro
         thin_border = Border(left=Side(style="thin"), right=Side(style="thin"), 
                              top=Side(style="thin"), bottom=Side(style="thin"))
         for col in range(1, len(HEADERS) + 1):
             cell = ws.cell(row=header_row, column=col)
-            cell.font = Font(bold=True, color="FFFFFF")
+            cell.font = Font(bold=True, color="FFFFFF")  # Blanco
             cell.fill = header_fill
             cell.border = thin_border
             cell.alignment = Alignment(horizontal="center", vertical="center")
         
-        # Agregar registros de estudiantes
+        # Filas de datos
+        fill = False
         for st in data:
             course_name_val = get_course_name(st)
             row_data = [
@@ -126,16 +136,24 @@ def export_students_to_excel(students, output_filename, school_name, logo_path, 
                 st.get("telefono", "")
             ]
             ws.append(row_data)
-        
-        # Aplicar bordes
-        for row in ws.iter_rows(min_row=header_row, max_row=ws.max_row, min_col=1, max_col=len(HEADERS)):
-            for cell in row:
+            fill = not fill
+            for col in range(1, len(HEADERS) + 1):
+                cell = ws.cell(row=ws.max_row, column=col)
                 cell.border = thin_border
+                cell.alignment = Alignment(horizontal="center", vertical="center")
+                cell.fill = PatternFill(start_color="F0F5FF", end_color="F0F5FF", fill_type="solid") if fill else PatternFill(start_color="FFFFFF", end_color="FFFFFF", fill_type="solid")  # Azul claro / Blanco
         
         # Ajustar ancho de columnas dinámicamente
         for col in range(1, len(HEADERS) + 1):
             max_length = max(len(str(cell.value or "")) for cell in ws[get_column_letter(col)])
-            ws.column_dimensions[get_column_letter(col)].width = max_length + 2
+            ws.column_dimensions[get_column_letter(col)].width = max_length + 5
+        
+        # Pie de página simulado
+        row_offset = ws.max_row + 2
+        ws.merge_cells(start_row=row_offset, start_column=1, end_row=row_offset, end_column=6)
+        footer_cell = ws.cell(row=row_offset, column=1, value=f"Total de estudiantes: {len(data)} - Reporte generado el {generation_date}")
+        footer_cell.font = Font(size=8, italic=True, color="969696")  # Gris claro
+        footer_cell.alignment = Alignment(horizontal="center", vertical="center")
         
         return ws
     
