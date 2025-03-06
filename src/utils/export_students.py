@@ -171,58 +171,91 @@ def export_students_to_excel(students, output_filename, school_name, logo_path, 
     wb.save(output_filename)
     return output_filename
 
-def export_students_to_pdf(students, output_filename, school_name, logo_path, course_controller):
-    """
-    Exporta estudiantes a un archivo PDF ordenados por curso (pre-jardin a once),
-    con numeración en el pie de página.
-    """
-    pdf = PDFWithFooter(orientation="L", unit="mm", format=(216, 385))
-    pdf.add_page()
-    
-    if os.path.exists(logo_path):
-        try:
-            pdf.image(logo_path, x=10, y=8, w=30)
-            pdf.ln(10)
-        except Exception as e:
-            print(f"Error al insertar logo en PDF: {e}")
-    
-    pdf.set_font("Arial", "B", 16)
-    pdf.cell(0, 10, school_name, ln=True, align="C")
-    pdf.ln(5)
-    
-    pdf.set_fill_color(79, 129, 189)
-    pdf.set_text_color(255, 255, 255)
-    pdf.set_font("Arial", "B", 12)
-    col_widths = [len(header) * 3 for header in HEADERS]
+class PDFWithHeaderFooter(FPDF):
+    def __init__(self, school_name, logo_path=None):
+        super().__init__(orientation="L", unit="mm", format=(216, 385))  # Hoja horizontal
+        self.school_name = school_name
+        self.logo_path = logo_path
 
-    # Reutilizamos _preparar_students para ordenar
+    def header(self):
+        # Logo (opcional, si se proporciona)
+        if self.logo_path and os.path.exists(self.logo_path):
+            try:
+                self.image(self.logo_path, x=10, y=8, w=25)
+            except Exception as e:
+                print(f"Error al insertar logo: {e}")
+        # Nombre del colegio al lado del logo, centrado en la hoja
+        self.set_font("Arial", "B", 18)
+        self.set_text_color(0, 51, 102)  # Azul oscuro
+        self.set_xy(0, 10)
+        self.cell(0, 10, self.school_name, ln=True, align="C")
+        
+        # Fecha de generación
+        self.set_font("Arial", "I", 10)
+        self.set_text_color(100, 100, 100)  # Gris
+        self.cell(0, 5, f"Generado el {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}", ln=True, align="C")
+        
+        # Línea decorativa
+        self.set_line_width(0.5)
+        self.set_draw_color(0, 51, 102)  # Azul oscuro
+        self.line(10, 35, self.w - 10, 35)
+        self.ln(10)
+
+    def footer(self):
+        self.set_y(-15)
+        self.set_font("Arial", "I", 8)
+        self.set_text_color(150, 150, 150)  # Gris claro
+        self.cell(0, 10, f"Página {self.page_no()} - Reporte generado por Sistema Escolar", 0, 0, "C")
+
+def export_students_to_pdf(students, output_filename, school_name, logo_path=None, course_controller=None):
+    """
+    Exporta estudiantes a un archivo PDF ordenados por curso, con un diseño visualmente atractivo.
+    
+    :param students: Lista de estudiantes (diccionarios con datos).
+    :param output_filename: Nombre del archivo PDF a generar.
+    :param school_name: Nombre del colegio para el encabezado.
+    :param logo_path: Ruta opcional al logo del colegio.
+    :param course_controller: Controlador de cursos (no usado aquí, pero mantenido por compatibilidad).
+    :return: Ruta del archivo PDF generado.
+    """
+    pdf = PDFWithHeaderFooter(school_name, logo_path)
+    pdf.set_margins(left=15, top=40, right=15)  # Márgenes amplios
+    pdf.add_page()
+
+    # Título de la tabla
+    pdf.set_font("Arial", "B", 14)
+    pdf.set_text_color(0, 51, 102)  # Azul oscuro
+    pdf.cell(0, 10, "Lista de Estudiantes", ln=True, align="C")
+    pdf.ln(5)
+
+    # Preparar estudiantes (asumiendo que tienes esta función definida)
     students_sorted = _preparar_students(students)
 
+    # Definir encabezados (ajusta según tu código original)
+    HEADERS = ["Identificación", "Nombre", "Apellido", "Curso", "Representante", "Teléfono"]
+    
     # Calcular anchos de columna dinámicamente
-    for st in students_sorted:
-        row_data = [
-            str(st.get("identificacion", "")),
-            str(st.get("nombre", "")),
-            str(st.get("apellido", "")),
-            st.get("course_name", ""),
-            str(st.get("representante", "")),
-            str(st.get("telefono", ""))
-        ]
-        for i, data in enumerate(row_data):
-            content_width = len(data) * 3
-            col_widths[i] = max(col_widths[i], content_width)
+    col_widths = [max([pdf.get_string_width(str(st.get(key, ""))) for st in students_sorted]) + 8 
+                  for key in ["identificacion", "nombre", "apellido", "course_name", "representante", "telefono"]]
+    total_width = sum(col_widths)
+    if total_width > pdf.w - 30:
+        scale_factor = (pdf.w - 30) / total_width
+        col_widths = [w * scale_factor for w in col_widths]
 
-    # Encabezados en el PDF
+    # Encabezados de la tabla
+    pdf.set_fill_color(0, 102, 204)  # Azul claro
+    pdf.set_text_color(255, 255, 255)  # Blanco
+    pdf.set_font("Arial", "B", 10)
     for i, header in enumerate(HEADERS):
-        pdf.cell(col_widths[i], 10, header, border=1, align="C", fill=True)
+        pdf.cell(col_widths[i], 8, header, border=1, align="C", fill=True)
     pdf.ln()
-    
-    pdf.set_text_color(0, 0, 0)
-    pdf.set_font("Arial", "", 12)
+
+    # Filas de la tabla
+    pdf.set_font("Arial", "", 9)
+    pdf.set_text_color(0, 0, 0)  # Negro
     fill = False
-    pdf.set_fill_color(240, 240, 240)
-    
     for st in students_sorted:
+        pdf.set_fill_color(240, 245, 255) if fill else pdf.set_fill_color(255, 255, 255)  # Azul claro / Blanco
         row_data = [
             str(st.get("identificacion", "")),
             str(st.get("nombre", "")),
@@ -232,9 +265,10 @@ def export_students_to_pdf(students, output_filename, school_name, logo_path, co
             str(st.get("telefono", ""))
         ]
         for i, data in enumerate(row_data):
-            pdf.cell(col_widths[i], 10, data, border=1, align="C", fill=fill)
+            pdf.cell(col_widths[i], 8, data, border=1, align="C", fill=True)
         pdf.ln()
         fill = not fill
-    
+
+    # Guardar el PDF
     pdf.output(output_filename)
     return output_filename
