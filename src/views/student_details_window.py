@@ -10,6 +10,7 @@ from src.controllers.config_controller import ConfigController
 from src.controllers.course_controller import CourseController
 from config import SCHOOL_NAME as DEFAULT_SCHOOL_NAME, LOGO_PATH as DEFAULT_LOGO_PATH
 from src.views.pdf_common import add_pdf_header  # Función común para encabezados PDF
+from src.utils.pdf_utils import PDFWithHeaderFooter
 from src.views.update_student_window import UpdateStudentWindow  # Ventana para actualizar datos
 
 class StudentDetailsWindow(tk.Toplevel):
@@ -254,23 +255,21 @@ class StudentDetailsWindow(tk.Toplevel):
                 return
         
             student = dict(student_row)
-            student['nombre'] = student.get('nombre', '').capitalize()
-            student['apellido'] = student.get('apellido', '').capitalize()
-            student['representante'] = student.get('representante', '').capitalize()
+            student['nombre'] = student.get('nombre', '').title()
+            student['apellido'] = student.get('apellido', '').title()
+            student['representante'] = student.get('representante', '').title()
             student['email'] = student.get('email', '').lower()
         
             curso = self.get_course_display(student)
         
-            pdf = FPDF()
-            pdf.add_page()
-            add_pdf_header(pdf, logo_path, school_name)
-        
+            pdf = PDFWithHeaderFooter(logo_path, school_name)
+            pdf.add_page()        
+            # Sección de Datos del Estudiante
             pdf.set_font("Arial", "B", 12)
-            cell_width1, cell_width2 = 50, 130
-            pdf.cell(cell_width1, 10, "Campo", border=1, align="C")
-            pdf.cell(cell_width2, 10, "Valor", border=1, align="C", ln=True)
-        
-            pdf.set_font("Arial", "", 12)
+            pdf.set_text_color(0, 51, 102)  # Azul oscuro
+            pdf.cell(0, 10, "Datos del Estudiante", ln=True)
+            pdf.set_font("Arial", "", 10)
+            pdf.set_text_color(0, 0, 0)  # Negro
             datos = [
                 ("Identificación", student.get('identificacion', '')),
                 ("Nombre", student['nombre']),
@@ -282,17 +281,17 @@ class StudentDetailsWindow(tk.Toplevel):
                 ("Estado", "Activo" if student.get('active', 1) == 1 else "Desactivado")
             ]
             for campo, valor in datos:
-                pdf.cell(cell_width1, 10, campo, border=1)
-                pdf.cell(cell_width2, 10, str(valor), border=1, ln=True)
-        
+                pdf.cell(50, 8, campo, border=1, align="L")
+                pdf.cell(130, 8, str(valor), border=1, align="L", ln=True)
             pdf.ln(10)
-            pdf.set_font("Arial", "B", 14)
+        
+            # Sección de Historial de Pagos
+            pdf.set_font("Arial", "B", 12)
+            pdf.set_text_color(0, 51, 102)  # Azul oscuro
             pdf.cell(0, 10, "Historial de Pagos", ln=True)
             pdf.ln(5)
         
-            # Tabla Historial de Pagos
             headers = ["Nº Recibo", "Monto", "Fecha de Pago", "Descripción"]
-            pdf.set_font("Arial", "B", 12)
             table_data = []
             history_rows = self.payment_controller.get_payments_by_student(student.get("id"))
             if history_rows:
@@ -307,35 +306,32 @@ class StudentDetailsWindow(tk.Toplevel):
                     table_data.append(row)
         
             # Calcular anchos dinámicos para cada columna
-            padding = 4
-            col_widths = []
-            for col in range(len(headers)):
-                max_width = pdf.get_string_width(headers[col])
-                for row in table_data:
-                    w = pdf.get_string_width(row[col])
-                    if w > max_width:
-                        max_width = w
-                col_widths.append(max_width + padding)
+            col_widths = [max([pdf.get_string_width(str(row[i])) for row in table_data] + [pdf.get_string_width(headers[i])]) + 8 for i in range(len(headers))]
         
-            # Escribir encabezados de la tabla
+            # Encabezados de la tabla
+            pdf.set_fill_color(0, 102, 204)  # Azul claro
+            pdf.set_text_color(255, 255, 255)  # Blanco
+            pdf.set_font("Arial", "B", 10)
             for i, header in enumerate(headers):
-                pdf.cell(col_widths[i], 10, header, border=1, align="C")
+                pdf.cell(col_widths[i], 8, header, border=1, align="C", fill=True)
             pdf.ln()
         
-            pdf.set_font("Arial", "", 12)
-            if table_data:
-                for row in table_data:
-                    for i, cell in enumerate(row):
-                        pdf.cell(col_widths[i], 10, cell, border=1, align="C")
-                    pdf.ln()
-            else:
-                pdf.cell(sum(col_widths), 10, "No se han encontrado pagos.", border=1, ln=True)
+            # Filas de la tabla
+            pdf.set_font("Arial", "", 9)
+            pdf.set_text_color(0, 0, 0)  # Negro
+            fill = False
+            for row in table_data:
+                pdf.set_fill_color(240, 245, 255) if fill else pdf.set_fill_color(255, 255, 255)  # Azul claro / Blanco
+                for i, data in enumerate(row):
+                    pdf.cell(col_widths[i], 8, data, border=1, align="C", fill=True)
+                pdf.ln()
+                fill = not fill
         
-            pdf.ln(10)
-            pdf.set_font("Arial", "", 10)
-            emission_date = datetime.datetime.now().strftime("%d de %B de %Y")
-            pdf.cell(0, 10, f"Generado el {emission_date}", ln=True, align="R")
+            if not table_data:
+                pdf.set_font("Arial", "I", 10)
+                pdf.cell(0, 10, "No se han encontrado pagos.", ln=True, align="C")
         
+            # Guardar el PDF
             default_filename = f"{student.get('identificacion','')}_{student['nombre']}_{student['apellido']}.pdf"
             file_path = filedialog.asksaveasfilename(
                 defaultextension=".pdf",
@@ -348,7 +344,6 @@ class StudentDetailsWindow(tk.Toplevel):
                 messagebox.showinfo("Éxito", f"PDF exportado exitosamente: {file_path}")
         except Exception as e:
             messagebox.showerror("Error", f"Error al exportar a PDF: {e}")
-
     def open_update_window(self):
         """
         Abre la ventana para actualizar ciertos datos del estudiante (Curso, Representante, Teléfono y Correo).

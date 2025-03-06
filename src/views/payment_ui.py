@@ -9,6 +9,7 @@ import datetime
 import traceback
 import logging
 from src.views.pdf_common import add_pdf_header  # Función común para encabezados PDF
+from src.utils.pdf_utils import PDFWithHeaderFooter  # Clase PDF con encabezado y pie de página
 
 # Configure logging
 logging.basicConfig(filename='payment_ui.log', level=logging.INFO, 
@@ -184,22 +185,31 @@ class PaymentUI:
             if success:
                 formatted_student_name = f"{self.selected_student['nombre']} {self.selected_student['apellido']}".title()
                 formatted_receipt = self.format_receipt_number(receipt_number, payment_date)
-                pdf = FPDF()
-                pdf.add_page()
                 configs = self.config_controller.get_all_configs()
-                school_name = configs.get("SCHOOL_NAME", DEFAULT_SCHOOL_NAME)
-                logo_path = configs.get("LOGO_PATH", DEFAULT_LOGO_PATH)
-                # Agregar encabezado común al PDF
-                add_pdf_header(pdf, logo_path, school_name, f"Recibo de Pago Nº {formatted_receipt}")
+
+                pdf = PDFWithHeaderFooter(school_name=configs.get("SCHOOL_NAME", DEFAULT_SCHOOL_NAME), 
+                                        logo_path=configs.get("LOGO_PATH", DEFAULT_LOGO_PATH), 
+                                        receipt_number=formatted_receipt)
+                pdf.add_page()                
+                # Detalles del pago
+                pdf.set_font("Arial", "B", 12)
+                pdf.set_text_color(0, 51, 102)  # Azul oscuro
+                pdf.cell(0, 10, "Detalles del Pago", ln=True)
+                pdf.set_font("Arial", "", 10)
+                pdf.set_text_color(0, 0, 0)  # Negro
                 
-                pdf.set_font("Arial", "", 12)
-                pdf.cell(0, 10, f"Recibo Nº: {formatted_receipt}", ln=True)
-                pdf.cell(0, 10, f"Fecha y Hora: {payment_date}", ln=True)
-                pdf.cell(0, 10, f"Alumno: {formatted_student_name}", ln=True)
-                
-                formatted_amount = "{:,.2f}".format(amount).replace(",", "X").replace(".", ",").replace("X", ".")
-                pdf.cell(0, 10, f"Monto: {formatted_amount}", ln=True)
-                pdf.cell(0, 10, f"Descripción: {description}", ln=True)
+                # Fondo gris claro para los detalles
+                pdf.set_fill_color(240, 240, 240)  # Gris claro
+                details = [
+                    ("Recibo Nº", formatted_receipt),
+                    ("Fecha y Hora", payment_date),
+                    ("Alumno", formatted_student_name),
+                    ("Monto", "{:,.2f}".format(amount).replace(",", "X").replace(".", ",").replace("X", ".")),
+                    ("Descripción", description)
+                ]
+                for label, value in details:
+                    pdf.cell(50, 8, label, border=1, align="L", fill=True)
+                    pdf.cell(130, 8, value, border=1, align="L", ln=True, fill=True)
                 
                 default_filename = f"recibo_{formatted_receipt}_{formatted_student_name.replace(' ', '_')}.pdf"
                 file_path = filedialog.asksaveasfilename(

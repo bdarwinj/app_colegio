@@ -1560,3 +1560,14 @@ sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
 2025-03-05 08:42:08,958 - INFO - Payment registered: Receipt 20250305-0001, Student: Eina Isabela Alba Arenas, Amount: 75000.0
 2025-03-05 08:55:07,014 - ERROR - Error formatting receipt number: invalid literal for int() with base 10: '20250305-0002'
 2025-03-05 08:55:09,918 - INFO - Payment registered: Receipt 20250305-0002, Student: Emmanuel Felipe Maurello Vega, Amount: 85000.0
+2025-03-05 21:34:34,808 - ERROR - Error al abrir detalles del estudiante: 'StudentDetailsWindow' object has no attribute 'export_pdf'
+2025-03-06 10:37:07,598 - ERROR - Error formatting receipt number: invalid literal for int() with base 10: '20250306-0003'
+2025-03-06 10:37:07,605 - ERROR - Error registering payment: cannot access local variable 'configs' where it is not associated with a value
+2025-03-06 10:38:12,177 - ERROR - Error formatting receipt number: invalid literal for int() with base 10: '20250306-0004'
+2025-03-06 10:38:12,177 - ERROR - Error registering payment: cannot access local variable 'configs' where it is not associated with a value
+2025-03-06 10:42:04,187 - ERROR - Error formatting receipt number: invalid literal for int() with base 10: '20250306-0005'
+2025-03-06 10:42:04,629 - ERROR - Error registering payment: 'PDFWithHeaderFooter' object has no attribute 'receipt_number'
+2025-03-06 10:45:51,578 - ERROR - Error formatting receipt number: invalid literal for int() with base 10: '20250306-0006'
+2025-03-06 10:45:55,827 - INFO - Payment registered: Receipt 20250306-0006, Student: Eina Isabela Alba Arenas, Amount: 65000.0
+2025-03-06 10:49:21,467 - ERROR - Error formatting receipt number: invalid literal for int() with base 10: '20250306-0007'
+2025-03-06 10:49:26,467 - INFO - Payment registered: Receipt 20250306-0007, Student: Eina Isabela Alba Arenas, Amount: 37500.0

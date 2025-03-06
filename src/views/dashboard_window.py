@@ -3,48 +3,7 @@ from tkinter import ttk, filedialog, messagebox
 import datetime
 from fpdf import FPDF
 import os
-
-class PDFWithHeaderFooter(FPDF):
-    def __init__(self, logo_path, school_name):
-        super().__init__()
-        self.logo_path = logo_path
-        self.school_name = school_name
-
-    def header(self):
-        # Insertar el logo
-        if os.path.exists(self.logo_path):
-            try:
-                self.image(self.logo_path, x=10, y=8, w=25)  # Logo a la izquierda
-            except Exception as e:
-                print(f"Error al insertar logo: {e}")
-        
-        # Colocar el nombre del colegio al lado del logo
-        self.set_xy(10, 8)  # X=40 para dejar espacio al logo, Y=8 para alinearlo
-        self.set_font("Arial", "B", 18)  # Fuente en negrita, tamaño 18
-        self.set_text_color(0, 51, 102)  # Color azul oscuro
-        self.cell(0, 10, self.school_name, ln=True, align="C")  # Escribir el nombre
-        
-        # Título del reporte debajo
-        self.set_xy(10, 20)  # Posición debajo del logo y nombre
-        self.set_font("Arial", "B", 14)
-        self.cell(0, 10, "Dashboard de Estadísticas", ln=True, align="C")
-        
-        # Fecha de generación
-        self.set_font("Arial", "I", 10)
-        self.set_text_color(100, 100, 100)  # Color gris
-        self.cell(0, 5, f"Generado el {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}", ln=True, align="C")
-        
-        # Línea decorativa
-        self.set_line_width(0.5)
-        self.set_draw_color(0, 51, 102)  # Azul oscuro
-        self.line(10, 35, self.w - 10, 35)  # Línea horizontal
-        self.ln(10)  # Espacio adicional
-
-    def footer(self):
-        self.set_y(-15)
-        self.set_font("Arial", "I", 8)
-        self.set_text_color(150, 150, 150)  # Gris claro
-        self.cell(0, 10, f"Página {self.page_no()} - Reporte generado por Sistema Escolar", 0, 0, "C")
+from src.utils.pdf_utils import PDFWithHeaderFooter
 
 class DashboardWindow(tk.Toplevel):
     def __init__(self, parent, db, student_controller, course_controller, payment_controller):
@@ -69,6 +28,8 @@ class DashboardWindow(tk.Toplevel):
         self.btn_export_pdf = ttk.Button(self.main_frame, text="Exportar Lista de Deudores a PDF", command=self.export_dashboard_pdf)
         self.btn_export_pdf.pack(pady=10)
 
+    
+    
     def load_stats(self):
         self.stats_text.configure(state="normal")
         self.stats_text.delete("1.0", tk.END)
