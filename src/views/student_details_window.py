@@ -262,7 +262,7 @@ class StudentDetailsWindow(tk.Toplevel):
         
             curso = self.get_course_display(student)
         
-            pdf = PDFWithHeaderFooter(logo_path, school_name)
+            pdf = PDFWithHeaderFooter(logo_path, school_name, receipt_number="", origin="student_details")
             pdf.add_page()        
             # Sección de Datos del Estudiante
             pdf.set_font("Arial", "B", 12)

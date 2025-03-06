@@ -7,13 +7,7 @@ from openpyxl.drawing.image import Image as XLImage
 from openpyxl.utils import get_column_letter
 from fpdf import FPDF
 from itertools import groupby
-
-# Clase para PDF con numeración en el pie de página
-class PDFWithFooter(FPDF):
-    def footer(self):
-        self.set_y(-15)  # 15 mm desde el final de la página
-        self.set_font("Arial", "I", 8)
-        self.cell(0, 10, f"Página {self.page_no()}", 0, 0, "R")
+from src.utils.pdf_utils import PDFWithHeaderFooter
 
 # Constantes para los encabezados de la tabla de estudiantes
 HEADERS = ["Identificacion", "Nombre", "Apellido", "Grado", "Representante", "Numero de Telefono"]
@@ -171,41 +165,6 @@ def export_students_to_excel(students, output_filename, school_name, logo_path, 
     wb.save(output_filename)
     return output_filename
 
-class PDFWithHeaderFooter(FPDF):
-    def __init__(self, school_name, logo_path=None):
-        super().__init__(orientation="L", unit="mm", format=(216, 385))  # Hoja horizontal
-        self.school_name = school_name
-        self.logo_path = logo_path
-
-    def header(self):
-        # Logo (opcional, si se proporciona)
-        if self.logo_path and os.path.exists(self.logo_path):
-            try:
-                self.image(self.logo_path, x=10, y=8, w=25)
-            except Exception as e:
-                print(f"Error al insertar logo: {e}")
-        # Nombre del colegio al lado del logo, centrado en la hoja
-        self.set_font("Arial", "B", 18)
-        self.set_text_color(0, 51, 102)  # Azul oscuro
-        self.set_xy(0, 10)
-        self.cell(0, 10, self.school_name, ln=True, align="C")
-        
-        # Fecha de generación
-        self.set_font("Arial", "I", 10)
-        self.set_text_color(100, 100, 100)  # Gris
-        self.cell(0, 5, f"Generado el {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}", ln=True, align="C")
-        
-        # Línea decorativa
-        self.set_line_width(0.5)
-        self.set_draw_color(0, 51, 102)  # Azul oscuro
-        self.line(10, 35, self.w - 10, 35)
-        self.ln(10)
-
-    def footer(self):
-        self.set_y(-15)
-        self.set_font("Arial", "I", 8)
-        self.set_text_color(150, 150, 150)  # Gris claro
-        self.cell(0, 10, f"Página {self.page_no()} - Reporte generado por Sistema Escolar", 0, 0, "C")
 
 def export_students_to_pdf(students, output_filename, school_name, logo_path=None, course_controller=None):
     """
@@ -218,7 +177,7 @@ def export_students_to_pdf(students, output_filename, school_name, logo_path=Non
     :param course_controller: Controlador de cursos (no usado aquí, pero mantenido por compatibilidad).
     :return: Ruta del archivo PDF generado.
     """
-    pdf = PDFWithHeaderFooter(school_name, logo_path)
+    pdf = PDFWithHeaderFooter(logo_path, school_name, receipt_number="", origin="student_details", orientation="L", page_format=(216,385))
     pdf.set_margins(left=15, top=40, right=15)  # Márgenes amplios
     pdf.add_page()
 

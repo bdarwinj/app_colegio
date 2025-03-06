@@ -6,11 +6,13 @@ from fpdf import FPDF
 
 
 class PDFWithHeaderFooter(FPDF):
-    def __init__(self, logo_path, school_name, receipt_number=""):
-        super().__init__()
+    def __init__(self, logo_path, school_name, receipt_number="", origin=None, orientation="P", page_format="Letter"):
+        # Se configura la orientación vertical ("P") y el tamaño carta ("Letter")
+        super().__init__(orientation=orientation, unit="mm", format=page_format)
         self.logo_path = logo_path
         self.school_name = school_name
         self.receipt_number = receipt_number
+        self.origin = origin
 
     def header(self):
         # Insertar el logo
@@ -32,7 +34,8 @@ class PDFWithHeaderFooter(FPDF):
         # Mostrar el recibo solo si se proporcionó un número
         if self.receipt_number:
             self.cell(0, 10, f"Recibo de Pago Nº {self.receipt_number}", ln=True, align="C")
-        else: # Si no, solo mostrar el título
+        # Si no, solo mostrar el título
+        elif not self.origin:
             self.cell(0, 10, "Dashboard de Estadísticas", ln=True, align="C")
         # Fecha de generación
         self.set_font("Arial", "I", 10)
