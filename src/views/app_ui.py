@@ -29,6 +29,7 @@ from src.views.change_password_window import ChangePasswordWindow
 from src.views.course_management_window import CourseManagementWindow
 from src.utils.export_students import export_students_to_excel, export_students_to_pdf
 from src.utils.backup_restore import backup_database, restore_database
+from src.utils.pdf_utils import PDFWithHeaderFooter
 
 # Configuración del logging
 logging.basicConfig(filename='app_ui.log', level=logging.INFO, 
@@ -212,40 +213,50 @@ class AppUI:
         # Genera un PDF de paz y salvo para el estudiante seleccionado
         selected = self.frame_lista.tree.selection()
         if not selected:
-            messagebox.showwarning(MSG_SELECTION_REQUIRED, "Seleccione un estudiante para generar el PDF")
+            messagebox.showwarning("Selección requerida", "Seleccione un estudiante para generar el PDF")
             return
+        
         item = self.frame_lista.tree.item(selected[0])
         estudiante_data = item["values"]
-        pdf = FPDF()
+        
+        pdf = PDFWithHeaderFooter(self.abs_logo_path, self.school_name, receipt_number="", titulo="Paz y Salvo")
+        pdf.set_margins(left=15, top=40, right=15)
         pdf.add_page()
-        if os.path.exists(self.abs_logo_path):
-            try:
-                pdf.image(self.abs_logo_path, x=10, y=8, w=30)
-            except Exception as e:
-                logging.error(f"Error al insertar logo en PDF: {e}")
-        pdf.set_font("Arial", "B", 16)
-        pdf.cell(200, 10, txt=self.school_name, ln=True, align="C")
-        pdf.ln(5)
-        pdf.cell(200, 10, txt="Paz y Salvo", ln=True, align="C")
-        pdf.ln(10)
+        
+        # Sección de Datos del Estudiante
+        pdf.set_font("Arial", "B", 12)
+        pdf.set_text_color(0, 51, 102)  # Azul oscuro
+        pdf.cell(0, 10, "Datos del Estudiante", ln=True)
+        pdf.set_font("Arial", "", 10)
+        pdf.set_text_color(0, 0, 0)  # Negro
+        
+        # Fondo gris claro para los detalles
+        pdf.set_fill_color(240, 240, 240)  # Gris claro
         campos = ["ID", "Identificación", "Nombre", "Apellido", "Curso"]
         for idx, campo in enumerate(campos):
-            pdf.set_font("Arial", "B", 12)
-            pdf.cell(50, 10, txt=f"{campo}:")
-            pdf.set_font("Arial", "", 12)
-            pdf.cell(50, 10, txt=str(estudiante_data[idx]))
-            pdf.ln(8)
+            pdf.cell(50, 8, f"{campo}:", border=1, align="L", fill=True)
+            pdf.cell(130, 8, str(estudiante_data[idx]), border=1, align="L", ln=True, fill=True)
         pdf.ln(10)
+        
+        # Sección de Total Pagado y Fecha de Emisión
+        pdf.set_font("Arial", "B", 12)
+        pdf.set_text_color(0, 51, 102)  # Azul oscuro
+        pdf.cell(0, 10, "Estado de Pago", ln=True)
+        pdf.set_font("Arial", "", 10)
+        pdf.set_text_color(0, 0, 0)  # Negro
+        
         student_id = estudiante_data[0]
         pagos = self.payment_controller.get_payments_by_student(student_id)
         total_pagado = sum(float(payment["amount"]) for payment in pagos if payment["amount"] is not None)
-        pdf.set_font("Arial", "B", 12)
-        pdf.cell(50, 10, txt="Total Pagado:")
-        pdf.set_font("Arial", "", 12)
-        formatted_total = f"{total_pagado:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-        pdf.cell(50, 10, txt=f"${formatted_total}")
-        pdf.ln(10)
-        pdf.cell(50, 10, txt="Fecha de emisión: " + datetime.date.today().strftime("%d/%m/%Y"))
+        formatted_total = f"${total_pagado:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+        
+        pdf.set_fill_color(240, 240, 240)  # Gris claro
+        pdf.cell(50, 8, "Total Pagado:", border=1, align="L", fill=True)
+        pdf.set_text_color(0, 102, 204)  # Azul claro
+        pdf.cell(130, 8, formatted_total, border=1, align="L", ln=True, fill=True)
+        pdf.set_text_color(0, 0, 0)  # Negro
+        pdf.cell(50, 8, "Fecha de Emisión:", border=1, align="L", fill=True)
+        pdf.cell(130, 8, datetime.date.today().strftime("%d/%m/%Y"), border=1, align="L", ln=True, fill=True)
         default_filename = f"paz_y_salvo_{estudiante_data[2]}.pdf"
         file_path = filedialog.asksaveasfilename(
             defaultextension=".pdf",

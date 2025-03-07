@@ -72,7 +72,7 @@ class DashboardWindow(tk.Toplevel):
         school_name = configs.get("SCHOOL_NAME", "Colegio Ejemplo")
         logo_path = configs.get("LOGO_PATH", "logo.png")
         
-        pdf = PDFWithHeaderFooter(logo_path, school_name)
+        pdf = PDFWithHeaderFooter(logo_path, school_name, receipt_number="", titulo="Dashboard de Estadísticas")
         pdf.set_margins(left=15, top=40, right=15)  # Márgenes más amplios
         pdf.add_page()
         

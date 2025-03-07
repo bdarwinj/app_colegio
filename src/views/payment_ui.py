@@ -189,7 +189,7 @@ class PaymentUI:
 
                 pdf = PDFWithHeaderFooter(school_name=configs.get("SCHOOL_NAME", DEFAULT_SCHOOL_NAME), 
                                         logo_path=configs.get("LOGO_PATH", DEFAULT_LOGO_PATH), 
-                                        receipt_number=formatted_receipt)
+                                        receipt_number=formatted_receipt, titulo="Recibo de Pago Nº")
                 pdf.add_page()                
                 # Detalles del pago
                 pdf.set_font("Arial", "B", 12)
