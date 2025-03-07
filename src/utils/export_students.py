@@ -177,15 +177,9 @@ def export_students_to_pdf(students, output_filename, school_name, logo_path=Non
     :param course_controller: Controlador de cursos (no usado aquí, pero mantenido por compatibilidad).
     :return: Ruta del archivo PDF generado.
     """
-    pdf = PDFWithHeaderFooter(logo_path, school_name, receipt_number="", origin="student_details", orientation="L", page_format=(216,385))
+    pdf = PDFWithHeaderFooter(logo_path, school_name, receipt_number="", titulo="Lista de Estudiantes", orientation="L")
     pdf.set_margins(left=15, top=40, right=15)  # Márgenes amplios
     pdf.add_page()
-
-    # Título de la tabla
-    pdf.set_font("Arial", "B", 14)
-    pdf.set_text_color(0, 51, 102)  # Azul oscuro
-    pdf.cell(0, 10, "Lista de Estudiantes", ln=True, align="C")
-    pdf.ln(5)
 
     # Preparar estudiantes (asumiendo que tienes esta función definida)
     students_sorted = _preparar_students(students)

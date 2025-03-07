@@ -1573,3 +1573,5 @@ sqlite3.IntegrityError: UNIQUE constraint failed: estudiantes.identificacion
 2025-03-06 10:49:26,467 - INFO - Payment registered: Receipt 20250306-0007, Student: Eina Isabela Alba Arenas, Amount: 37500.0
 2025-03-06 11:57:10,878 - ERROR - Error formatting receipt number: invalid literal for int() with base 10: '20250306-0008'
 2025-03-06 11:57:15,523 - INFO - Payment registered: Receipt 20250306-0008, Student: Lian Yohanis Lopez Laredo, Amount: 90000.0
+2025-03-06 20:38:52,613 - ERROR - Error formatting receipt number: invalid literal for int() with base 10: '20250306-0009'
+2025-03-06 20:38:58,798 - INFO - Payment registered: Receipt 20250306-0009, Student: Avril Luciana Castellanos Carvajal, Amount: 90000.0

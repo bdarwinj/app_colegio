@@ -177,19 +177,38 @@ class StudentDetailsWindow(tk.Toplevel):
             school_name = configs.get("SCHOOL_NAME", DEFAULT_SCHOOL_NAME).title()
             logo_path = configs.get("LOGO_PATH", DEFAULT_LOGO_PATH)
             try:
-                formatted_amount = f"{float(amount):,.2f}"
+                formatted_amount = f"{float(amount):,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
             except Exception:
                 formatted_amount = amount
 
-            pdf = FPDF()
+            # Crear PDF con diseño mejorado
+            pdf = PDFWithHeaderFooter(school_name=school_name, logo_path=logo_path, receipt_number=receipt_number)
+            pdf.set_margins(left=15, top=40, right=15)
             pdf.add_page()
-            add_pdf_header(pdf, logo_path, school_name, f"Recibo de Pago Nº {receipt_number}")
 
-            pdf.set_font("Arial", "", 12)
-            pdf.cell(0, 10, f"Monto: {formatted_amount}", ln=True)
-            pdf.cell(0, 10, f"Fecha y Hora: {payment_date}", ln=True)
-            pdf.multi_cell(0, 10, f"Descripción: {description}")
+            # Sección de Detalles del Pago
+            pdf.set_font("Arial", "B", 12)
+            pdf.set_text_color(0, 51, 102)  # Azul oscuro
+            pdf.cell(0, 10, "Detalles del Pago", ln=True)
+            pdf.set_font("Arial", "", 10)
+            pdf.set_text_color(0, 0, 0)  # Negro
             
+            # Fondo gris claro para los detalles
+            pdf.set_fill_color(240, 240, 240)  # Gris claro
+            details = [
+                ("Monto", formatted_amount),
+                ("Fecha y Hora", payment_date),
+                ("Descripción", description)
+            ]
+            for label, value in details:
+                pdf.cell(50, 8, label, border=1, align="L", fill=True)
+                if label == "Monto":
+                    pdf.set_text_color(0, 102, 204)  # Azul claro para el monto
+                else:
+                    pdf.set_text_color(0, 0, 0)  # Negro para los demás
+                pdf.cell(130, 8, value, border=1, align="L", ln=True, fill=True)
+            
+            # Guardar el PDF
             default_filename = f"recibo_{receipt_number}.pdf"
             file_path = filedialog.asksaveasfilename(
                 defaultextension=".pdf",

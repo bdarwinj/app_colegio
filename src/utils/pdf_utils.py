@@ -33,7 +33,7 @@ class PDFWithHeaderFooter(FPDF):
         self.set_font("Arial", "B", 14)
         # Mostrar el recibo solo si se proporcionó un número 
         if self.receipt_number:
-            self.cell(0, 10, f"{self.titulo} {self.receipt_number}", ln=True, align="C")
+            self.cell(0, 10, f"Recibo de Pago Nº {self.receipt_number}", ln=True, align="C")
         # Si no, solo mostrar el título
         self.cell(0, 10, f"{self.titulo}", ln=True, align="C")
     
