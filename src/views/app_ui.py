@@ -30,6 +30,7 @@ from src.views.course_management_window import CourseManagementWindow
 from src.utils.export_students import export_students_to_excel, export_students_to_pdf
 from src.utils.backup_restore import backup_database, restore_database
 from src.utils.pdf_utils import PDFWithHeaderFooter
+from src.views.course_fee_config_window import CourseFeeConfigWindow
 
 # Configuración del logging
 logging.basicConfig(filename='app_ui.log', level=logging.INFO, 
@@ -86,6 +87,9 @@ class AppUI:
             logging.error(f"Error al importar estudiantes desde Excel: {e}")
             messagebox.showerror(MSG_ERROR, f"Error al importar estudiantes: {str(e)}")
 
+    def open_fee_config_window(self):
+        CourseFeeConfigWindow(self.root, self.db, self.course_controller)
+
     def create_widgets(self):
         # Crea la barra de encabezado
         header_frame = HeaderFrame(self.root, self.school_name, self.abs_logo_path, 
@@ -100,7 +104,8 @@ class AppUI:
                 courses_command=self.manage_courses,
                 users_command=self.manage_users,
                 dashboard_command=self.open_dashboard_window,
-                import_command=self.import_students_excel
+                import_command=self.import_students_excel,
+                fee_config_command=self.open_fee_config_window  # Nuevo callback
             )
             self.frame_admin.pack(padx=10, pady=10, fill="x")
             self.frame_form = StudentRegistrationFrame(self.root, self.course_controller, 

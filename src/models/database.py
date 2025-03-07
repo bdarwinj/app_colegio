@@ -33,7 +33,7 @@ class Database:
                 FOREIGN KEY(course_id) REFERENCES courses(id)
             )
         ''')
-        # Verificar si existen columnas y añadirlas si no
+        # Verificar columnas y añadirlas si no existen
         self.cursor.execute("PRAGMA table_info(estudiantes)")
         columns = [col[1] for col in self.cursor.fetchall()]
         if 'active' not in columns:
@@ -85,6 +85,18 @@ class Database:
                 status TEXT,
                 date_enrolled TEXT,
                 FOREIGN KEY(student_id) REFERENCES estudiantes(id),
+                FOREIGN KEY(course_id) REFERENCES courses(id)
+            )
+        ''')
+        
+        # NUEVA TABLA: Tarifas de Cursos (Mensualidades)
+        self.cursor.execute('''
+            CREATE TABLE IF NOT EXISTS course_fees (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                course_id INTEGER,
+                academic_year INTEGER,
+                fee REAL,
+                UNIQUE(course_id, academic_year),
                 FOREIGN KEY(course_id) REFERENCES courses(id)
             )
         ''')
